@@ -1,9 +1,9 @@
-# Ignore system files
+# System files
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Ignore IDE files
+# IDE files
 .vscode/
 .idea/
 *.suo
@@ -11,6 +11,3 @@ desktop.ini
 *.njsproj
 *.sln
 *.sw?
-
-# Ignore backend folder (user requested frontend only)
-backend/
