@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --primary: #059669;
+  --primary-hover: #047857;
+  --primary-dark: #064e3b;
+  --primary-light: #ecfdf5;
+  --primary-border: #a7f3d0;
+  
+  --bg-page: #fbfdfc;
+  --bg-card: #ffffff;
+  --bg-subtle: #f6f8f7;
+  --border-subtle: #e5eae7;
+  --border-hover: #d1d9d4;
+  
+  --text-main: #19211d;
+  --text-muted: #5f6e66;
+  --text-light: #94a39b;
+  
+  --editor-bg: #0b1411;
+  --editor-gutter: #080f0c;
+  --editor-active-line: rgba(16, 185, 129, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text-main);
+  background-color: var(--bg-page);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark-scroll::-webkit-scrollbar-thumb {
+  background: #1e3a2f;
+}
+.dark-scroll::-webkit-scrollbar-thumb:hover {
+  background: #2d5545;
+}
+
+/* Transitions */
+.tab-transition {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Code Editor line numbers and styling */
+.editor-line-number {
+  color: #3b5a4b;
+  user-select: none;
+  text-align: right;
+  padding-right: 1.25rem;
+  font-size: 0.825rem;
+  line-height: 1.6;
+}
+
+.editor-line-active {
+  background-color: var(--editor-active-line);
+  border-left: 2px solid #10b981;
+}
+
+/* Syntax highlight colors matching dark forest green theme */
+.syn-def { color: #f472b6; font-weight: 500; }
+.syn-func { color: #60a5fa; }
+.syn-param { color: #f97316; }
+.syn-type { color: #34d399; }
+.syn-comment { color: #4b6a5b; font-style: italic; }
+.syn-keyword { color: #ec4899; }
+.syn-string { color: #fde047; }
+.syn-number { color: #a78bfa; }
+.syn-punct { color: #9ca3af; }
+.syn-return { color: #f43f5e; font-weight: 500; }
+
+/* Pulse animation for running state */
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(0.995); }
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 1.8s infinite ease-in-out;
+}
+
+/* Badge styles */
+.badge-easy {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-medium {
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.badge-hard {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* Focus mode styles */
+body.focus-mode header,
+body.focus-mode .sidebar-container {
+  display: none !important;
+}
+
+body.focus-mode .ide-container {
+  height: 100vh !important;
+}
+
