@@ -10,3 +10,4 @@ According to the system architecture specification:
 - **Notification**: Email Notification Service
 
 Backend implementation will be integrated here in the next phase.
+
