@@ -1,13 +1,21 @@
 // CodeForge Frontend API Client with auto-fallback to local mock data
 
 window.CodeForgeAPI = (function () {
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = 'http://localhost:8080/api';
   let isBackendOnline = false;
+
+  function getAuthHeaders() {
+    const token = localStorage.getItem('codeforge_token') || sessionStorage.getItem('codeforge_token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  }
 
   // Check backend status on startup
   async function checkBackend() {
     try {
-      const res = await fetch(`${API_BASE}/health`, { method: 'GET', signal: AbortSignal.timeout(1200) });
+      const res = await fetch(`${API_BASE}/execute/health`, {
+        method: 'GET',
+        signal: AbortSignal.timeout(1500)
+      });
       if (res.ok) {
         isBackendOnline = true;
         console.log("Connected to CodeForge Backend at", API_BASE);
@@ -22,9 +30,13 @@ window.CodeForgeAPI = (function () {
   async function getOverview() {
     if (isBackendOnline) {
       try {
-        const res = await fetch(`${API_BASE}/overview`);
-        const json = await res.json();
-        if (json.success) return json.data;
+        const res = await fetch(`${API_BASE}/overview`, {
+          headers: { ...getAuthHeaders() }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && (json.user || json.totalProblems)) return json;
+        }
       } catch (e) {
         console.warn("Failed to fetch overview, using fallback.", e);
       }
@@ -43,9 +55,14 @@ window.CodeForgeAPI = (function () {
     if (isBackendOnline) {
       try {
         const query = new URLSearchParams(params).toString();
-        const res = await fetch(`${API_BASE}/problems?${query}`);
-        const json = await res.json();
-        if (json.success) return json.data;
+        const res = await fetch(`${API_BASE}/problems?${query}`, {
+          headers: { ...getAuthHeaders() }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (Array.isArray(json)) return json;
+          if (json && Array.isArray(json.data)) return json.data;
+        }
       } catch (e) {
         console.warn("Failed to fetch problems from API, using fallback.", e);
       }
@@ -59,11 +76,15 @@ window.CodeForgeAPI = (function () {
       try {
         const res = await fetch(`${API_BASE}/execute/run`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
           body: JSON.stringify(payload)
         });
-        const json = await res.json();
-        if (json.success) return json;
+        if (res.ok) {
+          return await res.json();
+        }
       } catch (e) {
         console.warn("Run code API error, using local simulation.", e);
       }
@@ -83,11 +104,15 @@ window.CodeForgeAPI = (function () {
       try {
         const res = await fetch(`${API_BASE}/execute/submit`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
           body: JSON.stringify(payload)
         });
-        const json = await res.json();
-        if (json.success) return json;
+        if (res.ok) {
+          return await res.json();
+        }
       } catch (e) {
         console.warn("Submit code API error, using local simulation.", e);
       }
@@ -107,11 +132,16 @@ window.CodeForgeAPI = (function () {
       try {
         const res = await fetch(`${API_BASE}/problems`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
           body: JSON.stringify(payload)
         });
-        const json = await res.json();
-        if (json.success) return json.data;
+        if (res.ok) {
+          const json = await res.json();
+          if (json) return json;
+        }
       } catch (e) {
         console.warn("Create problem API error, using local fallback.", e);
       }
@@ -142,4 +172,3 @@ window.CodeForgeAPI = (function () {
     createProblem
   };
 })();
-
