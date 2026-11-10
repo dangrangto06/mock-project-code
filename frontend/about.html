@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeForge - About</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Shared Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Dedicated About Page Styles -->
+  <link rel="stylesheet" href="css/about.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-[#fbfdfc] text-[#19211d] min-h-screen flex flex-col antialiased selection:bg-emerald-100 selection:text-emerald-900">
+
+  <!-- ================= TOP NAVIGATION BAR (Shared - Identical to index.html) ================= -->
+  <header class="bg-white border-b border-[#e5eae7] sticky top-0 z-40">
+    <div class="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14">
+
+        <!-- Left: Logo & Nav items -->
+        <div class="flex items-center gap-8">
+          <!-- Logo -->
+          <a href="index.html#dashboard" id="brand-logo" class="flex items-center gap-2.5 cursor-pointer select-none no-underline">
+            <div class="w-8 h-8 rounded-lg bg-emerald-800 flex items-center justify-center text-white shadow-sm font-mono font-bold text-base">
+              <svg class="w-4 h-4 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <span class="font-bold text-lg text-gray-900 tracking-tight">CodeForge</span>
+          </a>
+
+          <!-- Main Nav Tabs -->
+          <nav class="hidden md:flex items-center gap-6 pt-3.5">
+            <a id="nav-overview" href="index.html#dashboard" class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Overview</a>
+            <a id="nav-practice" href="index.html#library" class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Practice</a>
+            <a href="index.html#learn" class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Learn</a>
+            <a href="index.html#community" class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Community</a>
+            <a href="about.html" class="text-sm font-semibold text-emerald-800 pb-4 border-b-2 border-emerald-600 transition">About</a>
+            <a href="index.html#contact" class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Contact</a>
+          </nav>
+        </div>
+
+        <!-- Right: Streak & User profile / Auth buttons -->
+        <div class="flex items-center gap-4">
+          <!-- LOGGED IN USER SECTION -->
+          <div id="header-user-section" class="flex items-center gap-4">
+            <!-- Streak -->
+            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f0fdf4] text-emerald-700 text-xs font-semibold border border-emerald-200">
+              <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span>7-day streak</span>
+            </div>
+
+            <!-- Notification Bell -->
+            <button class="relative p-1.5 text-gray-500 hover:text-gray-800 transition rounded-full hover:bg-gray-100">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white"></span>
+            </button>
+
+            <!-- User Avatar & Dropdown -->
+            <div class="relative">
+              <div id="btn-user-avatar" class="flex items-center gap-2 pl-2 border-l border-gray-200 cursor-pointer group select-none">
+                <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-semibold text-xs border border-emerald-300">
+                  AM
+                </div>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-gray-900 hidden sm:inline">Alex Morgan</span>
+                <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+
+              <!-- Dropdown menu -->
+              <div id="dropdown-user-menu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-[#e5eae7] py-1.5 text-xs text-gray-700 hidden z-50">
+                <div class="px-3 py-2 border-b border-gray-100">
+                  <div class="font-semibold text-gray-900">Alex Morgan</div>
+                  <div class="text-[11px] text-gray-400">alex@codeforge.io</div>
+                </div>
+                <a href="index.html#dashboard" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-gray-700">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                  </svg>
+                  <span>Dashboard</span>
+                </a>
+                <a href="index.html#create-problem" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-gray-700">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                  <span>My problems</span>
+                </a>
+                <div class="border-t border-gray-100 my-1"></div>
+                <button id="btn-auth-logout" class="w-full flex items-center gap-2 px-3 py-2 text-rose-600 hover:bg-rose-50 text-left">
+                  <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                  </svg>
+                  <span>Sign out</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- GUEST / LOGGED OUT BUTTONS -->
+          <div id="header-guest-section" class="flex items-center gap-3 hidden">
+            <a href="index.html#login" class="text-xs font-semibold text-gray-700 hover:text-emerald-700 transition px-2 py-1">Sign in</a>
+            <a href="index.html#signup" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs">Create account</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="about-main-wrapper flex-1">
+
+    <!-- 1. Hero Section (Green Tinted Background) -->
+    <section class="section-tinted">
+      <div class="about-container about-hero-section">
+        <div>
+          <span class="tag-label">About CodeForge</span>
+          <h1 class="about-hero-title">
+            Better problem solvers.<br>
+            One attempt at a time.
+          </h1>
+          <p class="about-hero-subtitle">
+            CodeForge is a space to practice algorithms, test your ideas, and build confidence through consistent problem-solving.
+          </p>
+
+          <div class="btn-group">
+            <a href="index.html#library" class="btn-explore">
+              <span>Explore problems</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+            <a href="index.html#dashboard" class="btn-dashboard">
+              Back to dashboard
+            </a>
+          </div>
+
+          <p class="sub-note">Pick a challenge. Try an approach. Make it better.</p>
+        </div>
+
+        <!-- Right Card: The Practice Loop -->
+        <div class="practice-loop-card">
+          <div class="loop-card-header">
+            <span class="loop-card-tag">The Practice Loop</span>
+            <span class="code-brackets-icon">{ }</span>
+          </div>
+
+          <div class="loop-steps">
+            <div class="loop-step-item">
+              <span class="step-num">01</span>
+              <div>
+                <h3 class="step-title">Think it through</h3>
+                <p class="step-desc">Understand the problem before the solution.</p>
+              </div>
+            </div>
+
+            <div class="loop-step-item">
+              <span class="step-num">02</span>
+              <div>
+                <h3 class="step-title">Put it to the test</h3>
+                <p class="step-desc">Write an approach. Run it against test cases.</p>
+              </div>
+            </div>
+
+            <div class="loop-step-item">
+              <span class="step-num">03</span>
+              <div>
+                <h3 class="step-title">Keep getting better</h3>
+                <p class="step-desc">Use feedback to refine your next attempt.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Why CodeForge (White Background) -->
+    <section class="section-plain">
+      <div class="about-container why-section">
+        <div>
+          <span class="tag-label">Why CodeForge</span>
+          <h2 class="section-heading">
+            Progress comes<br>from practice.
+          </h2>
+        </div>
+
+        <div>
+          <p class="why-quote">
+            Solving a problem is more than getting an accepted answer. It's understanding why an approach works—and knowing what to try when it doesn't.
+          </p>
+          <p class="why-text">
+            CodeForge brings challenges, a focused coding workspace, and a view of your progress together, so you can spend less time switching context and more time working through ideas.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Built for your practice (Green Tinted Background) -->
+    <section class="section-tinted">
+      <div class="about-container features-section">
+        <div class="features-header">
+          <span class="tag-label">Built for your practice</span>
+          <h2 class="section-heading">Everything you need to keep moving.</h2>
+        </div>
+
+        <div class="features-grid">
+          <!-- Card 1 -->
+          <div class="feature-card">
+            <div>
+              <div class="feature-icon-badge">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.95rem;">{ }</span>
+              </div>
+              <h3 class="feature-card-title">Find your next challenge</h3>
+              <p class="feature-card-desc">
+                Browse problems by topic and difficulty. Choose a focused exercise or revisit a problem you've saved.
+              </p>
+            </div>
+            <div>
+              <a href="index.html#library" class="feature-link">
+                Explore the problem library &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="feature-card">
+            <div>
+              <div class="feature-icon-badge">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <path d="M10 13l-2 2 2 2"></path>
+                  <path d="M14 17l2-2-2-2"></path>
+                </svg>
+              </div>
+              <h3 class="feature-card-title">Make room for your ideas</h3>
+              <p class="feature-card-desc">
+                Create custom problems with your own descriptions and test cases to practice what matters to you.
+              </p>
+            </div>
+            <div>
+              <a href="index.html#create-problem" class="feature-link">
+                Create a problem &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="feature-card">
+            <div>
+              <div class="feature-icon-badge">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                  <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                  <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                  <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                </svg>
+              </div>
+              <h3 class="feature-card-title">See your progress</h3>
+              <p class="feature-card-desc">
+                Review solved problems, recent submissions, and your practice streak—all in one place.
+              </p>
+            </div>
+            <div>
+              <a href="index.html#dashboard" class="feature-link">
+                View your dashboard &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Rhythm Section (White Background) -->
+    <section class="section-plain">
+      <div class="about-container">
+        <div class="rhythm-header">
+          <h2 class="section-heading">From first attempt to a better solution.</h2>
+          <p class="rhythm-subtitle">A simple rhythm. At your own pace.</p>
+        </div>
+
+        <div class="rhythm-grid">
+          <div class="rhythm-step">
+            <span class="rhythm-step-num">01</span>
+            <h3 class="rhythm-step-title">Choose a problem</h3>
+            <p class="rhythm-step-desc">
+              Open Practice and pick a challenge that matches what you want to work on.
+            </p>
+          </div>
+
+          <div class="rhythm-step">
+            <span class="rhythm-step-num">02</span>
+            <h3 class="rhythm-step-title">Write, run, refine</h3>
+            <p class="rhythm-step-desc">
+              Use the coding workspace to build your solution and learn from test results.
+            </p>
+          </div>
+
+          <div class="rhythm-step">
+            <span class="rhythm-step-num">03</span>
+            <h3 class="rhythm-step-title">Submit and reflect</h3>
+            <p class="rhythm-step-desc">
+              Submit your answer, review the outcome, and return to your dashboard to see your progress.
+            </p>
+          </div>
+        </div>
+
+        <!-- 5. CTA Banner Box inside rhythm section -->
+        <div class="cta-banner">
+          <div>
+            <h3 class="cta-title">Your next breakthrough starts with an attempt.</h3>
+            <p class="cta-desc">You don't need to know every answer. Just be ready to try.</p>
+          </div>
+
+          <div>
+            <a href="index.html#library" class="btn-explore">
+              <span>Explore problems</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="about-footer">
+    <div class="about-footer-inner">
+      <p class="footer-copy">&copy; 2026 CodeForge. One step every day.</p>
+      <div class="footer-links">
+        <a href="about.html" class="footer-link" style="color: #065f46; font-weight: 600;">About</a>
+        <a href="index.html#contact" class="footer-link">Contact</a>
+        <a href="index.html#dashboard" class="footer-link">Back to dashboard</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Basic dropdown toggle script for user avatar -->
+  <script>
+    const avatarBtn = document.getElementById('btn-user-avatar');
+    const dropdownMenu = document.getElementById('dropdown-user-menu');
+    if (avatarBtn && dropdownMenu) {
+      avatarBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('hidden');
+      });
+      document.addEventListener('click', () => {
+        dropdownMenu.classList.add('hidden');
+      });
+    }
+  </script>
+
+</body>
+
+</html>
