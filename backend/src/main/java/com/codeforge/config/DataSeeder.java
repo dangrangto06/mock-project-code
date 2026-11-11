@@ -19,8 +19,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Seeds initial data into the database on application startup.
- * Uses "insert-if-not-exists" logic so re-runs are safe — no duplicate-key crashes.
+ * Database seeding component executed upon Spring Boot application initialization.
+ *
+ * <p>Implements {@link ApplicationRunner} with an execution {@link Order} of 1 to ensure standard
+ * mock data, administrative test accounts, coding challenges, and sample test cases are available
+ * immediately after the application context starts up.</p>
+ *
+ * <p><strong>Key Design Considerations:</strong></p>
+ * <ul>
+ *   <li><b>Idempotent Seeding:</b> Utilizes "insert-if-absent" checks using primary key and unique constraint
+ *       existence queries, making repeated container boots, application restarts, or dev-profile reloads safe
+ *       against duplicate key errors.</li>
+ *   <li><b>Transactional Integrity:</b> Wrapped in {@link Transactional} to ensure atomicity across relational
+ *       entities (Users &rarr; Exercises &rarr; TestCases).</li>
+ *   <li><b>Pre-Configured Algorithm Challenges:</b> Seeds standard LeetCode-style algorithm problems across
+ *       Easy and Medium difficulties, including starter code templates for Python, JavaScript, C++, and Java.</li>
+ * </ul>
  */
 @Component
 @Order(1)
@@ -28,10 +42,20 @@ import java.util.List;
 @Slf4j
 public class DataSeeder implements ApplicationRunner {
 
+    /** Repository for managing user entity persistence and verification. */
     private final UserRepository userRepository;
+
+    /** Repository for managing coding exercise entities and starter codes. */
     private final ExerciseRepository exerciseRepository;
+
+    /** Repository for managing exercise test cases and sample verification data. */
     private final TestCaseRepository testCaseRepository;
 
+    /**
+     * Executes the database seeding logic upon application startup.
+     *
+     * @param args Command-line arguments passed to the application.
+     */
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
@@ -43,12 +67,20 @@ public class DataSeeder implements ApplicationRunner {
 
     // ── Users ─────────────────────────────────────────────────────────────────
 
+    /**
+     * Seeds default user accounts (e.g. Alex Morgan) if not already present.
+     *
+     * <p>Password hash corresponds to the BCrypt encoding of {@code password123}.
+     * Configures pre-populated telemetry metrics (streak, solved count, acceptance rate)
+     * for dashboard testing.</p>
+     */
     private void seedUsers() {
         if (userRepository.existsByEmail("alex@codeforge.io")) {
             log.info("User alex@codeforge.io already exists — skipping.");
             return;
         }
 
+        // Build default administrative user with populated practice statistics
         User alex = User.builder()
                 .username("alex_morgan")
                 .email("alex@codeforge.io")
@@ -68,7 +100,14 @@ public class DataSeeder implements ApplicationRunner {
 
     // ── Exercises ─────────────────────────────────────────────────────────────
 
+    /**
+     * Seeds foundational algorithm challenges into the catalog.
+     *
+     * <p>Populates Exercise 104 ("Pair Sum", equivalent to Two Sum) with multi-language starter templates,
+     * description markdown, constraints, and runtime limits, along with popular problems 105 through 110.</p>
+     */
     private void seedExercises() {
+        // Exercise 104: Pair Sum (Two Sum equivalent) with starter templates in 4 major languages
         seedExerciseIfAbsent(Exercise.builder()
                 .id(104L)
                 .title("Pair Sum")
@@ -87,6 +126,7 @@ public class DataSeeder implements ApplicationRunner {
                 .createdAt(LocalDateTime.now())
                 .build());
 
+        // Exercise 105: Contains Duplicate
         seedExerciseIfAbsent(Exercise.builder()
                 .id(105L).title("Contains Duplicate").difficulty("Easy")
                 .topics("Arrays, Hash set").acceptanceRate(new BigDecimal("82.10"))
@@ -94,6 +134,7 @@ public class DataSeeder implements ApplicationRunner {
                 .timeLimitMs(1000).memoryLimitMb(256).isCustom(false).createdAt(LocalDateTime.now())
                 .build());
 
+        // Exercise 106: Valid Anagram
         seedExerciseIfAbsent(Exercise.builder()
                 .id(106L).title("Valid Anagram").difficulty("Easy")
                 .topics("Strings, Hash map").acceptanceRate(new BigDecimal("76.80"))
@@ -101,6 +142,7 @@ public class DataSeeder implements ApplicationRunner {
                 .timeLimitMs(1000).memoryLimitMb(256).isCustom(false).createdAt(LocalDateTime.now())
                 .build());
 
+        // Exercise 107: Group Anagrams
         seedExerciseIfAbsent(Exercise.builder()
                 .id(107L).title("Group Anagrams").difficulty("Medium")
                 .topics("Strings, Sorting").acceptanceRate(new BigDecimal("64.20"))
@@ -108,6 +150,7 @@ public class DataSeeder implements ApplicationRunner {
                 .timeLimitMs(1000).memoryLimitMb(256).isCustom(false).createdAt(LocalDateTime.now())
                 .build());
 
+        // Exercise 108: Top K Frequent Elements
         seedExerciseIfAbsent(Exercise.builder()
                 .id(108L).title("Top K Frequent Elements").difficulty("Medium")
                 .topics("Arrays, Heap").acceptanceRate(new BigDecimal("61.50"))
@@ -115,6 +158,7 @@ public class DataSeeder implements ApplicationRunner {
                 .timeLimitMs(1000).memoryLimitMb(256).isCustom(false).createdAt(LocalDateTime.now())
                 .build());
 
+        // Exercise 109: Product of Array Except Self
         seedExerciseIfAbsent(Exercise.builder()
                 .id(109L).title("Product of Array Except Self").difficulty("Medium")
                 .topics("Arrays, Prefix sum").acceptanceRate(new BigDecimal("67.30"))
@@ -122,6 +166,7 @@ public class DataSeeder implements ApplicationRunner {
                 .timeLimitMs(1000).memoryLimitMb(256).isCustom(false).createdAt(LocalDateTime.now())
                 .build());
 
+        // Exercise 110: Valid Parentheses
         seedExerciseIfAbsent(Exercise.builder()
                 .id(110L).title("Valid Parentheses").difficulty("Easy")
                 .topics("Strings, Stacks").acceptanceRate(new BigDecimal("74.60"))
@@ -130,6 +175,11 @@ public class DataSeeder implements ApplicationRunner {
                 .build());
     }
 
+    /**
+     * Helper method to insert an exercise record only if an exercise with that ID does not exist.
+     *
+     * @param exercise The {@link Exercise} entity candidate to persist.
+     */
     private void seedExerciseIfAbsent(Exercise exercise) {
         if (exerciseRepository.existsById(exercise.getId())) {
             log.info("Exercise {} '{}' already exists — skipping.", exercise.getId(), exercise.getTitle());
@@ -141,20 +191,28 @@ public class DataSeeder implements ApplicationRunner {
 
     // ── Test Cases ────────────────────────────────────────────────────────────
 
+    /**
+     * Seeds sample test cases for initial problems (specifically Exercise 104).
+     *
+     * <p>Ensures that when a user opens the code editor for Exercise 104, sample test cases
+     * are immediately rendered in the console tab for local verification.</p>
+     */
     private void seedTestCases() {
-        // Only seed test cases for exercise 104 if it has none yet
+        // Guard against duplicate test case insertion if already present
         List<TestCase> existing = testCaseRepository.findByExerciseId(104L);
         if (!existing.isEmpty()) {
             log.info("Test cases for exercise 104 already exist — skipping.");
             return;
         }
 
+        // Locate Exercise 104
         Exercise ex104 = exerciseRepository.findById(104L).orElse(null);
         if (ex104 == null) {
             log.warn("Exercise 104 not found — cannot seed test cases.");
             return;
         }
 
+        // Test Case 1: Standard positive case
         testCaseRepository.save(TestCase.builder()
                 .exercise(ex104)
                 .caseName("Case 1")
@@ -163,6 +221,7 @@ public class DataSeeder implements ApplicationRunner {
                 .isSample(true)
                 .build());
 
+        // Test Case 2: Unsorted array requiring distinct indices
         testCaseRepository.save(TestCase.builder()
                 .exercise(ex104)
                 .caseName("Case 2")
@@ -174,4 +233,3 @@ public class DataSeeder implements ApplicationRunner {
         log.info("Seeded 2 test cases for exercise 104.");
     }
 }
-

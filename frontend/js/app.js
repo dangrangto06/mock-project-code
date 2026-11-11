@@ -1,15 +1,46 @@
-// CodeForge Main Application Router & State Manager
+/**
+ * @file app.js
+ * @description CodeForge Main Client Application, Single Page Router & Global State Manager.
+ * @module CodeForgeApp
+ *
+ * <p>Architectural Role:</p>
+ * Serves as the central frontend orchestration hub for the CodeForge SPA.
+ * Responsibilities include:
+ * <ul>
+ *   <li>Client-side hash routing (`#dashboard`, `#library`, `#ide`, `#create-problem`, etc.).</li>
+ *   <li>Session state management and token synchronization via Web Storage.</li>
+ *   <li>Global header and sidebar user profile UI updates (initials, streak, full name).</li>
+ *   <li>Problem catalog table rendering, dynamic text search, category filtering, and bookmark toggling.</li>
+ *   <li>Cross-module coordination with {@link CodeForgeIDE} and {@link CodeForgeEditor}.</li>
+ * </ul>
+ */
 
 window.CodeForgeApp = (function () {
+  'use strict';
+
+  /** Current active SPA route view */
   let currentRoute = 'dashboard'; // 'dashboard' | 'library' | 'ide' | 'create-problem' | 'login' | 'signup'
-  let activeTabFilter = 'all'; // 'all' | 'saved' | 'my'
+
+  /** Active library tab filter ('all' | 'saved' | 'my') */
+  let activeTabFilter = 'all';
+
+  /** Active library difficulty filter ('all' | 'Easy' | 'Medium' | 'Hard') */
   let filterDifficulty = 'all';
+
+  /** Active text search query matching problem title, ID, or topics */
   let searchQuery = '';
 
+  /** Web Storage key under which the JWT token is stored */
   const TOKEN_KEY = 'codeforge_token';
+
+  /** Web Storage key under which serialized user profile JSON is stored */
   const USER_KEY  = 'codeforge_user';
 
-  // Detect login state from storage (set by login.js / signup.js)
+  /**
+   * Retrieves and deserializes the authenticated user object from Web Storage.
+   *
+   * @returns {Object|null} The cached user profile object, or null if unauthenticated.
+   */
   function getStoredUser() {
     try {
       const raw = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
@@ -17,15 +48,26 @@ window.CodeForgeApp = (function () {
     } catch (_) { return null; }
   }
 
+  /**
+   * Reads the active JWT Bearer token from localStorage or sessionStorage.
+   *
+   * @returns {string|null} The raw JWT string, or null if absent.
+   */
   function getToken() {
     try {
       return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || null;
     } catch (_) { return null; }
   }
 
+  /** Authentication flag reflecting whether a valid token exists in storage */
   let isLoggedIn = !!getToken();
 
-  // Build initials from a full name, e.g. "Dav Nguyen" → "DN"
+  /**
+   * Derives uppercase two-letter initials from a user's full name.
+   *
+   * @param {string} fullName - Full name string (e.g. "Alex Morgan").
+   * @returns {string} Initials string (e.g. "AM") or "?" if empty.
+   */
   function buildInitials(fullName) {
     if (!fullName) return '?';
     const parts = fullName.trim().split(/\s+/);
@@ -33,14 +75,23 @@ window.CodeForgeApp = (function () {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
-  // Build greeting (first name)
+  /**
+   * Extracts the first name for friendly personalized greetings.
+   *
+   * @param {string} fullName - Full name string (e.g. "Alex Morgan").
+   * @returns {string} First name string (e.g. "Alex").
+   */
   function buildGreeting(fullName) {
     if (!fullName) return 'there';
     return fullName.trim().split(/\s+/)[0];
   }
 
+  /**
+   * Main application bootstrapper.
+   * Initializes routing, event listeners, user state, and child controllers.
+   */
   function init() {
-    // Re-check login state on init (in case storage changed)
+    // Re-verify login status from current Web Storage state
     isLoggedIn = !!getToken();
 
     setupHashRouting();
@@ -50,11 +101,14 @@ window.CodeForgeApp = (function () {
     updateDashboardForUser();
     handleRoute(window.location.hash.replace('#', '') || 'dashboard');
     
-    // Initialize child modules
+    // Initialize embedded submodules
     if (window.CodeForgeIDE) CodeForgeIDE.init();
     if (window.CodeForgeEditor) CodeForgeEditor.init();
   }
 
+  /**
+   * Sets up URL hash change listener for single-page client routing.
+   */
   function setupHashRouting() {
     window.addEventListener('hashchange', () => {
       const route = window.location.hash.replace('#', '') || 'dashboard';
@@ -62,10 +116,18 @@ window.CodeForgeApp = (function () {
     });
   }
 
+  /**
+   * Navigates programmatically to a target SPA route.
+   *
+   * @param {string} routeName - Target route name (e.g. 'dashboard', 'library', 'ide').
+   */
   function navigate(routeName) {
     window.location.hash = `#${routeName}`;
   }
 
+  /**
+   * Synchronizes header user profile elements with the current authentication state.
+   */
   function updateAuthUI() {
     const userSection = document.getElementById('header-user-section');
     const guestSection = document.getElementById('header-guest-section');
@@ -75,7 +137,7 @@ window.CodeForgeApp = (function () {
         userSection.classList.remove('hidden');
         guestSection.classList.add('hidden');
 
-        // Populate header with real user data
+        // Populate header with real user profile data
         const user = getStoredUser();
         if (user) {
           const initials = buildInitials(user.fullName);
@@ -97,20 +159,22 @@ window.CodeForgeApp = (function () {
     }
   }
 
-  // Update dashboard greeting and stats with the logged-in user's data
+  /**
+   * Populates personalized dashboard greeting text and current calendar date.
+   */
   function updateDashboardForUser() {
     const user = getStoredUser();
     if (!user) return;
 
     const greeting = buildGreeting(user.fullName);
 
-    // Update the greeting heading
+    // Update greeting banner headline
     const greetingEl = document.getElementById('dashboard-greeting');
     if (greetingEl) {
       greetingEl.textContent = `Keep the momentum, ${greeting}.`;
     }
 
-    // Update the date line
+    // Update localized date string
     const dateEl = document.getElementById('dashboard-date');
     if (dateEl) {
       const now = new Date();
@@ -120,6 +184,9 @@ window.CodeForgeApp = (function () {
     }
   }
 
+  /**
+   * Handles interactive login button simulation in embedded modal.
+   */
   function handleLoginSubmit() {
     const btn = document.getElementById('btn-login-submit');
     const emailInput = document.getElementById('login-email');
@@ -139,6 +206,9 @@ window.CodeForgeApp = (function () {
     }
   }
 
+  /**
+   * Handles interactive signup button simulation in embedded modal.
+   */
   function handleSignupSubmit() {
     const btn = document.getElementById('btn-signup-submit');
     const nameInput = document.getElementById('signup-name');
@@ -158,9 +228,12 @@ window.CodeForgeApp = (function () {
     }
   }
 
+  /**
+   * Signs the user out, purges session storage, and redirects to the login screen.
+   */
   function handleLogout() {
     isLoggedIn = false;
-    // Clear stored session
+    // Clear stored session tokens
     try {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
@@ -175,10 +248,15 @@ window.CodeForgeApp = (function () {
     window.location.href = 'login.html';
   }
 
+  /**
+   * Renders the view corresponding to the active route and updates navigation highlights.
+   *
+   * @param {string} route - Route string extracted from hash fragment.
+   */
   function handleRoute(route) {
     currentRoute = route;
 
-    // Elements
+    // View Containers
     const pageDashboard = document.getElementById('page-dashboard');
     const pageLibrary = document.getElementById('page-library');
     const pageIde = document.getElementById('page-ide');
@@ -187,7 +265,7 @@ window.CodeForgeApp = (function () {
     const pageSignup = document.getElementById('page-signup');
     const sidebarContainer = document.getElementById('main-sidebar');
 
-    // Hide all pages first
+    // Hide all view panels first
     if (pageDashboard) pageDashboard.classList.add('hidden');
     if (pageLibrary) pageLibrary.classList.add('hidden');
     if (pageIde) pageIde.classList.add('hidden');
@@ -195,11 +273,11 @@ window.CodeForgeApp = (function () {
     if (pageLogin) pageLogin.classList.add('hidden');
     if (pageSignup) pageSignup.classList.add('hidden');
 
-    // Close any open dropdowns
+    // Close any open avatar dropdown menus
     const dropdown = document.getElementById('dropdown-user-menu');
     if (dropdown) dropdown.classList.add('hidden');
 
-    // Top Navigation Links highlight
+    // Top Navigation Links highlight management
     const navOverview = document.getElementById('nav-overview');
     const navPractice = document.getElementById('nav-practice');
 
@@ -217,7 +295,7 @@ window.CodeForgeApp = (function () {
 
     resetTopNav();
 
-    // Reset Sidebar Links highlight
+    // Reset Sidebar Navigation Links highlight
     const sidebarLinks = document.querySelectorAll('.sidebar-nav-item');
     sidebarLinks.forEach(item => {
       item.className = "sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition";
@@ -230,9 +308,9 @@ window.CodeForgeApp = (function () {
       }
     };
 
-    // Route Switching
+    // Route Switching Logic
     if (route === 'dashboard') {
-      // If not logged in, redirect to login page
+      // Enforce authentication gate: redirect to login if session missing
       if (!isLoggedIn) {
         window.location.href = 'login.html';
         return;
@@ -257,7 +335,7 @@ window.CodeForgeApp = (function () {
       document.body.classList.remove('focus-mode');
     } else if (route === 'ide' || route.startsWith('solve/')) {
       if (pageIde) pageIde.classList.remove('hidden');
-      if (sidebarContainer) sidebarContainer.classList.add('hidden'); // IDE has split full width layout
+      if (sidebarContainer) sidebarContainer.classList.add('hidden'); // IDE adopts full-width layout
       activateTopNav(navPractice);
     } else if (route === 'login') {
       if (pageLogin) pageLogin.classList.remove('hidden');
@@ -268,22 +346,30 @@ window.CodeForgeApp = (function () {
       if (sidebarContainer) sidebarContainer.classList.add('hidden');
       document.body.classList.remove('focus-mode');
     } else {
-      // Default to dashboard
+      // Fallback default: dashboard
       if (pageDashboard) pageDashboard.classList.remove('hidden');
       if (sidebarContainer) sidebarContainer.classList.remove('hidden');
       activateTopNav(navOverview);
       activateSidebarLink('sb-dashboard');
     }
 
+    // Scroll smoothly to top upon view transition
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /**
+   * Filters and renders the problem catalog table rows into the DOM.
+   *
+   * <p>Applies active search query, tab filtering (All, Saved, My problems),
+   * and difficulty level filters to the problems array.</p>
+   */
   function renderProblemTable() {
     const tableBody = document.getElementById('problems-table-body');
     if (!tableBody) return;
 
+    // Filter problems list according to active criteria
     let filtered = CodeForgeData.problems.filter(p => {
-      // Search filter
+      // Text search filter
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         const matchTitle = p.title.toLowerCase().includes(q);
@@ -300,6 +386,7 @@ window.CodeForgeApp = (function () {
       return true;
     });
 
+    // Render empty state if no problems match
     if (filtered.length === 0) {
       tableBody.innerHTML = `
         <tr>
@@ -311,8 +398,9 @@ window.CodeForgeApp = (function () {
       return;
     }
 
+    // Generate table rows HTML
     tableBody.innerHTML = filtered.map(p => {
-      // Status icon
+      // Determine status icon
       let statusIcon = '';
       if (p.status === 'solved') {
         statusIcon = `
@@ -333,19 +421,19 @@ window.CodeForgeApp = (function () {
         `;
       }
 
-      // Difficulty class
+      // Determine difficulty styling class
       const diffClass = p.difficulty === 'Easy' 
         ? 'text-emerald-700 font-medium' 
         : p.difficulty === 'Medium' 
         ? 'text-amber-700 font-medium' 
         : 'text-rose-700 font-medium';
 
-      // Topics pills
+      // Build topic badge pills
       const topicsHtml = (p.topics || []).map(t => `
         <span class="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700 border border-gray-200">${t}</span>
       `).join(' ');
 
-      // Bookmark
+      // Build bookmark icon
       const bookmarkIcon = p.saved
         ? `<svg class="w-4 h-4 text-emerald-600 fill-emerald-600" viewBox="0 0 24 24"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>`
         : `<svg class="w-4 h-4 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>`;
@@ -385,10 +473,20 @@ window.CodeForgeApp = (function () {
     }).join('');
   }
 
+  /**
+   * Navigates to the IDE workspace to solve a selected challenge.
+   *
+   * @param {number} problemId - Identifier of the problem to open.
+   */
   function openProblem(problemId) {
     navigate(`ide`);
   }
 
+  /**
+   * Toggles the saved/bookmarked state of a problem in the user's library.
+   *
+   * @param {number} problemId - Identifier of the problem.
+   */
   function toggleBookmark(problemId) {
     const p = CodeForgeData.problems.find(item => item.id === problemId);
     if (p) {
@@ -398,6 +496,9 @@ window.CodeForgeApp = (function () {
     }
   }
 
+  /**
+   * Selects a random challenge from the library and navigates to the IDE.
+   */
   function pickRandomProblem() {
     const list = CodeForgeData.problems;
     const random = list[Math.floor(Math.random() * list.length)];
@@ -407,21 +508,24 @@ window.CodeForgeApp = (function () {
     }, 600);
   }
 
+  /**
+   * Binds global application event listeners across navigation items, buttons, and menus.
+   */
   function bindGlobalEvents() {
-    // Top logo click
+    // Top logo click -> dashboard
     const brandLogo = document.getElementById('brand-logo');
     if (brandLogo) {
       brandLogo.addEventListener('click', () => navigate('dashboard'));
     }
 
-    // Top nav clicks
+    // Top navigation link clicks
     const navOverview = document.getElementById('nav-overview');
     if (navOverview) navOverview.addEventListener('click', () => navigate('dashboard'));
 
     const navPractice = document.getElementById('nav-practice');
     if (navPractice) navPractice.addEventListener('click', () => navigate('library'));
 
-    // Sidebar navigation clicks
+    // Sidebar navigation link clicks
     const sbDashboard = document.getElementById('sb-dashboard');
     if (sbDashboard) sbDashboard.addEventListener('click', () => navigate('dashboard'));
 
@@ -442,7 +546,7 @@ window.CodeForgeApp = (function () {
       });
     }
 
-    // Dashboard Buttons
+    // Dashboard quick action buttons
     const btnBrowseProblems = document.getElementById('btn-browse-problems');
     if (btnBrowseProblems) btnBrowseProblems.addEventListener('click', () => navigate('library'));
 
@@ -482,7 +586,7 @@ window.CodeForgeApp = (function () {
     if (tabSaved) tabSaved.addEventListener('click', () => setLibraryTab('saved'));
     if (tabMy) tabMy.addEventListener('click', () => setLibraryTab('my'));
 
-    // Search Input
+    // Problem table search input
     const searchInput = document.getElementById('library-search-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
@@ -491,7 +595,7 @@ window.CodeForgeApp = (function () {
       });
     }
 
-    // Difficulty Filter Dropdown
+    // Difficulty filter dropdown
     const diffSelect = document.getElementById('filter-difficulty-select');
     if (diffSelect) {
       diffSelect.addEventListener('change', (e) => {
@@ -500,7 +604,7 @@ window.CodeForgeApp = (function () {
       });
     }
 
-    // User Avatar Dropdown Toggle
+    // User Avatar dropdown toggle
     const btnUserAvatar = document.getElementById('btn-user-avatar');
     const dropdownMenu = document.getElementById('dropdown-user-menu');
     if (btnUserAvatar && dropdownMenu) {
@@ -509,7 +613,7 @@ window.CodeForgeApp = (function () {
         dropdownMenu.classList.toggle('hidden');
       });
 
-      // Close when clicking outside
+      // Close dropdown when clicking outside
       document.addEventListener('click', (e) => {
         if (!btnUserAvatar.contains(e.target) && !dropdownMenu.contains(e.target)) {
           dropdownMenu.classList.add('hidden');
@@ -517,7 +621,7 @@ window.CodeForgeApp = (function () {
       });
     }
 
-    // Sign out button (dropdown)
+    // Sign out button (header dropdown)
     const btnLogout = document.getElementById('btn-auth-logout');
     if (btnLogout) {
       btnLogout.addEventListener('click', handleLogout);
@@ -529,7 +633,7 @@ window.CodeForgeApp = (function () {
       sbLogout.addEventListener('click', handleLogout);
     }
 
-    // Social Auth buttons
+    // Social authentication button simulation
     document.querySelectorAll('.btn-social-auth').forEach(btn => {
       btn.addEventListener('click', () => {
         showToast("Social login simulated! Redirecting to Dashboard...", "success");
@@ -541,7 +645,7 @@ window.CodeForgeApp = (function () {
       });
     });
 
-    // Modal Close
+    // Submission success modal close button
     const closeModalBtn = document.getElementById('btn-close-modal');
     if (closeModalBtn) {
       closeModalBtn.addEventListener('click', () => {
@@ -551,6 +655,12 @@ window.CodeForgeApp = (function () {
     }
   }
 
+  /**
+   * Displays a floating notification toast.
+   *
+   * @param {string} message - Notification message string.
+   * @param {string} [type='info'] - Severity type ('info', 'success', 'warn').
+   */
   function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -574,6 +684,7 @@ window.CodeForgeApp = (function () {
     }, 3200);
   }
 
+  // Expose public API interface
   return {
     init,
     navigate,
@@ -587,6 +698,5 @@ window.CodeForgeApp = (function () {
   };
 })();
 
-// Boot on DOM ready
+// Boot application upon DOM ready
 document.addEventListener('DOMContentLoaded', CodeForgeApp.init);
-
