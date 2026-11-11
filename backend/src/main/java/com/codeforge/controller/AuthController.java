@@ -7,16 +7,28 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * REST controller handling user authentication and registration endpoints.
+ *
+ * <p>Exposes public identity management endpoints under {@code /api/auth}.
+ * Leverages {@link AuthService} to validate credentials, register accounts, and return
+ * cryptographically signed JWT tokens for subsequent authenticated API requests.</p>
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
+    /** Business service handling user verification, password hashing, and token issuance. */
     private final AuthService authService;
 
     /**
-     * POST /api/auth/login
-     * Authenticate with username + password, returns JWT token.
+     * Authenticates a user with a username/email and plaintext password.
+     *
+     * <p>HTTP Endpoint: {@code POST /api/auth/login}</p>
+     *
+     * @param request Validated login payload containing username/email and password.
+     * @return {@link ResponseEntity} with HTTP 200 OK and {@link AuthDto.AuthResponse} (JWT token + profile).
      */
     @PostMapping("/login")
     public ResponseEntity<AuthDto.AuthResponse> login(@Valid @RequestBody AuthDto.LoginRequest request) {
@@ -25,8 +37,12 @@ public class AuthController {
     }
 
     /**
-     * POST /api/auth/register
-     * Register a new user account, returns JWT token.
+     * Registers a new user account with initial 'Learner' privileges.
+     *
+     * <p>HTTP Endpoint: {@code POST /api/auth/register}</p>
+     *
+     * @param request Validated registration payload (full name, username, email, password).
+     * @return {@link ResponseEntity} with HTTP 200 OK and {@link AuthDto.AuthResponse} containing issued JWT token.
      */
     @PostMapping("/register")
     public ResponseEntity<AuthDto.AuthResponse> register(@Valid @RequestBody AuthDto.RegisterRequest request) {
@@ -35,12 +51,14 @@ public class AuthController {
     }
 
     /**
-     * GET /api/auth/health
-     * Quick check that auth endpoints are reachable.
+     * Verifies operational availability of the authentication service.
+     *
+     * <p>HTTP Endpoint: {@code GET /api/auth/health}</p>
+     *
+     * @return {@link ResponseEntity} with HTTP 200 OK and status confirmation message.
      */
     @GetMapping("/health")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Auth service is running");
     }
 }
-

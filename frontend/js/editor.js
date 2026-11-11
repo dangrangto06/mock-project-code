@@ -1,19 +1,42 @@
-// CodeForge Challenge Creator & Markdown Editor
+/**
+ * @file editor.js
+ * @description CodeForge Challenge Creator & Markdown Editor Controller.
+ * @module CodeForgeEditor
+ *
+ * <p>Architectural Role:</p>
+ * Drives the Problem Authoring interface (`#page-create-problem`). Manages live markdown
+ * editing and HTML preview rendering, toolbar text transformations (bold, italic, code, links),
+ * topic tag chip manipulation, difficulty tier selection, draft auto-saving, and publishing workflows.
+ */
 
 window.CodeForgeEditor = (function () {
+  'use strict';
+
+  /** Internal state flag tracking whether the markdown editor is in Preview mode */
   let isPreviewMode = false;
+
+  /** Active difficulty selection ('Easy' | 'Medium' | 'Hard') */
   let activeDifficulty = 'Easy';
+
+  /** List of topic tags applied to the current problem */
   let tags = ['Arrays', 'Hash map'];
 
+  /**
+   * Initializes the problem editor module, binding event listeners and rendering initial tags.
+   */
   function init() {
     bindEvents();
     renderTags();
   }
 
+  /**
+   * Renders topic tag chips into the DOM and binds individual removal listeners.
+   */
   function renderTags() {
     const container = document.getElementById('editor-tag-chips');
     if (!container) return;
 
+    // Generate HTML for each tag badge with an interactive remove button
     container.innerHTML = tags.map(tag => `
       <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
         ${tag}
@@ -33,6 +56,11 @@ window.CodeForgeEditor = (function () {
     });
   }
 
+  /**
+   * Adds a new topic tag if not already present and below the 5-tag limit.
+   *
+   * @param {string} tagName - Tag label to add.
+   */
   function addTag(tagName) {
     const trimmed = tagName.trim();
     if (trimmed && !tags.includes(trimmed) && tags.length < 5) {
@@ -41,8 +69,17 @@ window.CodeForgeEditor = (function () {
     }
   }
 
+  /**
+   * Translates raw Markdown text into sanitized HTML for live preview rendering.
+   *
+   * <p>Parses standard Markdown constructs including headers (h1-h3), bold text, italics,
+   * inline monospace code spans, unordered lists, and paragraphs.</p>
+   *
+   * @param {string} rawMarkdown - Raw Markdown source string.
+   * @returns {string} Formatted HTML string ready for injection into the preview DOM.
+   */
   function renderMarkdownPreview(rawMarkdown) {
-    // Lightweight markdown parser for challenge statement preview
+    // Lightweight regex-based markdown parser
     let html = rawMarkdown
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -60,6 +97,9 @@ window.CodeForgeEditor = (function () {
     return html;
   }
 
+  /**
+   * Binds user event handlers for toolbar buttons, difficulty selectors, and preview toggles.
+   */
   function bindEvents() {
     // Markdown tab toggle Write vs Preview
     const tabWrite = document.getElementById('tab-edit-write');
@@ -68,6 +108,7 @@ window.CodeForgeEditor = (function () {
     const previewArea = document.getElementById('problem-statement-preview');
 
     if (tabWrite && tabPreview && textarea && previewArea) {
+      // Switch to raw Markdown editing textarea
       tabWrite.addEventListener('click', () => {
         isPreviewMode = false;
         tabWrite.className = "px-3 py-1 text-xs font-semibold rounded bg-white text-gray-800 shadow-sm border border-gray-200";
@@ -76,6 +117,7 @@ window.CodeForgeEditor = (function () {
         previewArea.classList.add('hidden');
       });
 
+      // Switch to parsed HTML preview container
       tabPreview.addEventListener('click', () => {
         isPreviewMode = true;
         tabPreview.className = "px-3 py-1 text-xs font-semibold rounded bg-white text-gray-800 shadow-sm border border-gray-200";
@@ -86,7 +128,7 @@ window.CodeForgeEditor = (function () {
       });
     }
 
-    // Markdown toolbar action helpers
+    // Markdown formatting toolbar action configuration
     const toolbarButtons = {
       'btn-fmt-bold': { wrap: '**' },
       'btn-fmt-italic': { wrap: '*' },
@@ -95,6 +137,7 @@ window.CodeForgeEditor = (function () {
       'btn-fmt-list': { prefix: '\n- ' }
     };
 
+    // Attach text wrapping and insertion handlers to each toolbar button
     Object.keys(toolbarButtons).forEach(id => {
       const btn = document.getElementById(id);
       if (btn && textarea) {
@@ -119,7 +162,7 @@ window.CodeForgeEditor = (function () {
       }
     });
 
-    // Tag input on Enter or Comma
+    // Tag input on Enter or Comma keypress
     const tagInput = document.getElementById('tag-input-field');
     if (tagInput) {
       tagInput.addEventListener('keydown', (e) => {
@@ -131,15 +174,17 @@ window.CodeForgeEditor = (function () {
       });
     }
 
-    // Difficulty buttons toggle
+    // Difficulty selection buttons toggle
     const diffButtons = document.querySelectorAll('.btn-diff-choice');
     diffButtons.forEach(btn => {
       btn.addEventListener('click', () => {
+        // Reset styling across all choices
         diffButtons.forEach(b => {
           b.className = "btn-diff-choice flex-1 py-1.5 text-xs font-medium rounded-md text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 text-center transition";
         });
         const choice = btn.getAttribute('data-diff');
         activeDifficulty = choice;
+        // Apply active accent color according to selected tier
         if (choice === 'Easy') {
           btn.className = "btn-diff-choice flex-1 py-1.5 text-xs font-medium rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold text-center";
         } else if (choice === 'Medium') {
@@ -150,7 +195,7 @@ window.CodeForgeEditor = (function () {
       });
     });
 
-    // Save Draft Button
+    // Save Draft Button handler
     const saveDraftBtn = document.getElementById('btn-save-draft');
     if (saveDraftBtn) {
       saveDraftBtn.addEventListener('click', () => {
@@ -167,7 +212,7 @@ window.CodeForgeEditor = (function () {
       });
     }
 
-    // Publish Changes Button
+    // Publish Changes Button handler
     const publishBtn = document.getElementById('btn-publish-changes');
     if (publishBtn) {
       publishBtn.addEventListener('click', () => {
@@ -185,7 +230,7 @@ window.CodeForgeEditor = (function () {
       });
     }
 
-    // Top Preview button opens the problem solving IDE
+    // Top Preview button opens the problem solving IDE view
     const previewProblemBtn = document.getElementById('btn-preview-problem');
     if (previewProblemBtn) {
       previewProblemBtn.addEventListener('click', () => {
@@ -194,8 +239,8 @@ window.CodeForgeEditor = (function () {
     }
   }
 
+  // Expose public API
   return {
     init
   };
 })();
-

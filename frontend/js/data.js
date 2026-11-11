@@ -1,6 +1,20 @@
-// CodeForge Mock Database & Initial State
+/**
+ * @file data.js
+ * @description CodeForge In-Memory Mock Database & Initial Application State.
+ * @namespace CodeForgeData
+ *
+ * <p>Architectural Role:</p>
+ * Supplies default state representations, algorithmic challenges, starter codes,
+ * test suites, and mock user performance telemetry used when running without a live backend
+ * or initializing the frontend before asynchronous network fetches resolve.
+ */
 
 window.CodeForgeData = {
+
+  /**
+   * Mock user profile representing default dashboard statistics for guest/offline view.
+   * @type {Object}
+   */
   currentUser: {
     name: "Guest",
     initials: "G",
@@ -14,6 +28,7 @@ window.CodeForgeData = {
     practiceDelta: "+2.4h",
     weeklyGoalDone: 8,
     weeklyGoalTarget: 10,
+    /** 7-day completion tracking for Monday through Sunday */
     weekHistory: [
       { day: "M", done: true },
       { day: "T", done: true },
@@ -23,6 +38,7 @@ window.CodeForgeData = {
       { day: "S", done: false },
       { day: "S", done: false }
     ],
+    /** Curated track completion progress displayed on the overview dashboard */
     learningPaths: [
       {
         id: "arrays-hashing",
@@ -52,6 +68,7 @@ window.CodeForgeData = {
         pct: 11
       }
     ],
+    /** Recent submission activity feed */
     recentActivity: [
       { id: 104, title: "Pair Sum", status: "Accepted", runtime: "32 ms", memory: "17.4 MB", date: "Just now" },
       { id: 106, title: "Valid Anagram", status: "Accepted", runtime: "41 ms", memory: "16.8 MB", date: "Yesterday" },
@@ -60,6 +77,11 @@ window.CodeForgeData = {
     ]
   },
 
+  /**
+   * Catalog of algorithm exercises, including problem 104 (fully hydrated with IDE templates,
+   * test suites, and editorial solutions) and supplementary practice challenges.
+   * @type {Array<Object>}
+   */
   problems: [
     {
       id: 104,
@@ -96,6 +118,7 @@ Return the answer in any order.`,
         "-10⁹ ≤ nums[i], target ≤ 10⁹",
         "Exactly one valid answer exists."
       ],
+      /** Multi-language starter code templates loaded dynamically into the IDE editor */
       starterCode: {
         python: `def pair_sum(nums: list[int], target: int) -> list[int]:
     # Remember each value and its index.
@@ -165,6 +188,7 @@ public:
     }
 }`
       },
+      /** Sample test cases rendered in the test console tab */
       testCases: [
         {
           id: 1,
@@ -183,6 +207,7 @@ public:
           passed: true
         }
       ],
+      /** Editorial walkthrough and complexity analysis */
       editorial: {
         title: "One-Pass Hash Table (Intuition & Walkthrough)",
         timeComplexity: "O(n)",
@@ -200,6 +225,7 @@ While we iterate and insert elements into the hash table, we also look back to c
    - If no, add \`seen[num] = i\` to \`seen\`.
 5. Return empty list if no pair is found.`
       },
+      /** Community solution submissions */
       solutions: [
         {
           author: "StefanPochmann",
@@ -223,6 +249,7 @@ While we iterate and insert elements into the hash table, we also look back to c
           preview: "Pre-reserve bucket size to avoid rehash overhead."
         }
       ],
+      /** Historical submission attempts */
       submissions: [
         { status: "Accepted", runtime: "32 ms", memory: "17.4 MB", language: "Python 3", date: "Oct 28, 2026 14:22" },
         { status: "Accepted", runtime: "38 ms", memory: "17.6 MB", language: "Python 3", date: "Oct 28, 2026 14:18" },
@@ -297,6 +324,10 @@ While we iterate and insert elements into the hash table, we also look back to c
     }
   ],
 
+  /**
+   * Pre-populated challenge form state utilized by the problem editor module (editor.js).
+   * @type {Object}
+   */
   challengeForm: {
     title: "Pair Sum",
     markdownStatement: `Given an integer array \`nums\` and an integer \`target\`,

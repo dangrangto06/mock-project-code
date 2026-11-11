@@ -1,10 +1,25 @@
--- Seed Initial Data for CodeForge
+-- ==============================================================================
+-- CodeForge Initial Seed Data Script (DML)
+-- ==============================================================================
+-- Architectural Role:
+-- Executed by Spring Boot / Hibernate or database administration tools to
+-- pre-populate the database with default administrative profiles, standard
+-- LeetCode-style algorithm problems, and sample test cases for immediate platform usability.
+-- ==============================================================================
 
--- 1. Insert Initial User: Alex Morgan (Username: alex_morgan, greeting: Hieu)
+-- ------------------------------------------------------------------------------
+-- 1. Insert Initial User: Alex Morgan
+-- Administrator profile with populated streak, acceptance, and practice statistics.
+-- Password hash corresponds to 'password123' hashed with BCrypt.
+-- ------------------------------------------------------------------------------
 INSERT INTO users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
 VALUES (1, 'alex_morgan', 'alex@codeforge.io', '$2a$10$7EqJtq98hPqEX7fNZaFWoOeV2d6m8C6sX1w/2WjH4Uf31hB7uRfa2', 'Alex Morgan', 'Admin', 7, 48, 76.20, 12.50, CURRENT_TIMESTAMP);
 
--- 2. Insert Problem 104: Pair Sum
+-- ------------------------------------------------------------------------------
+-- 2. Insert Problem 104: Pair Sum (Equivalent to Two Sum)
+-- Includes full markdown description, constraints, and starter code templates in
+-- Python, JavaScript, C++, and Java.
+-- ------------------------------------------------------------------------------
 INSERT INTO exercises (id, title, difficulty, topics, acceptance_rate, description, constraints, starter_code_python, starter_code_javascript, starter_code_cpp, starter_code_java, time_limit_ms, memory_limit_mb, is_custom, created_at)
 VALUES (104, 'Pair Sum', 'Easy', 'Arrays, Hash map', 78.40,
 'Given an integer array `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.\n\nYou may assume that each input has exactly one solution. You may not use the same element twice.\n\nReturn the answer in any order.',
@@ -15,29 +30,39 @@ VALUES (104, 'Pair Sum', 'Easy', 'Arrays, Hash map', 78.40,
 'class Solution {\n    public int[] pairSum(int[] nums, int target) {\n        Map<Integer, Integer> seen = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            if (seen.containsKey(complement)) {\n                return new int[] { seen.get(complement), i };\n            }\n            seen.put(nums[i], i);\n        }\n        return new int[0];\n    }\n}',
 1000, 256, 1, CURRENT_TIMESTAMP);
 
+-- ------------------------------------------------------------------------------
 -- 3. Insert TestCases for Problem 104
+-- Pre-seeds two public sample test cases visible in the IDE test console.
+-- ------------------------------------------------------------------------------
 INSERT INTO test_cases (exercise_id, case_name, input_data, expected_output, is_sample)
 VALUES (104, 'Case 1', 'nums = [2,7,11,15], target = 9', '[0, 1]', 1);
 
 INSERT INTO test_cases (exercise_id, case_name, input_data, expected_output, is_sample)
 VALUES (104, 'Case 2', 'nums = [3,2,4], target = 6', '[1, 2]', 1);
 
--- 4. Insert Other Exercises
+-- ------------------------------------------------------------------------------
+-- 4. Insert Additional Curated Problems (105 through 110)
+-- ------------------------------------------------------------------------------
+-- Problem 105: Contains Duplicate
 INSERT INTO exercises (id, title, difficulty, topics, acceptance_rate, description, time_limit_ms, memory_limit_mb, is_custom, created_at)
 VALUES (105, 'Contains Duplicate', 'Easy', 'Arrays, Hash set', 82.10, 'Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.', 1000, 256, 0, CURRENT_TIMESTAMP);
 
+-- Problem 106: Valid Anagram
 INSERT INTO exercises (id, title, difficulty, topics, acceptance_rate, description, time_limit_ms, memory_limit_mb, is_custom, created_at)
 VALUES (106, 'Valid Anagram', 'Easy', 'Strings, Hash map', 76.80, 'Given two strings s and t, return true if t is an anagram of s, and false otherwise.', 1000, 256, 0, CURRENT_TIMESTAMP);
 
+-- Problem 107: Group Anagrams
 INSERT INTO exercises (id, title, difficulty, topics, acceptance_rate, description, time_limit_ms, memory_limit_mb, is_custom, created_at)
 VALUES (107, 'Group Anagrams', 'Medium', 'Strings, Sorting', 64.20, 'Given an array of strings strs, group the anagrams together. You can return the answer in any order.', 1000, 256, 0, CURRENT_TIMESTAMP);
 
+-- Problem 108: Top K Frequent Elements
 INSERT INTO exercises (id, title, difficulty, topics, acceptance_rate, description, time_limit_ms, memory_limit_mb, is_custom, created_at)
 VALUES (108, 'Top K Frequent Elements', 'Medium', 'Arrays, Heap', 61.50, 'Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order.', 1000, 256, 0, CURRENT_TIMESTAMP);
 
+-- Problem 109: Product of Array Except Self
 INSERT INTO exercises (id, title, difficulty, topics, acceptance_rate, description, time_limit_ms, memory_limit_mb, is_custom, created_at)
 VALUES (109, 'Product of Array Except Self', 'Medium', 'Arrays, Prefix sum', 67.30, 'Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i].', 1000, 256, 0, CURRENT_TIMESTAMP);
 
+-- Problem 110: Valid Parentheses
 INSERT INTO exercises (id, title, difficulty, topics, acceptance_rate, description, time_limit_ms, memory_limit_mb, is_custom, created_at)
 VALUES (110, 'Valid Parentheses', 'Easy', 'Strings, Stacks', 74.60, 'Given a string s containing just the characters ''('', '')'', ''{'', ''}'', ''['' and '']'', determine if the input string is valid.', 1000, 256, 0, CURRENT_TIMESTAMP);
-
