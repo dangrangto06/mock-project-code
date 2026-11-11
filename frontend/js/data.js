@@ -1,20 +1,6 @@
-/**
- * @file data.js
- * @description CodeForge In-Memory Mock Database & Initial Application State.
- * @namespace CodeForgeData
- *
- * <p>Architectural Role:</p>
- * Supplies default state representations, algorithmic challenges, starter codes,
- * test suites, and mock user performance telemetry used when running without a live backend
- * or initializing the frontend before asynchronous network fetches resolve.
- */
+// CodeForge Mock Database & Initial State
 
 window.CodeForgeData = {
-
-  /**
-   * Mock user profile representing default dashboard statistics for guest/offline view.
-   * @type {Object}
-   */
   currentUser: {
     name: "Guest",
     initials: "G",
@@ -28,7 +14,6 @@ window.CodeForgeData = {
     practiceDelta: "+2.4h",
     weeklyGoalDone: 8,
     weeklyGoalTarget: 10,
-    /** 7-day completion tracking for Monday through Sunday */
     weekHistory: [
       { day: "M", done: true },
       { day: "T", done: true },
@@ -38,7 +23,6 @@ window.CodeForgeData = {
       { day: "S", done: false },
       { day: "S", done: false }
     ],
-    /** Curated track completion progress displayed on the overview dashboard */
     learningPaths: [
       {
         id: "arrays-hashing",
@@ -68,29 +52,23 @@ window.CodeForgeData = {
         pct: 11
       }
     ],
-    /** Recent submission activity feed */
     recentActivity: [
-      { id: 104, title: "Pair Sum", status: "Accepted", runtime: "32 ms", memory: "17.4 MB", date: "Just now" },
+      { id: 1, title: "Pair Sum", status: "Accepted", runtime: "32 ms", memory: "17.4 MB", date: "Just now" },
       { id: 106, title: "Valid Anagram", status: "Accepted", runtime: "41 ms", memory: "16.8 MB", date: "Yesterday" },
       { id: 105, title: "Contains Duplicate", status: "Accepted", runtime: "28 ms", memory: "19.2 MB", date: "2 days ago" },
       { id: 110, title: "Valid Parentheses", status: "Accepted", runtime: "19 ms", memory: "16.5 MB", date: "4 days ago" }
     ]
   },
 
-  /**
-   * Catalog of algorithm exercises, including problem 104 (fully hydrated with IDE templates,
-   * test suites, and editorial solutions) and supplementary practice challenges.
-   * @type {Array<Object>}
-   */
   problems: [
     {
-      id: 104,
+      id: 1,
       title: "Pair Sum",
       difficulty: "Easy",
       topics: ["Arrays", "Hash map"],
       acceptance: "78.4%",
-      status: "in-progress", // 'solved', 'in-progress', 'unattempted'
-      saved: true,
+      status: "unattempted", // 'solved', 'in-progress', 'unattempted'
+      saved: false,
       isMine: true,
       author: "Alex Morgan",
       updatedDate: "Oct 28, 2026",
@@ -118,7 +96,6 @@ Return the answer in any order.`,
         "-10⁹ ≤ nums[i], target ≤ 10⁹",
         "Exactly one valid answer exists."
       ],
-      /** Multi-language starter code templates loaded dynamically into the IDE editor */
       starterCode: {
         python: `def pair_sum(nums: list[int], target: int) -> list[int]:
     # Remember each value and its index.
@@ -188,7 +165,6 @@ public:
     }
 }`
       },
-      /** Sample test cases rendered in the test console tab */
       testCases: [
         {
           id: 1,
@@ -207,7 +183,6 @@ public:
           passed: true
         }
       ],
-      /** Editorial walkthrough and complexity analysis */
       editorial: {
         title: "One-Pass Hash Table (Intuition & Walkthrough)",
         timeComplexity: "O(n)",
@@ -225,7 +200,6 @@ While we iterate and insert elements into the hash table, we also look back to c
    - If no, add \`seen[num] = i\` to \`seen\`.
 5. Return empty list if no pair is found.`
       },
-      /** Community solution submissions */
       solutions: [
         {
           author: "StefanPochmann",
@@ -249,85 +223,14 @@ While we iterate and insert elements into the hash table, we also look back to c
           preview: "Pre-reserve bucket size to avoid rehash overhead."
         }
       ],
-      /** Historical submission attempts */
       submissions: [
         { status: "Accepted", runtime: "32 ms", memory: "17.4 MB", language: "Python 3", date: "Oct 28, 2026 14:22" },
         { status: "Accepted", runtime: "38 ms", memory: "17.6 MB", language: "Python 3", date: "Oct 28, 2026 14:18" },
         { status: "Wrong Answer", runtime: "28 ms", memory: "17.3 MB", language: "Python 3", date: "Oct 28, 2026 14:15" }
       ]
-    },
-    {
-      id: 105,
-      title: "Contains Duplicate",
-      difficulty: "Easy",
-      topics: ["Arrays", "Hash set"],
-      acceptance: "82.1%",
-      status: "solved",
-      saved: false,
-      isMine: false,
-      description: "Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct."
-    },
-    {
-      id: 106,
-      title: "Valid Anagram",
-      difficulty: "Easy",
-      topics: ["Strings", "Hash map"],
-      acceptance: "76.8%",
-      status: "solved",
-      saved: true,
-      isMine: false,
-      description: "Given two strings s and t, return true if t is an anagram of s, and false otherwise."
-    },
-    {
-      id: 107,
-      title: "Group Anagrams",
-      difficulty: "Medium",
-      topics: ["Strings", "Sorting"],
-      acceptance: "64.2%",
-      status: "unattempted",
-      saved: false,
-      isMine: false,
-      description: "Given an array of strings strs, group the anagrams together. You can return the answer in any order."
-    },
-    {
-      id: 108,
-      title: "Top K Frequent Elements",
-      difficulty: "Medium",
-      topics: ["Arrays", "Heap"],
-      acceptance: "61.5%",
-      status: "unattempted",
-      saved: true,
-      isMine: false,
-      description: "Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order."
-    },
-    {
-      id: 109,
-      title: "Product of Array Except Self",
-      difficulty: "Medium",
-      topics: ["Arrays", "Prefix sum"],
-      acceptance: "67.3%",
-      status: "unattempted",
-      saved: false,
-      isMine: false,
-      description: "Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i]."
-    },
-    {
-      id: 110,
-      title: "Valid Parentheses",
-      difficulty: "Easy",
-      topics: ["Strings", "Stacks"],
-      acceptance: "74.6%",
-      status: "solved",
-      saved: false,
-      isMine: false,
-      description: "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid."
     }
   ],
 
-  /**
-   * Pre-populated challenge form state utilized by the problem editor module (editor.js).
-   * @type {Object}
-   */
   challengeForm: {
     title: "Pair Sum",
     markdownStatement: `Given an integer array \`nums\` and an integer \`target\`,
@@ -349,3 +252,153 @@ Return the answer in any order.
     version: "Live version 1.2"
   }
 };
+
+// ---------------------------------------------------------------------------
+// Practice library catalog: 100 challenges in total (Pair Sum above + 99 below).
+// Every challenge starts as "unattempted" because the learner has not solved
+// anything yet. Entries use the format "Title|Topic,Topic".
+// ---------------------------------------------------------------------------
+(function buildProblemCatalog() {
+  const RAW = {
+    Easy: [
+      "Contains Duplicate|Arrays,Hash set",
+      "Valid Anagram|Strings,Hash map",
+      "Valid Parentheses|Strings,Stacks",
+      "Binary Search|Arrays,Binary search",
+      "Best Time to Buy and Sell Stock|Arrays,Greedy",
+      "Valid Palindrome|Strings,Two pointers",
+      "Reverse String|Strings,Two pointers",
+      "Merge Sorted Array|Arrays,Two pointers",
+      "Move Zeroes|Arrays,Two pointers",
+      "Majority Element|Arrays,Hash map",
+      "Single Number|Arrays,Bit manipulation",
+      "Missing Number|Arrays,Math",
+      "Intersection of Two Arrays|Arrays,Hash set",
+      "First Unique Character in a String|Strings,Hash map",
+      "Ransom Note|Strings,Hash map",
+      "Isomorphic Strings|Strings,Hash map",
+      "Roman to Integer|Strings,Math",
+      "Longest Common Prefix|Strings,Arrays",
+      "Plus One|Arrays,Math",
+      "Remove Duplicates from Sorted Array|Arrays,Two pointers",
+      "Climbing Stairs|Dynamic programming,Math",
+      "Fizz Buzz|Math,Strings",
+      "Reverse Linked List|Linked list,Recursion",
+      "Merge Two Sorted Lists|Linked list,Recursion",
+      "Linked List Cycle|Linked list,Two pointers",
+      "Maximum Depth of Binary Tree|Trees,Recursion",
+      "Invert Binary Tree|Trees,Recursion",
+      "Symmetric Tree|Trees,Recursion",
+      "Min Stack|Stacks,Design",
+      "Implement Queue using Stacks|Stacks,Design",
+      "Happy Number|Math,Hash set",
+      "Power of Two|Math,Bit manipulation",
+      "Pascal's Triangle|Arrays,Dynamic programming"
+    ],
+    Medium: [
+      "Group Anagrams|Strings,Sorting",
+      "Top K Frequent Elements|Arrays,Heap",
+      "Product of Array Except Self|Arrays,Prefix sum",
+      "Longest Consecutive Sequence|Arrays,Hash set",
+      "3Sum|Arrays,Two pointers",
+      "Container With Most Water|Arrays,Two pointers",
+      "Two Sum II - Sorted Input|Arrays,Two pointers",
+      "Longest Substring Without Repeating Characters|Strings,Sliding window",
+      "Longest Repeating Character Replacement|Strings,Sliding window",
+      "Permutation in String|Strings,Sliding window",
+      "Search in Rotated Sorted Array|Arrays,Binary search",
+      "Find Minimum in Rotated Sorted Array|Arrays,Binary search",
+      "Koko Eating Bananas|Arrays,Binary search",
+      "Time Based Key-Value Store|Hash map,Binary search",
+      "Daily Temperatures|Arrays,Stacks",
+      "Car Fleet|Arrays,Stacks",
+      "Generate Parentheses|Strings,Backtracking",
+      "Evaluate Reverse Polish Notation|Stacks,Math",
+      "Maximum Subarray|Arrays,Dynamic programming",
+      "Jump Game|Arrays,Greedy",
+      "Jump Game II|Arrays,Greedy",
+      "Merge Intervals|Intervals,Sorting",
+      "Insert Interval|Intervals,Arrays",
+      "Non-overlapping Intervals|Intervals,Greedy",
+      "Subsets|Backtracking,Arrays",
+      "Permutations|Backtracking,Arrays",
+      "Combination Sum|Backtracking,Arrays",
+      "Word Search|Matrix,Backtracking",
+      "Number of Islands|Graphs,Matrix",
+      "Clone Graph|Graphs,Hash map",
+      "Course Schedule|Graphs,Topological sort",
+      "Pacific Atlantic Water Flow|Graphs,Matrix",
+      "Rotting Oranges|Graphs,Queues",
+      "Add Two Numbers|Linked list,Math",
+      "Remove Nth Node From End of List|Linked list,Two pointers",
+      "Reorder List|Linked list,Two pointers",
+      "Copy List with Random Pointer|Linked list,Hash map",
+      "Lowest Common Ancestor of a BST|Trees,Recursion",
+      "Binary Tree Level Order Traversal|Trees,Queues",
+      "Validate Binary Search Tree|Trees,Recursion",
+      "Kth Smallest Element in a BST|Trees,Recursion",
+      "Coin Change|Dynamic programming,Arrays",
+      "House Robber|Dynamic programming,Arrays",
+      "Longest Increasing Subsequence|Dynamic programming,Binary search",
+      "Unique Paths|Dynamic programming,Math",
+      "Decode Ways|Dynamic programming,Strings",
+      "Word Break|Dynamic programming,Strings",
+      "Partition Equal Subset Sum|Dynamic programming,Arrays",
+      "K Closest Points to Origin|Heap,Sorting",
+      "Kth Largest Element in an Array|Heap,Sorting"
+    ],
+    Hard: [
+      "Trapping Rain Water|Arrays,Two pointers",
+      "Minimum Window Substring|Strings,Sliding window",
+      "Sliding Window Maximum|Arrays,Sliding window",
+      "Median of Two Sorted Arrays|Arrays,Binary search",
+      "Largest Rectangle in Histogram|Arrays,Stacks",
+      "Merge k Sorted Lists|Linked list,Heap",
+      "Reverse Nodes in k-Group|Linked list,Recursion",
+      "Word Ladder|Graphs,Queues",
+      "Longest Valid Parentheses|Strings,Dynamic programming",
+      "Edit Distance|Dynamic programming,Strings",
+      "Regular Expression Matching|Dynamic programming,Strings",
+      "N-Queens|Backtracking,Matrix",
+      "Binary Tree Maximum Path Sum|Trees,Recursion",
+      "Serialize and Deserialize Binary Tree|Trees,Design",
+      "Find Median from Data Stream|Heap,Design",
+      "Alien Dictionary|Graphs,Topological sort"
+    ]
+  };
+
+  // Acceptance-rate ranges per difficulty (values are stable across reloads).
+  const RANGE = { Easy: [62, 86], Medium: [42, 68], Hard: [26, 52] };
+
+  function stableAcceptance(title, difficulty) {
+    let h = 0;
+    for (let i = 0; i < title.length; i++) h = (h * 31 + title.charCodeAt(i)) >>> 0;
+    const [lo, hi] = RANGE[difficulty];
+    return (lo + (h % ((hi - lo) * 10 + 1)) / 10).toFixed(1) + "%";
+  }
+
+  // Mix difficulties so every page of the table looks like a real curriculum.
+  const queues = { Easy: RAW.Easy.slice(), Medium: RAW.Medium.slice(), Hard: RAW.Hard.slice() };
+  const PATTERN = ["Easy", "Medium", "Easy", "Medium", "Medium", "Hard"];
+  const ordered = [];
+  let i = 0;
+  while (queues.Easy.length + queues.Medium.length + queues.Hard.length > 0) {
+    let want = PATTERN[i++ % PATTERN.length];
+    if (!queues[want].length) want = ["Medium", "Easy", "Hard"].find(d => queues[d].length);
+    ordered.push({ difficulty: want, raw: queues[want].shift() });
+  }
+
+  ordered.forEach((entry, idx) => {
+    const [title, topics] = entry.raw.split("|");
+    CodeForgeData.problems.push({
+      id: idx + 2, // Pair Sum is #1
+      title,
+      difficulty: entry.difficulty,
+      topics: topics.split(","),
+      acceptance: stableAcceptance(title, entry.difficulty),
+      status: "unattempted",
+      saved: false,
+      isMine: false
+    });
+  });
+})();

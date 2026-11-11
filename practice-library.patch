@@ -1,0 +1,890 @@
+From bcaa862d7f0c0a6dcf795bd86e85912460d7ad4b Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 11 Nov 2026 08:24:22 +0000
+Subject: [PATCH] feat(frontend): data-driven practice library with 100
+ unsolved challenges
+
+- Catalog of 100 challenges (34 Easy / 50 Medium / 16 Hard), none solved
+- Pagination (10 per page), topic/status/difficulty filters, search, acceptance sort
+- Header, progress banner and tab counters derive from the data (no hardcoded 240/48)
+- Cmd/Ctrl+K focuses search; empty states; HTML-escaped rendering
+- Pair Sum is now #1 (IDE/dashboard labels updated); api.js ids/total derived from data
+---
+ frontend/index.html |  69 +++++++----
+ frontend/js/api.js  |   4 +-
+ frontend/js/app.js  | 277 ++++++++++++++++++++++++++++++++++++++------
+ frontend/js/data.js | 224 ++++++++++++++++++++++++-----------
+ 4 files changed, 445 insertions(+), 129 deletions(-)
+
+diff --git a/frontend/index.html b/frontend/index.html
+index d14a464..4a6cbdf 100644
+--- a/frontend/index.html
++++ b/frontend/index.html
+@@ -167,7 +167,7 @@
+                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                 <span>My problems</span>
+               </div>
+-              <span class="px-1.5 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600 rounded">3</span>
++              <span id="sb-my-problems-count" class="px-1.5 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600 rounded">1</span>
+             </button>
+             <button class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition text-left">
+               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+@@ -298,7 +298,7 @@
+                     Find two numbers that add up to a target. Build your intuition for fast lookups with a hash map.
+                   </p>
+                   <div class="text-xs text-gray-400 font-mono pt-1">
+-                    #104 &middot; Arrays &middot; Hash map &middot; ~15 min
++                    #1 &middot; Arrays &middot; Hash map &middot; ~15 min
+                   </div>
+                 </div>
+ 
+@@ -488,7 +488,7 @@
+               <div class="flex items-center gap-3">
+                 <span class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-[10px]">&check;</span>
+                 <span class="font-medium text-gray-900">Pair Sum</span>
+-                <span class="text-gray-400 font-mono text-[11px]">#104</span>
++                <span class="text-gray-400 font-mono text-[11px]">#1</span>
+               </div>
+               <div class="flex items-center gap-4 text-gray-500">
+                 <span class="font-mono text-emerald-700">32 ms</span>
+@@ -536,7 +536,7 @@
+           <div>
+             <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Practice / Problem library</div>
+             <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-0.5">One problem closer.</h1>
+-            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Sharpen your skills with 240 curated coding challenges, from first steps to interview-ready.</p>
++            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Sharpen your skills with <span id="library-total-copy">100</span> curated coding challenges, from first steps to interview-ready.</p>
+           </div>
+           <div>
+             <button id="btn-create-problem-lib" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-xs sm:text-sm font-semibold transition shadow-sm">
+@@ -553,8 +553,8 @@
+               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+             </div>
+             <div>
+-              <div class="text-sm font-bold text-gray-900">48 solved. Keep going.</div>
+-              <div class="text-xs text-gray-500">You've completed 20% of the library.</div>
++              <div id="lib-solved-title" class="text-sm font-bold text-gray-900">0 solved. Your first one is waiting.</div>
++              <div id="lib-solved-sub" class="text-xs text-gray-500">You've completed 0% of the library.</div>
+             </div>
+           </div>
+ 
+@@ -562,15 +562,15 @@
+           <div class="flex items-center gap-4 text-xs font-medium text-gray-700">
+             <div class="flex items-center gap-1.5">
+               <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+-              <span>Easy <span class="font-bold text-gray-900">32/80</span></span>
++              <span>Easy <span id="lib-count-easy" class="font-bold text-gray-900 font-mono">0/34</span></span>
+             </div>
+             <div class="flex items-center gap-1.5">
+               <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+-              <span>Medium <span class="font-bold text-gray-900">14/120</span></span>
++              <span>Medium <span id="lib-count-medium" class="font-bold text-gray-900 font-mono">0/50</span></span>
+             </div>
+             <div class="flex items-center gap-1.5">
+               <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+-              <span>Hard <span class="font-bold text-gray-900">2/40</span></span>
++              <span>Hard <span id="lib-count-hard" class="font-bold text-gray-900 font-mono">0/16</span></span>
+             </div>
+           </div>
+ 
+@@ -590,15 +590,15 @@
+             <div class="flex items-center gap-2">
+               <button id="tab-filter-all" class="px-3 py-2 text-sm text-emerald-800 font-semibold border-b-2 border-emerald-600 transition flex items-center gap-1.5">
+                 <span>All problems</span>
+-                <span class="px-1.5 py-0.2 rounded text-[11px] bg-emerald-50 text-emerald-700">240</span>
++                <span id="tab-count-all" class="px-1.5 py-0.2 rounded text-[11px] bg-emerald-50 text-emerald-700">100</span>
+               </button>
+               <button id="tab-filter-saved" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-800 font-normal border-b-2 border-transparent transition flex items-center gap-1.5">
+                 <span>Saved</span>
+-                <span class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">18</span>
++                <span id="tab-count-saved" class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">0</span>
+               </button>
+               <button id="tab-filter-my" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-800 font-normal border-b-2 border-transparent transition flex items-center gap-1.5">
+                 <span>My problems</span>
+-                <span class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">3</span>
++                <span id="tab-count-my" class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">1</span>
+               </button>
+             </div>
+             <div class="text-xs text-gray-400 hidden sm:block">
+@@ -616,8 +616,8 @@
+             </div>
+ 
+             <!-- Dropdown: Difficulty -->
+-            <div class="flex items-center gap-2">
+-              <select id="filter-difficulty-select" class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
++            <div class="flex flex-wrap items-center gap-2">
++              <select id="filter-difficulty-select" aria-label="Filter by difficulty" class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
+                 <option value="all">Difficulty</option>
+                 <option value="Easy">Easy</option>
+                 <option value="Medium">Medium</option>
+@@ -625,17 +625,13 @@
+               </select>
+ 
+               <!-- Dropdown: Topics -->
+-              <select class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
++              <select id="filter-topic-select" aria-label="Filter by topic" class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs max-w-[9rem]">
+                 <option value="all">Topics</option>
+-                <option value="arrays">Arrays</option>
+-                <option value="strings">Strings</option>
+-                <option value="hash-map">Hash map</option>
+-                <option value="sorting">Sorting</option>
+-                <option value="heap">Heap</option>
++                <!-- Options are generated from the problem catalog by app.js -->
+               </select>
+ 
+               <!-- Dropdown: Status -->
+-              <select class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
++              <select id="filter-status-select" aria-label="Filter by status" class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
+                 <option value="all">Status</option>
+                 <option value="solved">Solved</option>
+                 <option value="in-progress">In progress</option>
+@@ -662,7 +658,9 @@
+                   <th class="py-3 px-4">Problem</th>
+                   <th class="py-3 px-4 w-24">Difficulty</th>
+                   <th class="py-3 px-4">Topics</th>
+-                  <th class="py-3 px-4 w-28 text-right">Acceptance &darr;</th>
++                  <th class="py-3 px-4 w-36 text-right whitespace-nowrap" aria-sort="none" id="th-acceptance">
++                    <button id="sort-acceptance" type="button" class="uppercase tracking-wider font-semibold hover:text-gray-800 transition focus:outline-none">Acceptance <span id="sort-acceptance-arrow" class="text-gray-400">&udarr;</span></button>
++                  </th>
+                   <th class="py-3 px-4 text-center w-12"></th>
+                 </tr>
+               </thead>
+@@ -671,6 +669,29 @@
+               </tbody>
+             </table>
+           </div>
++
++          <!-- Footer: result count + pagination -->
++          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3.5 border-t border-gray-100 bg-white">
++            <div id="library-showing" class="text-xs text-gray-500">Showing 1&ndash;10 of 100 problems</div>
++            <nav id="library-pagination" class="flex items-center gap-1.5" aria-label="Pagination"></nav>
++          </div>
++        </div>
++
++        <!-- Status legend -->
++        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-gray-400">
++          <div class="flex items-center gap-4">
++            <span class="uppercase tracking-wider">Your progress</span>
++            <span class="inline-flex items-center gap-1.5 text-gray-500">
++              <span class="inline-flex items-center justify-center w-3.5 h-3.5 text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></span>Solved
++            </span>
++            <span class="inline-flex items-center gap-1.5 text-gray-500">
++              <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-amber-200 bg-amber-50"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span></span>In progress
++            </span>
++            <span class="inline-flex items-center gap-1.5 text-gray-500">
++              <span class="inline-block w-3.5 h-3.5 rounded-full border border-gray-300"></span>Not started
++            </span>
++          </div>
++          <div>Find your next challenge. Make it a habit.</div>
+         </div>
+ 
+       </section>
+@@ -690,7 +711,7 @@
+               <span>Problem library</span>
+             </button>
+             <span class="text-gray-300">|</span>
+-            <span class="text-xs font-semibold text-gray-900">104. Pair Sum</span>
++            <span class="text-xs font-semibold text-gray-900">1. Pair Sum</span>
+             <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">In progress</span>
+           </div>
+ 
+@@ -735,7 +756,7 @@
+               <!-- Title & Bookmark -->
+               <div class="flex items-start justify-between">
+                 <div>
+-                  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">104. Pair Sum</h1>
++                  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">1. Pair Sum</h1>
+                   <!-- Pills -->
+                   <div class="flex flex-wrap items-center gap-2 mt-2">
+                     <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Easy</span>
+diff --git a/frontend/js/api.js b/frontend/js/api.js
+index 717a993..220dbbb 100644
+--- a/frontend/js/api.js
++++ b/frontend/js/api.js
+@@ -46,7 +46,7 @@ window.CodeForgeAPI = (function () {
+     return {
+       user: CodeForgeData.currentUser,
+       stats: {
+-        totalProblems: 240,
++        totalProblems: CodeForgeData.problems.length,
+         solvedCount: CodeForgeData.currentUser.solvedCount
+       }
+     };
+@@ -139,7 +139,7 @@ window.CodeForgeAPI = (function () {
+       }
+     }
+     const newProb = {
+-      id: CodeForgeData.problems.length + 104,
++      id: Math.max(0, ...CodeForgeData.problems.map(p => p.id)) + 1,
+       title: payload.title,
+       difficulty: payload.difficulty,
+       topics: payload.topics,
+diff --git a/frontend/js/app.js b/frontend/js/app.js
+index aebb68d..6bfce2e 100644
+--- a/frontend/js/app.js
++++ b/frontend/js/app.js
+@@ -5,6 +5,11 @@ window.CodeForgeApp = (function () {
+   let activeTabFilter = 'all'; // 'all' | 'saved' | 'my'
+   let filterDifficulty = 'all';
+   let searchQuery = '';
++  let filterTopic = 'all';
++  let filterStatus = 'all';
++  let sortAcceptance = null; // null (catalog order) | 'desc' | 'asc'
++  let currentPage = 1;
++  const PAGE_SIZE = 10;
+ 
+   const TOKEN_KEY = 'codeforge_token';
+   const USER_KEY  = 'codeforge_user';
+@@ -278,71 +283,207 @@ window.CodeForgeApp = (function () {
+     window.scrollTo({ top: 0, behavior: 'smooth' });
+   }
+ 
+-  function renderProblemTable() {
+-    const tableBody = document.getElementById('problems-table-body');
+-    if (!tableBody) return;
++  // ---------- Problem library (practice page) ----------
++
++  function escapeHtml(value) {
++    return String(value).replace(/[&<>"']/g, ch => (
++      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
++    ));
++  }
+ 
+-    let filtered = CodeForgeData.problems.filter(p => {
+-      // Search filter
+-      if (searchQuery) {
+-        const q = searchQuery.toLowerCase();
++  function setText(id, text) {
++    const el = document.getElementById(id);
++    if (el) el.textContent = text;
++  }
++
++  // Header, progress banner and tab counters are all derived from the data,
++  // so they stay correct whatever the size of the catalog or the solved count.
++  function updateLibraryStats() {
++    const all = CodeForgeData.problems;
++    const total = all.length;
++    const solved = all.filter(p => p.status === 'solved').length;
++    const pct = total ? Math.round((solved / total) * 100) : 0;
++
++    ['Easy', 'Medium', 'Hard'].forEach(level => {
++      const inLevel = all.filter(p => p.difficulty === level);
++      const done = inLevel.filter(p => p.status === 'solved').length;
++      setText(`lib-count-${level.toLowerCase()}`, `${done}/${inLevel.length}`);
++    });
++
++    setText('lib-solved-title', solved === 0 ? '0 solved. Your first one is waiting.' : `${solved} solved. Keep going.`);
++    setText('lib-solved-sub', `You've completed ${pct}% of the library.`);
++    setText('library-total-copy', total);
++    setText('tab-count-all', total);
++    setText('tab-count-saved', all.filter(p => p.saved).length);
++    setText('tab-count-my', all.filter(p => p.isMine).length);
++    setText('sb-my-problems-count', all.filter(p => p.isMine).length);
++  }
++
++  // Topic dropdown is built from the catalog so it never goes out of date.
++  function syncTopicOptions() {
++    const select = document.getElementById('filter-topic-select');
++    if (!select) return;
++    const topics = [...new Set(CodeForgeData.problems.flatMap(p => p.topics || []))]
++      .sort((x, y) => x.localeCompare(y));
++    const signature = topics.join('|');
++    if (select.dataset.signature === signature) return;
++    select.dataset.signature = signature;
++    select.innerHTML = '<option value="all">Topics</option>' +
++      topics.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
++    select.value = topics.includes(filterTopic) ? filterTopic : 'all';
++  }
++
++  function getFilteredProblems() {
++    const q = searchQuery.trim().toLowerCase();
++
++    const list = CodeForgeData.problems.filter(p => {
++      if (q) {
+         const matchTitle = p.title.toLowerCase().includes(q);
+         const matchId = String(p.id).includes(q);
+-        const matchTopic = p.topics && p.topics.some(t => t.toLowerCase().includes(q));
++        const matchTopic = (p.topics || []).some(t => t.toLowerCase().includes(q));
+         if (!matchTitle && !matchId && !matchTopic) return false;
+       }
+-      // Tab filter
+       if (activeTabFilter === 'saved' && !p.saved) return false;
+       if (activeTabFilter === 'my' && !p.isMine) return false;
+-      // Difficulty filter
+       if (filterDifficulty !== 'all' && p.difficulty.toLowerCase() !== filterDifficulty.toLowerCase()) return false;
+-
++      if (filterTopic !== 'all' && !(p.topics || []).includes(filterTopic)) return false;
++      if (filterStatus !== 'all' && p.status !== filterStatus) return false;
+       return true;
+     });
+ 
++    if (sortAcceptance) {
++      const rate = p => parseFloat(p.acceptance) || 0;
++      list.sort((x, y) => sortAcceptance === 'desc' ? rate(y) - rate(x) : rate(x) - rate(y));
++    }
++    return list;
++  }
++
++  // 1 2 3 … 10   |   1 … 4 5 6 … 10   |   1 … 8 9 10
++  function getPageItems(current, total) {
++    const keep = new Set([1, total, current - 1, current, current + 1]);
++    if (current <= 3) { keep.add(2); keep.add(3); }
++    if (current >= total - 2) { keep.add(total - 1); keep.add(total - 2); }
++    const pages = [...keep].filter(n => n >= 1 && n <= total).sort((x, y) => x - y);
++
++    const items = [];
++    pages.forEach((n, i) => {
++      if (i > 0) {
++        const gap = n - pages[i - 1];
++        if (gap === 2) items.push(n - 1);
++        else if (gap > 2) items.push('…');
++      }
++      items.push(n);
++    });
++    return items;
++  }
++
++  function renderPagination(totalItems) {
++    const nav = document.getElementById('library-pagination');
++    const info = document.getElementById('library-showing');
++    if (!nav || !info) return;
++
++    if (totalItems === 0) {
++      info.textContent = 'Showing 0 problems';
++      nav.innerHTML = '';
++      return;
++    }
++
++    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
++    const start = (currentPage - 1) * PAGE_SIZE + 1;
++    const end = Math.min(currentPage * PAGE_SIZE, totalItems);
++    info.textContent = `Showing ${start}\u2013${end} of ${totalItems} problem${totalItems === 1 ? '' : 's'}`;
++
++    if (totalPages === 1) {
++      nav.innerHTML = '';
++      return;
++    }
++
++    const edgeBtn = (label, page, disabled) => `
++      <button type="button" data-page="${page}" ${disabled ? 'disabled' : ''}
++        class="px-3 py-1.5 text-xs font-medium rounded-lg border border-[#d1d9d4] bg-white text-gray-700 transition ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-50'}">${label}</button>`;
++
++    const pageBtns = getPageItems(currentPage, totalPages).map(item => {
++      if (item === '…') return `<span class="w-7 text-center text-xs text-gray-400 select-none">…</span>`;
++      const active = item === currentPage;
++      return `<button type="button" data-page="${item}" ${active ? 'aria-current="page"' : ''}
++        class="w-7 h-7 text-xs font-medium rounded-md transition ${active ? 'bg-emerald-700 text-white' : 'text-gray-600 hover:bg-gray-100'}">${item}</button>`;
++    }).join('');
++
++    nav.innerHTML = edgeBtn('Previous', currentPage - 1, currentPage === 1) + pageBtns + edgeBtn('Next', currentPage + 1, currentPage === totalPages);
++  }
++
++  function updateSortIndicator() {
++    const arrow = document.getElementById('sort-acceptance-arrow');
++    const th = document.getElementById('th-acceptance');
++    if (arrow) {
++      arrow.textContent = sortAcceptance === 'desc' ? '\u2193' : sortAcceptance === 'asc' ? '\u2191' : '\u2195';
++      arrow.className = sortAcceptance ? 'text-emerald-700' : 'text-gray-400';
++    }
++    if (th) th.setAttribute('aria-sort', sortAcceptance === 'desc' ? 'descending' : sortAcceptance === 'asc' ? 'ascending' : 'none');
++  }
++
++  function emptyStateMessage() {
++    if (activeTabFilter === 'saved' && !searchQuery && filterDifficulty === 'all' && filterTopic === 'all' && filterStatus === 'all') {
++      return `<div class="font-medium text-gray-700">No saved problems yet</div><div class="mt-1 text-xs">Tap the bookmark on any problem to keep it here.</div>`;
++    }
++    if (activeTabFilter === 'my' && !searchQuery && filterDifficulty === 'all' && filterTopic === 'all' && filterStatus === 'all') {
++      return `<div class="font-medium text-gray-700">You haven't created a problem yet</div><div class="mt-1 text-xs">Use &ldquo;Create problem&rdquo; to add your own challenge.</div>`;
++    }
++    return `<div class="font-medium text-gray-700">No problems match your filters</div>
++      <button type="button" class="mt-2 text-xs font-semibold text-emerald-700 hover:text-emerald-800 underline underline-offset-2" onclick="CodeForgeApp.clearLibraryFilters()">Clear filters</button>`;
++  }
++
++  function renderProblemTable() {
++    const tableBody = document.getElementById('problems-table-body');
++    if (!tableBody) return;
++
++    syncTopicOptions();
++    updateLibraryStats();
++    updateSortIndicator();
++
++    const filtered = getFilteredProblems();
++    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
++    if (currentPage > totalPages) currentPage = totalPages;
++    renderPagination(filtered.length);
++
+     if (filtered.length === 0) {
+       tableBody.innerHTML = `
+         <tr>
+-          <td colspan="7" class="py-12 text-center text-gray-500 text-sm">
+-            No problems found matching your criteria.
+-          </td>
++          <td colspan="7" class="py-14 text-center text-gray-500 text-sm">${emptyStateMessage()}</td>
+         </tr>
+       `;
+       return;
+     }
+ 
+-    tableBody.innerHTML = filtered.map(p => {
++    const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
++
++    tableBody.innerHTML = pageItems.map(p => {
+       // Status icon
+       let statusIcon = '';
+       if (p.status === 'solved') {
+         statusIcon = `
+-          <span class="inline-flex items-center justify-center w-5 h-5 text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200">
++          <span class="inline-flex items-center justify-center w-5 h-5 text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200" title="Solved">
+             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+           </span>
+         `;
+       } else if (p.status === 'in-progress') {
+         statusIcon = `
+-          <span class="inline-flex items-center justify-center w-5 h-5 text-amber-600 bg-amber-50 rounded-full border border-amber-200">
++          <span class="inline-flex items-center justify-center w-5 h-5 text-amber-600 bg-amber-50 rounded-full border border-amber-200" title="In progress">
+             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+           </span>
+         `;
+       } else {
+         statusIcon = `
+-          <span class="inline-flex items-center justify-center w-5 h-5 text-gray-300 rounded-full border border-gray-300">
+-          </span>
++          <span class="inline-flex items-center justify-center w-5 h-5 text-gray-300 rounded-full border border-gray-300" title="Not started"></span>
+         `;
+       }
+ 
+-      // Difficulty class
+-      const diffClass = p.difficulty === 'Easy' 
+-        ? 'text-emerald-700 font-medium' 
+-        : p.difficulty === 'Medium' 
+-        ? 'text-amber-700 font-medium' 
+-        : 'text-rose-700 font-medium';
++      // Difficulty pill (badge colours live in styles.css)
++      const diffBadge = p.difficulty === 'Easy' ? 'badge-easy' : p.difficulty === 'Medium' ? 'badge-medium' : 'badge-hard';
+ 
+       // Topics pills
+       const topicsHtml = (p.topics || []).map(t => `
+-        <span class="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700 border border-gray-200">${t}</span>
++        <span class="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700 border border-gray-200">${escapeHtml(t)}</span>
+       `).join(' ');
+ 
+       // Bookmark
+@@ -351,7 +492,7 @@ window.CodeForgeApp = (function () {
+         : `<svg class="w-4 h-4 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>`;
+ 
+       return `
+-        <tr class="border-b border-gray-100 hover:bg-[#fcfdfd] transition group cursor-pointer" onclick="CodeForgeApp.openProblem(${p.id})">
++        <tr class="border-b border-gray-100 hover:bg-[#fcfdfd] transition group cursor-pointer ${p.status === 'in-progress' ? 'bg-emerald-50/40' : ''}" onclick="CodeForgeApp.openProblem(${p.id})">
+           <td class="py-3.5 px-4 text-center w-12" onclick="event.stopPropagation()">
+             ${statusIcon}
+           </td>
+@@ -360,12 +501,12 @@ window.CodeForgeApp = (function () {
+           </td>
+           <td class="py-3.5 px-4">
+             <div class="flex items-center gap-2">
+-              <span class="text-sm font-medium text-gray-900 group-hover:text-emerald-700 transition">${p.title}</span>
++              <span class="text-sm font-medium text-gray-900 group-hover:text-emerald-700 transition">${escapeHtml(p.title)}</span>
+               ${p.isMine ? `<span class="px-1.5 py-0.2 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Yours</span>` : ''}
+             </div>
+           </td>
+-          <td class="py-3.5 px-4 text-xs ${diffClass} w-24">
+-            ${p.difficulty}
++          <td class="py-3.5 px-4 w-24">
++            <span class="inline-block px-2 py-0.5 rounded text-xs font-medium ${diffBadge}">${p.difficulty}</span>
+           </td>
+           <td class="py-3.5 px-4">
+             <div class="flex flex-wrap gap-1.5">
+@@ -376,7 +517,7 @@ window.CodeForgeApp = (function () {
+             ${p.acceptance}
+           </td>
+           <td class="py-3.5 px-4 text-center w-12" onclick="event.stopPropagation(); CodeForgeApp.toggleBookmark(${p.id})">
+-            <button type="button" class="p-1 rounded hover:bg-gray-100 transition focus:outline-none">
++            <button type="button" class="p-1 rounded hover:bg-gray-100 transition focus:outline-none" aria-label="${p.saved ? 'Remove from saved' : 'Save problem'}">
+               ${bookmarkIcon}
+             </button>
+           </td>
+@@ -385,6 +526,21 @@ window.CodeForgeApp = (function () {
+     }).join('');
+   }
+ 
++  function clearLibraryFilters() {
++    searchQuery = '';
++    filterDifficulty = 'all';
++    filterTopic = 'all';
++    filterStatus = 'all';
++    currentPage = 1;
++    const searchInput = document.getElementById('library-search-input');
++    if (searchInput) searchInput.value = '';
++    ['filter-difficulty-select', 'filter-topic-select', 'filter-status-select'].forEach(id => {
++      const el = document.getElementById(id);
++      if (el) el.value = 'all';
++    });
++    renderProblemTable();
++  }
++
+   function openProblem(problemId) {
+     navigate(`ide`);
+   }
+@@ -399,7 +555,8 @@ window.CodeForgeApp = (function () {
+   }
+ 
+   function pickRandomProblem() {
+-    const list = CodeForgeData.problems;
++    const unsolved = CodeForgeData.problems.filter(p => p.status !== 'solved');
++    const list = unsolved.length ? unsolved : CodeForgeData.problems;
+     const random = list[Math.floor(Math.random() * list.length)];
+     showToast(`Picked random challenge: ${random.title}! Opening IDE...`, "success");
+     setTimeout(() => {
+@@ -461,13 +618,14 @@ window.CodeForgeApp = (function () {
+     const btnBackLibrary = document.getElementById('btn-back-to-library');
+     if (btnBackLibrary) btnBackLibrary.addEventListener('click', () => navigate('library'));
+ 
+-    // Library Tabs (All 240, Saved 18, My problems 3)
++    // Library Tabs (All / Saved / My problems)
+     const tabAll = document.getElementById('tab-filter-all');
+     const tabSaved = document.getElementById('tab-filter-saved');
+     const tabMy = document.getElementById('tab-filter-my');
+ 
+     const setLibraryTab = (tab) => {
+       activeTabFilter = tab;
++      currentPage = 1;
+       [tabAll, tabSaved, tabMy].forEach(t => {
+         if (!t) return;
+         t.className = "px-3 py-2 text-sm text-gray-500 hover:text-gray-800 font-normal border-b-2 border-transparent transition";
+@@ -487,6 +645,7 @@ window.CodeForgeApp = (function () {
+     if (searchInput) {
+       searchInput.addEventListener('input', (e) => {
+         searchQuery = e.target.value;
++        currentPage = 1;
+         renderProblemTable();
+       });
+     }
+@@ -496,10 +655,61 @@ window.CodeForgeApp = (function () {
+     if (diffSelect) {
+       diffSelect.addEventListener('change', (e) => {
+         filterDifficulty = e.target.value;
++        currentPage = 1;
+         renderProblemTable();
+       });
+     }
+ 
++    // Topic + status dropdowns
++    const topicSelect = document.getElementById('filter-topic-select');
++    if (topicSelect) {
++      topicSelect.addEventListener('change', (e) => {
++        filterTopic = e.target.value;
++        currentPage = 1;
++        renderProblemTable();
++      });
++    }
++    const statusSelect = document.getElementById('filter-status-select');
++    if (statusSelect) {
++      statusSelect.addEventListener('change', (e) => {
++        filterStatus = e.target.value;
++        currentPage = 1;
++        renderProblemTable();
++      });
++    }
++
++    // Acceptance column sort: catalog order -> high to low -> low to high
++    const sortBtn = document.getElementById('sort-acceptance');
++    if (sortBtn) {
++      sortBtn.addEventListener('click', () => {
++        sortAcceptance = sortAcceptance === null ? 'desc' : sortAcceptance === 'desc' ? 'asc' : null;
++        currentPage = 1;
++        renderProblemTable();
++      });
++    }
++
++    // Pagination (event delegation)
++    const pagination = document.getElementById('library-pagination');
++    if (pagination) {
++      pagination.addEventListener('click', (e) => {
++        const btn = e.target.closest('button[data-page]');
++        if (!btn || btn.disabled) return;
++        currentPage = parseInt(btn.dataset.page, 10);
++        renderProblemTable();
++        const card = document.getElementById('problems-table-body');
++        if (card) card.closest('.rounded-xl').scrollIntoView({ behavior: 'smooth', block: 'start' });
++      });
++    }
++
++    // Cmd/Ctrl + K focuses the library search (matches the hint in the design)
++    document.addEventListener('keydown', (e) => {
++      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k' && currentRoute === 'library') {
++        e.preventDefault();
++        const input = document.getElementById('library-search-input');
++        if (input) input.focus();
++      }
++    });
++
+     // User Avatar Dropdown Toggle
+     const btnUserAvatar = document.getElementById('btn-user-avatar');
+     const dropdownMenu = document.getElementById('dropdown-user-menu');
+@@ -579,6 +789,7 @@ window.CodeForgeApp = (function () {
+     navigate,
+     openProblem,
+     toggleBookmark,
++    clearLibraryFilters,
+     pickRandomProblem,
+     showToast,
+     handleLoginSubmit,
+diff --git a/frontend/js/data.js b/frontend/js/data.js
+index 10fe47d..40cdec9 100644
+--- a/frontend/js/data.js
++++ b/frontend/js/data.js
+@@ -53,7 +53,7 @@ window.CodeForgeData = {
+       }
+     ],
+     recentActivity: [
+-      { id: 104, title: "Pair Sum", status: "Accepted", runtime: "32 ms", memory: "17.4 MB", date: "Just now" },
++      { id: 1, title: "Pair Sum", status: "Accepted", runtime: "32 ms", memory: "17.4 MB", date: "Just now" },
+       { id: 106, title: "Valid Anagram", status: "Accepted", runtime: "41 ms", memory: "16.8 MB", date: "Yesterday" },
+       { id: 105, title: "Contains Duplicate", status: "Accepted", runtime: "28 ms", memory: "19.2 MB", date: "2 days ago" },
+       { id: 110, title: "Valid Parentheses", status: "Accepted", runtime: "19 ms", memory: "16.5 MB", date: "4 days ago" }
+@@ -62,13 +62,13 @@ window.CodeForgeData = {
+ 
+   problems: [
+     {
+-      id: 104,
++      id: 1,
+       title: "Pair Sum",
+       difficulty: "Easy",
+       topics: ["Arrays", "Hash map"],
+       acceptance: "78.4%",
+-      status: "in-progress", // 'solved', 'in-progress', 'unattempted'
+-      saved: true,
++      status: "unattempted", // 'solved', 'in-progress', 'unattempted'
++      saved: false,
+       isMine: true,
+       author: "Alex Morgan",
+       updatedDate: "Oct 28, 2026",
+@@ -228,72 +228,6 @@ While we iterate and insert elements into the hash table, we also look back to c
+         { status: "Accepted", runtime: "38 ms", memory: "17.6 MB", language: "Python 3", date: "Oct 28, 2026 14:18" },
+         { status: "Wrong Answer", runtime: "28 ms", memory: "17.3 MB", language: "Python 3", date: "Oct 28, 2026 14:15" }
+       ]
+-    },
+-    {
+-      id: 105,
+-      title: "Contains Duplicate",
+-      difficulty: "Easy",
+-      topics: ["Arrays", "Hash set"],
+-      acceptance: "82.1%",
+-      status: "solved",
+-      saved: false,
+-      isMine: false,
+-      description: "Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct."
+-    },
+-    {
+-      id: 106,
+-      title: "Valid Anagram",
+-      difficulty: "Easy",
+-      topics: ["Strings", "Hash map"],
+-      acceptance: "76.8%",
+-      status: "solved",
+-      saved: true,
+-      isMine: false,
+-      description: "Given two strings s and t, return true if t is an anagram of s, and false otherwise."
+-    },
+-    {
+-      id: 107,
+-      title: "Group Anagrams",
+-      difficulty: "Medium",
+-      topics: ["Strings", "Sorting"],
+-      acceptance: "64.2%",
+-      status: "unattempted",
+-      saved: false,
+-      isMine: false,
+-      description: "Given an array of strings strs, group the anagrams together. You can return the answer in any order."
+-    },
+-    {
+-      id: 108,
+-      title: "Top K Frequent Elements",
+-      difficulty: "Medium",
+-      topics: ["Arrays", "Heap"],
+-      acceptance: "61.5%",
+-      status: "unattempted",
+-      saved: true,
+-      isMine: false,
+-      description: "Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order."
+-    },
+-    {
+-      id: 109,
+-      title: "Product of Array Except Self",
+-      difficulty: "Medium",
+-      topics: ["Arrays", "Prefix sum"],
+-      acceptance: "67.3%",
+-      status: "unattempted",
+-      saved: false,
+-      isMine: false,
+-      description: "Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i]."
+-    },
+-    {
+-      id: 110,
+-      title: "Valid Parentheses",
+-      difficulty: "Easy",
+-      topics: ["Strings", "Stacks"],
+-      acceptance: "74.6%",
+-      status: "solved",
+-      saved: false,
+-      isMine: false,
+-      description: "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid."
+     }
+   ],
+ 
+@@ -318,3 +252,153 @@ Return the answer in any order.
+     version: "Live version 1.2"
+   }
+ };
++
++// ---------------------------------------------------------------------------
++// Practice library catalog: 100 challenges in total (Pair Sum above + 99 below).
++// Every challenge starts as "unattempted" because the learner has not solved
++// anything yet. Entries use the format "Title|Topic,Topic".
++// ---------------------------------------------------------------------------
++(function buildProblemCatalog() {
++  const RAW = {
++    Easy: [
++      "Contains Duplicate|Arrays,Hash set",
++      "Valid Anagram|Strings,Hash map",
++      "Valid Parentheses|Strings,Stacks",
++      "Binary Search|Arrays,Binary search",
++      "Best Time to Buy and Sell Stock|Arrays,Greedy",
++      "Valid Palindrome|Strings,Two pointers",
++      "Reverse String|Strings,Two pointers",
++      "Merge Sorted Array|Arrays,Two pointers",
++      "Move Zeroes|Arrays,Two pointers",
++      "Majority Element|Arrays,Hash map",
++      "Single Number|Arrays,Bit manipulation",
++      "Missing Number|Arrays,Math",
++      "Intersection of Two Arrays|Arrays,Hash set",
++      "First Unique Character in a String|Strings,Hash map",
++      "Ransom Note|Strings,Hash map",
++      "Isomorphic Strings|Strings,Hash map",
++      "Roman to Integer|Strings,Math",
++      "Longest Common Prefix|Strings,Arrays",
++      "Plus One|Arrays,Math",
++      "Remove Duplicates from Sorted Array|Arrays,Two pointers",
++      "Climbing Stairs|Dynamic programming,Math",
++      "Fizz Buzz|Math,Strings",
++      "Reverse Linked List|Linked list,Recursion",
++      "Merge Two Sorted Lists|Linked list,Recursion",
++      "Linked List Cycle|Linked list,Two pointers",
++      "Maximum Depth of Binary Tree|Trees,Recursion",
++      "Invert Binary Tree|Trees,Recursion",
++      "Symmetric Tree|Trees,Recursion",
++      "Min Stack|Stacks,Design",
++      "Implement Queue using Stacks|Stacks,Design",
++      "Happy Number|Math,Hash set",
++      "Power of Two|Math,Bit manipulation",
++      "Pascal's Triangle|Arrays,Dynamic programming"
++    ],
++    Medium: [
++      "Group Anagrams|Strings,Sorting",
++      "Top K Frequent Elements|Arrays,Heap",
++      "Product of Array Except Self|Arrays,Prefix sum",
++      "Longest Consecutive Sequence|Arrays,Hash set",
++      "3Sum|Arrays,Two pointers",
++      "Container With Most Water|Arrays,Two pointers",
++      "Two Sum II - Sorted Input|Arrays,Two pointers",
++      "Longest Substring Without Repeating Characters|Strings,Sliding window",
++      "Longest Repeating Character Replacement|Strings,Sliding window",
++      "Permutation in String|Strings,Sliding window",
++      "Search in Rotated Sorted Array|Arrays,Binary search",
++      "Find Minimum in Rotated Sorted Array|Arrays,Binary search",
++      "Koko Eating Bananas|Arrays,Binary search",
++      "Time Based Key-Value Store|Hash map,Binary search",
++      "Daily Temperatures|Arrays,Stacks",
++      "Car Fleet|Arrays,Stacks",
++      "Generate Parentheses|Strings,Backtracking",
++      "Evaluate Reverse Polish Notation|Stacks,Math",
++      "Maximum Subarray|Arrays,Dynamic programming",
++      "Jump Game|Arrays,Greedy",
++      "Jump Game II|Arrays,Greedy",
++      "Merge Intervals|Intervals,Sorting",
++      "Insert Interval|Intervals,Arrays",
++      "Non-overlapping Intervals|Intervals,Greedy",
++      "Subsets|Backtracking,Arrays",
++      "Permutations|Backtracking,Arrays",
++      "Combination Sum|Backtracking,Arrays",
++      "Word Search|Matrix,Backtracking",
++      "Number of Islands|Graphs,Matrix",
++      "Clone Graph|Graphs,Hash map",
++      "Course Schedule|Graphs,Topological sort",
++      "Pacific Atlantic Water Flow|Graphs,Matrix",
++      "Rotting Oranges|Graphs,Queues",
++      "Add Two Numbers|Linked list,Math",
++      "Remove Nth Node From End of List|Linked list,Two pointers",
++      "Reorder List|Linked list,Two pointers",
++      "Copy List with Random Pointer|Linked list,Hash map",
++      "Lowest Common Ancestor of a BST|Trees,Recursion",
++      "Binary Tree Level Order Traversal|Trees,Queues",
++      "Validate Binary Search Tree|Trees,Recursion",
++      "Kth Smallest Element in a BST|Trees,Recursion",
++      "Coin Change|Dynamic programming,Arrays",
++      "House Robber|Dynamic programming,Arrays",
++      "Longest Increasing Subsequence|Dynamic programming,Binary search",
++      "Unique Paths|Dynamic programming,Math",
++      "Decode Ways|Dynamic programming,Strings",
++      "Word Break|Dynamic programming,Strings",
++      "Partition Equal Subset Sum|Dynamic programming,Arrays",
++      "K Closest Points to Origin|Heap,Sorting",
++      "Kth Largest Element in an Array|Heap,Sorting"
++    ],
++    Hard: [
++      "Trapping Rain Water|Arrays,Two pointers",
++      "Minimum Window Substring|Strings,Sliding window",
++      "Sliding Window Maximum|Arrays,Sliding window",
++      "Median of Two Sorted Arrays|Arrays,Binary search",
++      "Largest Rectangle in Histogram|Arrays,Stacks",
++      "Merge k Sorted Lists|Linked list,Heap",
++      "Reverse Nodes in k-Group|Linked list,Recursion",
++      "Word Ladder|Graphs,Queues",
++      "Longest Valid Parentheses|Strings,Dynamic programming",
++      "Edit Distance|Dynamic programming,Strings",
++      "Regular Expression Matching|Dynamic programming,Strings",
++      "N-Queens|Backtracking,Matrix",
++      "Binary Tree Maximum Path Sum|Trees,Recursion",
++      "Serialize and Deserialize Binary Tree|Trees,Design",
++      "Find Median from Data Stream|Heap,Design",
++      "Alien Dictionary|Graphs,Topological sort"
++    ]
++  };
++
++  // Acceptance-rate ranges per difficulty (values are stable across reloads).
++  const RANGE = { Easy: [62, 86], Medium: [42, 68], Hard: [26, 52] };
++
++  function stableAcceptance(title, difficulty) {
++    let h = 0;
++    for (let i = 0; i < title.length; i++) h = (h * 31 + title.charCodeAt(i)) >>> 0;
++    const [lo, hi] = RANGE[difficulty];
++    return (lo + (h % ((hi - lo) * 10 + 1)) / 10).toFixed(1) + "%";
++  }
++
++  // Mix difficulties so every page of the table looks like a real curriculum.
++  const queues = { Easy: RAW.Easy.slice(), Medium: RAW.Medium.slice(), Hard: RAW.Hard.slice() };
++  const PATTERN = ["Easy", "Medium", "Easy", "Medium", "Medium", "Hard"];
++  const ordered = [];
++  let i = 0;
++  while (queues.Easy.length + queues.Medium.length + queues.Hard.length > 0) {
++    let want = PATTERN[i++ % PATTERN.length];
++    if (!queues[want].length) want = ["Medium", "Easy", "Hard"].find(d => queues[d].length);
++    ordered.push({ difficulty: want, raw: queues[want].shift() });
++  }
++
++  ordered.forEach((entry, idx) => {
++    const [title, topics] = entry.raw.split("|");
++    CodeForgeData.problems.push({
++      id: idx + 2, // Pair Sum is #1
++      title,
++      difficulty: entry.difficulty,
++      topics: topics.split(","),
++      acceptance: stableAcceptance(title, entry.difficulty),
++      status: "unattempted",
++      saved: false,
++      isMine: false
++    });
++  });
++})();
+-- 
+2.43.0
+

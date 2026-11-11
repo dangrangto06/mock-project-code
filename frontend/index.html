@@ -167,7 +167,7 @@
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 <span>My problems</span>
               </div>
-              <span class="px-1.5 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600 rounded">3</span>
+              <span id="sb-my-problems-count" class="px-1.5 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600 rounded">1</span>
             </button>
             <button class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition text-left">
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -298,7 +298,7 @@
                     Find two numbers that add up to a target. Build your intuition for fast lookups with a hash map.
                   </p>
                   <div class="text-xs text-gray-400 font-mono pt-1">
-                    #104 &middot; Arrays &middot; Hash map &middot; ~15 min
+                    #1 &middot; Arrays &middot; Hash map &middot; ~15 min
                   </div>
                 </div>
 
@@ -488,7 +488,7 @@
               <div class="flex items-center gap-3">
                 <span class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-[10px]">&check;</span>
                 <span class="font-medium text-gray-900">Pair Sum</span>
-                <span class="text-gray-400 font-mono text-[11px]">#104</span>
+                <span class="text-gray-400 font-mono text-[11px]">#1</span>
               </div>
               <div class="flex items-center gap-4 text-gray-500">
                 <span class="font-mono text-emerald-700">32 ms</span>
@@ -536,7 +536,7 @@
           <div>
             <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Practice / Problem library</div>
             <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-0.5">One problem closer.</h1>
-            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Sharpen your skills with 240 curated coding challenges, from first steps to interview-ready.</p>
+            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Sharpen your skills with <span id="library-total-copy">100</span> curated coding challenges, from first steps to interview-ready.</p>
           </div>
           <div>
             <button id="btn-create-problem-lib" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-xs sm:text-sm font-semibold transition shadow-sm">
@@ -553,8 +553,8 @@
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             </div>
             <div>
-              <div class="text-sm font-bold text-gray-900">48 solved. Keep going.</div>
-              <div class="text-xs text-gray-500">You've completed 20% of the library.</div>
+              <div id="lib-solved-title" class="text-sm font-bold text-gray-900">0 solved. Your first one is waiting.</div>
+              <div id="lib-solved-sub" class="text-xs text-gray-500">You've completed 0% of the library.</div>
             </div>
           </div>
 
@@ -562,15 +562,15 @@
           <div class="flex items-center gap-4 text-xs font-medium text-gray-700">
             <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>Easy <span class="font-bold text-gray-900">32/80</span></span>
+              <span>Easy <span id="lib-count-easy" class="font-bold text-gray-900 font-mono">0/34</span></span>
             </div>
             <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-              <span>Medium <span class="font-bold text-gray-900">14/120</span></span>
+              <span>Medium <span id="lib-count-medium" class="font-bold text-gray-900 font-mono">0/50</span></span>
             </div>
             <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-              <span>Hard <span class="font-bold text-gray-900">2/40</span></span>
+              <span>Hard <span id="lib-count-hard" class="font-bold text-gray-900 font-mono">0/16</span></span>
             </div>
           </div>
 
@@ -590,15 +590,15 @@
             <div class="flex items-center gap-2">
               <button id="tab-filter-all" class="px-3 py-2 text-sm text-emerald-800 font-semibold border-b-2 border-emerald-600 transition flex items-center gap-1.5">
                 <span>All problems</span>
-                <span class="px-1.5 py-0.2 rounded text-[11px] bg-emerald-50 text-emerald-700">240</span>
+                <span id="tab-count-all" class="px-1.5 py-0.2 rounded text-[11px] bg-emerald-50 text-emerald-700">100</span>
               </button>
               <button id="tab-filter-saved" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-800 font-normal border-b-2 border-transparent transition flex items-center gap-1.5">
                 <span>Saved</span>
-                <span class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">18</span>
+                <span id="tab-count-saved" class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">0</span>
               </button>
               <button id="tab-filter-my" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-800 font-normal border-b-2 border-transparent transition flex items-center gap-1.5">
                 <span>My problems</span>
-                <span class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">3</span>
+                <span id="tab-count-my" class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">1</span>
               </button>
             </div>
             <div class="text-xs text-gray-400 hidden sm:block">
@@ -616,8 +616,8 @@
             </div>
 
             <!-- Dropdown: Difficulty -->
-            <div class="flex items-center gap-2">
-              <select id="filter-difficulty-select" class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="filter-difficulty-select" aria-label="Filter by difficulty" class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
                 <option value="all">Difficulty</option>
                 <option value="Easy">Easy</option>
                 <option value="Medium">Medium</option>
@@ -625,17 +625,13 @@
               </select>
 
               <!-- Dropdown: Topics -->
-              <select class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
+              <select id="filter-topic-select" aria-label="Filter by topic" class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs max-w-[9rem]">
                 <option value="all">Topics</option>
-                <option value="arrays">Arrays</option>
-                <option value="strings">Strings</option>
-                <option value="hash-map">Hash map</option>
-                <option value="sorting">Sorting</option>
-                <option value="heap">Heap</option>
+                <!-- Options are generated from the problem catalog by app.js -->
               </select>
 
               <!-- Dropdown: Status -->
-              <select class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
+              <select id="filter-status-select" aria-label="Filter by status" class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
                 <option value="all">Status</option>
                 <option value="solved">Solved</option>
                 <option value="in-progress">In progress</option>
@@ -662,7 +658,9 @@
                   <th class="py-3 px-4">Problem</th>
                   <th class="py-3 px-4 w-24">Difficulty</th>
                   <th class="py-3 px-4">Topics</th>
-                  <th class="py-3 px-4 w-28 text-right">Acceptance &darr;</th>
+                  <th class="py-3 px-4 w-36 text-right whitespace-nowrap" aria-sort="none" id="th-acceptance">
+                    <button id="sort-acceptance" type="button" class="uppercase tracking-wider font-semibold hover:text-gray-800 transition focus:outline-none">Acceptance <span id="sort-acceptance-arrow" class="text-gray-400">&udarr;</span></button>
+                  </th>
                   <th class="py-3 px-4 text-center w-12"></th>
                 </tr>
               </thead>
@@ -671,6 +669,29 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Footer: result count + pagination -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3.5 border-t border-gray-100 bg-white">
+            <div id="library-showing" class="text-xs text-gray-500">Showing 1&ndash;10 of 100 problems</div>
+            <nav id="library-pagination" class="flex items-center gap-1.5" aria-label="Pagination"></nav>
+          </div>
+        </div>
+
+        <!-- Status legend -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-gray-400">
+          <div class="flex items-center gap-4">
+            <span class="uppercase tracking-wider">Your progress</span>
+            <span class="inline-flex items-center gap-1.5 text-gray-500">
+              <span class="inline-flex items-center justify-center w-3.5 h-3.5 text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></span>Solved
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-gray-500">
+              <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-amber-200 bg-amber-50"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span></span>In progress
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-gray-500">
+              <span class="inline-block w-3.5 h-3.5 rounded-full border border-gray-300"></span>Not started
+            </span>
+          </div>
+          <div>Find your next challenge. Make it a habit.</div>
         </div>
 
       </section>
@@ -690,7 +711,7 @@
               <span>Problem library</span>
             </button>
             <span class="text-gray-300">|</span>
-            <span class="text-xs font-semibold text-gray-900">104. Pair Sum</span>
+            <span class="text-xs font-semibold text-gray-900">1. Pair Sum</span>
             <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">In progress</span>
           </div>
 
@@ -735,7 +756,7 @@
               <!-- Title & Bookmark -->
               <div class="flex items-start justify-between">
                 <div>
-                  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">104. Pair Sum</h1>
+                  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">1. Pair Sum</h1>
                   <!-- Pills -->
                   <div class="flex flex-wrap items-center gap-2 mt-2">
                     <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Easy</span>
