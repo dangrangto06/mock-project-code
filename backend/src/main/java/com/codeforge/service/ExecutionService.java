@@ -1,6 +1,7 @@
 package com.codeforge.service;
 
 import com.codeforge.dto.ExecutionDto;
+import com.codeforge.dto.ExerciseDto;
 import com.codeforge.entity.Exercise;
 import com.codeforge.entity.Submission;
 import com.codeforge.entity.User;

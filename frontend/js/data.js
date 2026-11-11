@@ -2,9 +2,9 @@
 
 window.CodeForgeData = {
   currentUser: {
-    name: "Alex Morgan",
-    initials: "AM",
-    greetingName: "Hieu",
+    name: "Guest",
+    initials: "G",
+    greetingName: "there",
     streakDays: 7,
     solvedCount: 48,
     solvedWeek: 8,

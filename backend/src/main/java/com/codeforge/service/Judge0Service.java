@@ -2,6 +2,7 @@ package com.codeforge.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -23,6 +24,9 @@ public class Judge0Service {
     private String rapidApiHost;
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    private static final ParameterizedTypeReference<Map<String, Object>> MAP_TYPE =
+            new ParameterizedTypeReference<>() {};
 
     public Integer getLanguageId(String language) {
         if (language == null) return 71; // default Python
@@ -52,10 +56,11 @@ public class Judge0Service {
                 body.put("expected_output", expectedOutput);
 
                 HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-                ResponseEntity<Map> response = restTemplate.postForEntity(
+                ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                         judge0Url + "/submissions?base64_encoded=false&wait=true",
+                        HttpMethod.POST,
                         request,
-                        Map.class
+                        MAP_TYPE
                 );
 
                 if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {

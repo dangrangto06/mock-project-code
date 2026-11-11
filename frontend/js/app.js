@@ -5,23 +5,49 @@ window.CodeForgeApp = (function () {
   let activeTabFilter = 'all'; // 'all' | 'saved' | 'my'
   let filterDifficulty = 'all';
   let searchQuery = '';
-  const TOKEN_KEY = 'codeforge_token';
-  const USER_KEY = 'codeforge_user';
-  let isLoggedIn = true; // User authentication state
 
-  function checkAuthState() {
-    const token = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
-    const loggedOut = localStorage.getItem('codeforge_logged_out');
-    // If token exists, user is logged in. If explicitly logged out, false. Otherwise default to demo logged in.
-    isLoggedIn = token ? true : (loggedOut ? false : true);
+  const TOKEN_KEY = 'codeforge_token';
+  const USER_KEY  = 'codeforge_user';
+
+  // Detect login state from storage (set by login.js / signup.js)
+  function getStoredUser() {
+    try {
+      const raw = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) { return null; }
+  }
+
+  function getToken() {
+    try {
+      return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || null;
+    } catch (_) { return null; }
+  }
+
+  let isLoggedIn = !!getToken();
+
+  // Build initials from a full name, e.g. "Dav Nguyen" → "DN"
+  function buildInitials(fullName) {
+    if (!fullName) return '?';
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  // Build greeting (first name)
+  function buildGreeting(fullName) {
+    if (!fullName) return 'there';
+    return fullName.trim().split(/\s+/)[0];
   }
 
   function init() {
-    checkAuthState();
+    // Re-check login state on init (in case storage changed)
+    isLoggedIn = !!getToken();
+
     setupHashRouting();
     bindGlobalEvents();
     renderProblemTable();
     updateAuthUI();
+    updateDashboardForUser();
     handleRoute(window.location.hash.replace('#', '') || 'dashboard');
     
     // Initialize child modules
@@ -49,30 +75,48 @@ window.CodeForgeApp = (function () {
         userSection.classList.remove('hidden');
         guestSection.classList.add('hidden');
 
-        // Populate user name and initials from storage if available
-        const userRaw = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
-        if (userRaw) {
-          try {
-            const u = JSON.parse(userRaw);
-            const nameEl = document.getElementById('header-user-name');
-            const dropNameEl = document.getElementById('dropdown-user-name');
-            const dropEmailEl = document.getElementById('dropdown-user-email');
-            const avatarEl = document.getElementById('header-user-avatar');
-            if (nameEl && u.fullName) nameEl.textContent = u.fullName;
-            if (dropNameEl && u.fullName) dropNameEl.textContent = u.fullName;
-            if (dropEmailEl && u.email) dropEmailEl.textContent = u.email;
-            if (avatarEl && (u.fullName || u.username)) {
-              const name = u.fullName || u.username;
-              const parts = name.trim().split(' ');
-              const initials = parts.length > 1 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : name.substring(0, 2).toUpperCase();
-              avatarEl.textContent = initials;
-            }
-          } catch (_) {}
+        // Populate header with real user data
+        const user = getStoredUser();
+        if (user) {
+          const initials = buildInitials(user.fullName);
+          const avatarEl = document.getElementById('header-avatar-initials');
+          const nameEl = document.getElementById('header-user-name');
+          const dropdownNameEl = document.getElementById('dropdown-user-fullname');
+          const dropdownEmailEl = document.getElementById('dropdown-user-email');
+          const streakEl = document.getElementById('header-streak-text');
+
+          if (avatarEl) avatarEl.textContent = initials;
+          if (nameEl) nameEl.textContent = user.fullName || user.username;
+          if (dropdownNameEl) dropdownNameEl.textContent = user.fullName || user.username;
+          if (dropdownEmailEl) dropdownEmailEl.textContent = user.email || '';
         }
       } else {
         userSection.classList.add('hidden');
         guestSection.classList.remove('hidden');
       }
+    }
+  }
+
+  // Update dashboard greeting and stats with the logged-in user's data
+  function updateDashboardForUser() {
+    const user = getStoredUser();
+    if (!user) return;
+
+    const greeting = buildGreeting(user.fullName);
+
+    // Update the greeting heading
+    const greetingEl = document.getElementById('dashboard-greeting');
+    if (greetingEl) {
+      greetingEl.textContent = `Keep the momentum, ${greeting}.`;
+    }
+
+    // Update the date line
+    const dateEl = document.getElementById('dashboard-date');
+    if (dateEl) {
+      const now = new Date();
+      const options = { weekday: 'long', month: 'long', day: 'numeric' };
+      const formatted = now.toLocaleDateString('en-US', options);
+      dateEl.textContent = `Your overview / ${formatted}`;
     }
   }
 
@@ -116,15 +160,18 @@ window.CodeForgeApp = (function () {
 
   function handleLogout() {
     isLoggedIn = false;
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    sessionStorage.removeItem(TOKEN_KEY);
-    sessionStorage.removeItem(USER_KEY);
-    localStorage.setItem('codeforge_logged_out', 'true');
+    // Clear stored session
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(USER_KEY);
+    } catch (_) {}
     updateAuthUI();
     const dropdown = document.getElementById('dropdown-user-menu');
     if (dropdown) dropdown.classList.add('hidden');
     showToast("Signed out successfully.", "info");
+    // Redirect to separate login page
     window.location.href = 'login.html';
   }
 
@@ -185,6 +232,11 @@ window.CodeForgeApp = (function () {
 
     // Route Switching
     if (route === 'dashboard') {
+      // If not logged in, redirect to login page
+      if (!isLoggedIn) {
+        window.location.href = 'login.html';
+        return;
+      }
       if (pageDashboard) pageDashboard.classList.remove('hidden');
       if (sidebarContainer) sidebarContainer.classList.remove('hidden');
       activateTopNav(navOverview);
@@ -465,10 +517,16 @@ window.CodeForgeApp = (function () {
       });
     }
 
-    // Sign out button
+    // Sign out button (dropdown)
     const btnLogout = document.getElementById('btn-auth-logout');
     if (btnLogout) {
       btnLogout.addEventListener('click', handleLogout);
+    }
+
+    // Sign out button (sidebar)
+    const sbLogout = document.getElementById('sb-logout');
+    if (sbLogout) {
+      sbLogout.addEventListener('click', handleLogout);
     }
 
     // Social Auth buttons

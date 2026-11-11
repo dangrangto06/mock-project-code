@@ -11,14 +11,3 @@ desktop.ini
 *.njsproj
 *.sln
 *.sw?
-
-# Build and Package output
-target/
-backend/target/
-*.class
-*.jar
-*.war
-*.ear
-*.log
-hs_err_pid*
-replay_pid*

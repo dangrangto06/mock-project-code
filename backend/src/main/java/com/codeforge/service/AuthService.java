@@ -3,6 +3,7 @@ package com.codeforge.service;
 import com.codeforge.config.JwtUtil;
 import com.codeforge.dto.AuthDto;
 import com.codeforge.entity.User;
+import com.codeforge.exception.ApiException;
 import com.codeforge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,22 +22,11 @@ public class AuthService {
     public AuthDto.AuthResponse authenticate(AuthDto.LoginRequest request) {
         User user = userRepository.findByUsername(request.getUsernameOrEmail())
                 .or(() -> userRepository.findByEmail(request.getUsernameOrEmail()))
-                .orElse(null);
+                .orElseThrow(() -> ApiException.unauthorized("Invalid username/email or password"));
 
-        // If user not found, create or mock demo account for Alex Morgan
-        if (user == null) {
-            user = User.builder()
-                    .username("alex_morgan")
-                    .email("alex@codeforge.io")
-                    .fullName("Alex Morgan")
-                    .role("Admin")
-                    .passwordHash(passwordEncoder.encode("codeforge2026"))
-                    .streakDays(7)
-                    .solvedCount(48)
-                    .acceptanceRate(new BigDecimal("76.20"))
-                    .practiceTimeHours(new BigDecimal("12.50"))
-                    .build();
-            user = userRepository.save(user);
+        // Verify password
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw ApiException.unauthorized("Invalid username/email or password");
         }
 
         String token = jwtUtil.generateToken(user.getUsername());
@@ -53,10 +43,10 @@ public class AuthService {
 
     public AuthDto.AuthResponse register(AuthDto.RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username is already taken");
+            throw ApiException.conflict("Username is already taken");
         }
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email is already registered");
+            throw ApiException.conflict("Email is already registered");
         }
 
         User newUser = User.builder()
@@ -84,4 +74,3 @@ public class AuthService {
                 .build();
     }
 }
-
