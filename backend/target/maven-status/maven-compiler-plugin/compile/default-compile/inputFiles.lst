@@ -16,6 +16,8 @@ C:\Downloads\mock-project-code-main\mock-project-code-main\backend\src\main\java
 C:\Downloads\mock-project-code-main\mock-project-code-main\backend\src\main\java\com\codeforge\entity\Submission.java
 C:\Downloads\mock-project-code-main\mock-project-code-main\backend\src\main\java\com\codeforge\entity\TestCase.java
 C:\Downloads\mock-project-code-main\mock-project-code-main\backend\src\main\java\com\codeforge\entity\User.java
+C:\Downloads\mock-project-code-main\mock-project-code-main\backend\src\main\java\com\codeforge\exception\ApiException.java
+C:\Downloads\mock-project-code-main\mock-project-code-main\backend\src\main\java\com\codeforge\exception\GlobalExceptionHandler.java
 C:\Downloads\mock-project-code-main\mock-project-code-main\backend\src\main\java\com\codeforge\repository\ExerciseRepository.java
 C:\Downloads\mock-project-code-main\mock-project-code-main\backend\src\main\java\com\codeforge\repository\SubmissionRepository.java
 C:\Downloads\mock-project-code-main\mock-project-code-main\backend\src\main\java\com\codeforge\repository\TestCaseRepository.java
