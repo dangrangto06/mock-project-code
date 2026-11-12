@@ -137,21 +137,9 @@ function pairSum(nums, target) {
     }
     return [];
 }`,
-        cpp: `class Solution {
-public:
-    vector<int> pairSum(vector<int>& nums, int target) {
-        unordered_map<int, int> seen;
-        for (int i = 0; i < nums.size(); ++i) {
-            int complement = target - nums[i];
-            if (seen.find(complement) != seen.end()) {
-                return {seen[complement], i};
-            }
-            seen[nums[i]] = i;
-        }
-        return {};
-    }
-};`,
-        java: `class Solution {
+        java: `import java.util.*;
+
+class Solution {
     public int[] pairSum(int[] nums, int target) {
         Map<Integer, Integer> seen = new HashMap<>();
         for (int i = 0; i < nums.length; i++) {
@@ -217,10 +205,10 @@ While we iterate and insert elements into the hash table, we also look back to c
         },
         {
           author: "alex_morgan",
-          title: "Optimized C++ unordered_map Solution (0ms beats 100%)",
+          title: "Optimized Java HashMap Solution (1ms beats 100%)",
           votes: 412,
-          language: "C++",
-          preview: "Pre-reserve bucket size to avoid rehash overhead."
+          language: "Java",
+          preview: "Pre-size the HashMap to avoid rehash overhead."
         }
       ],
       submissions: [

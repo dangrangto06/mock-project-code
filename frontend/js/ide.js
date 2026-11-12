@@ -25,8 +25,12 @@ window.CodeForgeIDE = (function () {
   /** Active console tab view: 'cases' (Test cases) | 'results' (Test results) */
   let activeConsoleTab = 'results';
 
-  /** Currently active programming language identifier ('python' | 'javascript' | 'cpp' | 'java') */
+  /** Currently active programming language identifier ('python' | 'javascript' | 'java') */
   let currentLanguage = 'python';
+
+  /** Status-bar labels. Java matches the Judge0 runner used by the backend (OpenJDK 13). */
+  const LANGUAGE_LABELS = { python: 'Python 3.12', javascript: 'Node.js 20', java: 'Java 13' };
+  const FILE_NAMES = { python: 'solution.py', javascript: 'solution.js', java: 'Solution.java' };
 
   /**
    * Initializes the IDE controller: starts timer, binds UI events, and renders editor & test cases.
@@ -89,7 +93,7 @@ window.CodeForgeIDE = (function () {
       const isActive = lineNum === 9; // Line 9 active highlight for initial visual focus
       lineNumbersHtml += `<div class="editor-line-number ${isActive ? 'text-emerald-400 font-medium' : ''}">${lineNum}</div>`;
       
-      const highlighted = highlightPythonLine(line);
+      const highlighted = highlightLine(line);
       codeLinesHtml += `<div class="px-3 leading-[1.6rem] font-mono text-xs md:text-sm whitespace-pre ${isActive ? 'editor-line-active' : ''}">${highlighted || ' '}</div>`;
     });
 
@@ -99,9 +103,11 @@ window.CodeForgeIDE = (function () {
     // Update bottom status bar with language and formatting metadata
     const statsEl = document.getElementById('editor-cursor-stats');
     if (statsEl) {
-      const langName = currentLanguage === 'python' ? 'Python 3.12' : currentLanguage === 'javascript' ? 'Node.js 20' : 'C++ 20';
+      const langName = LANGUAGE_LABELS[currentLanguage] || currentLanguage;
       statsEl.textContent = `Spaces: 4 · UTF-8 · ${langName}`;
     }
+    const fileEl = document.getElementById('editor-filename');
+    if (fileEl) fileEl.textContent = FILE_NAMES[currentLanguage] || 'solution.txt';
   }
 
   /**
@@ -113,25 +119,33 @@ window.CodeForgeIDE = (function () {
    * @param {string} line - Single line of source code.
    * @returns {string} HTML markup with syntax highlighting classes.
    */
-  function highlightPythonLine(line) {
+  function highlightLine(line) {
     if (!line) return '';
+    const isJava = currentLanguage === 'java';
     // Escape HTML characters
     let escaped = line
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
-    // Highlight comments
-    if (escaped.trim().startsWith('#')) {
+    // Highlight full-line comments
+    const commentStart = isJava ? '//' : '#';
+    if (escaped.trim().startsWith(commentStart)) {
       return `<span class="syn-comment">${escaped}</span>`;
     }
 
     // Highlight reserved keywords
-    escaped = escaped.replace(/\b(def|class|return|if|in|for|while|import|from|as|else|elif|try|except)\b/g, '<span class="syn-keyword">$1</span>');
+    const keywords = isJava
+      ? /\b(import|class|public|private|static|new|return|if|else|for|while|break|continue|try|catch|final)\b/g
+      : /\b(def|class|return|if|in|for|while|import|from|as|else|elif|try|except)\b/g;
+    escaped = escaped.replace(keywords, '<span class="syn-keyword">$1</span>');
     // Highlight standard types and built-in functions
-    escaped = escaped.replace(/\b(enumerate|len|range|print|int|str|list|dict|set)\b/g, '<span class="syn-type">$1</span>');
+    const types = isJava
+      ? /\b(int|boolean|void|String|Integer|Map|HashMap|List|ArrayList|Set|HashSet)\b/g
+      : /\b(enumerate|len|range|print|int|str|list|dict|set)\b/g;
+    escaped = escaped.replace(types, '<span class="syn-type">$1</span>');
     // Highlight trailing comments
-    escaped = escaped.replace(/(#[^<]*)/g, '<span class="syn-comment">$1</span>');
+    escaped = escaped.replace(isJava ? /(\/\/[^<]*)/g : /(#[^<]*)/g, '<span class="syn-comment">$1</span>');
     // Highlight numeric literals
     escaped = escaped.replace(/(\b\d+\b)/g, '<span class="syn-number">$1</span>');
 
