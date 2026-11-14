@@ -389,4 +389,188 @@ Return the answer in any order.
       isMine: false
     });
   });
+
+  // Learner's Personal Notes initial mock data
+  CodeForgeData.initialNotes = [
+    {
+      id: "note-1",
+      title: "Two Sum: 1-Pass Hash Map Pattern",
+      problemId: 104,
+      problemTitle: "Pair Sum",
+      tags: ["Arrays", "Hash map", "Optimization"],
+      content: "Key takeaway: Instead of checking all pairs O(N²), store each element's complement `target - num` as we iterate. Lookup in hash map is O(1) average. Time complexity: O(N), Space complexity: O(N).",
+      updatedAt: "2026-11-14T10:15:00Z"
+    },
+    {
+      id: "note-2",
+      title: "Sliding Window: Invariant Checklist",
+      problemId: null,
+      problemTitle: "General Template",
+      tags: ["Sliding Window", "Two pointers", "Cheatsheet"],
+      content: "1. Expand right pointer `r` to absorb elements into window.\n2. When window invariant is violated, contract left pointer `l`.\n3. Update answer either on valid state or after contraction.\nClassic applications: Longest Substring Without Repeating Characters, Minimum Window Substring.",
+      updatedAt: "2026-11-13T16:30:00Z"
+    },
+    {
+      id: "note-3",
+      title: "Dynamic Programming: 5-Step Framework",
+      problemId: null,
+      problemTitle: "General Template",
+      tags: ["Dynamic Programming", "Recursion", "Framework"],
+      content: "Step 1: State definition (what does `dp[i]` represent in plain English?).\nStep 2: Base cases (initial row/column values).\nStep 3: Recurrence relation (choice between take or skip).\nStep 4: Computation order (bottom-up direction).\nStep 5: Space optimization (roll array if only previous row is needed).",
+      updatedAt: "2026-11-12T11:45:00Z"
+    },
+    {
+      id: "note-4",
+      title: "Binary Search Edge Cases: Off-by-one Prevention",
+      problemId: null,
+      problemTitle: "General Template",
+      tags: ["Binary Search", "Edge cases"],
+      content: "Always use `mid = left + (right - left) / 2` to avoid 32-bit integer overflow.\nWhen updating bounds: if `left = mid`, then `mid` calculation must round up: `mid = left + (right - left + 1) / 2` to prevent infinite loops when `right - left == 1`.",
+      updatedAt: "2026-11-11T08:20:00Z"
+    }
+  ];
+
+  // Learner's Community Discussions initial mock data
+  CodeForgeData.initialDiscussions = [
+    {
+      id: "post-1",
+      title: "[Walkthrough] Clean O(N) Python & Java solutions for Pair Sum with step-by-step visual diagrams",
+      authorName: "Alex Morgan",
+      authorInitials: "AM",
+      authorRole: "Admin",
+      category: "Solutions",
+      problemId: 104,
+      problemTitle: "Pair Sum",
+      content: "Hey everyone! While solving Pair Sum, the most common trap is sorting the array first (which ruins original indices). Using a single-pass hash map keeps time complexity strictly at O(N) while maintaining indices effortlessly. Here is the annotated solution and complexity analysis.",
+      upvotes: 48,
+      isUpvoted: false,
+      repliesCount: 3,
+      createdAt: "3 hours ago",
+      replies: [
+        {
+          id: "rep-1-1",
+          authorName: "David Kim",
+          authorInitials: "DK",
+          authorRole: "Top Contributor",
+          content: "Great breakdown! One subtle edge case to watch out for is duplicate values: the complement lookup must check `target - num` before inserting the current index to avoid self-pairing when `target == 2 * num`.",
+          createdAt: "2 hours ago",
+          upvotes: 8
+        },
+        {
+          id: "rep-1-2",
+          authorName: "Sarah Jenkins",
+          authorInitials: "SJ",
+          authorRole: "Learner",
+          content: "The single-pass hash map is so much cleaner than my initial nested loops. Reduced runtime from 1450ms down to 32ms!",
+          createdAt: "1 hour ago",
+          upvotes: 4
+        },
+        {
+          id: "rep-1-3",
+          authorName: "Marcus Vance",
+          authorInitials: "MV",
+          authorRole: "Learner",
+          content: "Thanks Alex! Does this general approach work when the problem asks for all pairs without duplicates?",
+          createdAt: "30 mins ago",
+          upvotes: 2
+        }
+      ]
+    },
+    {
+      id: "post-2",
+      title: "How do you systematically identify when to use Sliding Window vs Two Pointers?",
+      authorName: "Sarah Jenkins",
+      authorInitials: "SJ",
+      authorRole: "Learner",
+      category: "Questions",
+      problemId: null,
+      problemTitle: null,
+      content: "I often get confused during timed contests on whether a problem requires two pointers moving towards each other (like 3Sum / Container with Most Water) or a sliding window moving in the same direction. What mental models or problem keywords do you look for?",
+      upvotes: 36,
+      isUpvoted: false,
+      repliesCount: 2,
+      createdAt: "Yesterday",
+      replies: [
+        {
+          id: "rep-2-1",
+          authorName: "Alex Morgan",
+          authorInitials: "AM",
+          authorRole: "Admin",
+          content: "Rule of thumb: If the problem asks for a contiguous subarray/substring with some condition (max length, min window, at most k distinct elements), it's almost always a Sliding Window. If the array is sorted and you need pairs or triplets satisfying a sum or area constraint, use Two Pointers from opposite ends.",
+          createdAt: "Yesterday",
+          upvotes: 19
+        },
+        {
+          id: "rep-2-2",
+          authorName: "David Kim",
+          authorInitials: "DK",
+          authorRole: "Top Contributor",
+          content: "Also check the monotonicity property! Sliding window works when expanding the right pointer only increases (or preserves) the condition, and shrinking the left pointer monotonically decreases it.",
+          createdAt: "Yesterday",
+          upvotes: 11
+        }
+      ]
+    },
+    {
+      id: "post-3",
+      title: "Google L4 Technical Interview Experience — 3 Rounds Algorithms (Tree DFS & Graph BFS)",
+      authorName: "David Kim",
+      authorInitials: "DK",
+      authorRole: "Top Contributor",
+      category: "Interview Prep",
+      problemId: null,
+      problemTitle: null,
+      content: "Just completed my onsite loops. Key takeaway: Communication matters just as much as getting the code to run. Make sure to state constraints, edge cases (empty input, duplicates), and talk through space-time complexity before writing the first line of code.",
+      upvotes: 85,
+      isUpvoted: false,
+      repliesCount: 2,
+      createdAt: "2 days ago",
+      replies: [
+        {
+          id: "rep-3-1",
+          authorName: "Sarah Jenkins",
+          authorInitials: "SJ",
+          authorRole: "Learner",
+          content: "Huge congrats David! Did you get asked about follow-up scaling questions (e.g. what if the graph doesn't fit in memory)?",
+          createdAt: "2 days ago",
+          upvotes: 5
+        },
+        {
+          id: "rep-3-2",
+          authorName: "David Kim",
+          authorInitials: "DK",
+          authorRole: "Top Contributor",
+          content: "Yes! In round 2 with the Graph BFS question, the interviewer asked how to partition the graph across worker machines and avoid duplicated visits with distributed caching.",
+          createdAt: "1 day ago",
+          upvotes: 14
+        }
+      ]
+    },
+    {
+      id: "post-4",
+      title: "Avoid TLE in Python: Using collections.deque vs list.pop(0)",
+      authorName: "Marcus Vance",
+      authorInitials: "MV",
+      authorRole: "Learner",
+      category: "Tips",
+      problemId: null,
+      problemTitle: null,
+      content: "PSA for Python developers: `list.pop(0)` is O(N) because it shifts all remaining elements in memory! In BFS queue traversal, this easily triggers Time Limit Exceeded on larger test inputs. Always use `from collections import deque` and `queue.popleft()` which is strictly O(1).",
+      upvotes: 52,
+      isUpvoted: false,
+      repliesCount: 1,
+      createdAt: "3 days ago",
+      replies: [
+        {
+          id: "rep-4-1",
+          authorName: "Alex Morgan",
+          authorInitials: "AM",
+          authorRole: "Admin",
+          content: "100% agree. This is one of the top reasons people fail Python test suites on BFS challenges. Bookmark this!",
+          createdAt: "3 days ago",
+          upvotes: 12
+        }
+      ]
+    }
+  ];
 })();

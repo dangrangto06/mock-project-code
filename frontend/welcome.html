@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeForge — Master Algorithmic Coding & Technical Interviews</title>
+  <meta name="description" content="CodeForge is the hands-on coding platform with an integrated online IDE, automated sandbox test execution, and 100 curated algorithm challenges.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom glow & gradient utilities */
+    .hero-glow {
+      background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.15) 0%, rgba(2, 44, 34, 0.05) 50%, transparent 70%);
+    }
+    .grid-pattern {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .code-editor-shadow {
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-white min-h-screen flex flex-col overflow-x-hidden">
+
+  <!-- ================= TOP NAVIGATION ================= -->
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-[#090d16]/85 border-b border-slate-800/80 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo -->
+      <a href="welcome.html" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-lg tracking-tight text-white">CodeForge</span>
+          <span class="px-1.5 py-0.5 text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded">v2.0</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
+        <a href="#features" class="hover:text-emerald-400 transition">Features</a>
+        <a href="#curriculum" class="hover:text-emerald-400 transition">100 Challenges</a>
+        <a href="#interactive-demo" class="hover:text-emerald-400 transition">Live Demo</a>
+        <a href="index.html#notes" class="hover:text-emerald-400 transition">Notes</a>
+        <a href="index.html#community" class="hover:text-emerald-400 transition">Community</a>
+        <a href="#faq" class="hover:text-emerald-400 transition">FAQ</a>
+      </nav>
+
+      <!-- Right Action Buttons -->
+      <div class="flex items-center gap-3">
+        <a href="index.html#library" class="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition border border-slate-800">
+          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          <span>Explore as Guest</span>
+        </a>
+        <a href="login.html" class="text-xs font-semibold text-slate-300 hover:text-white px-3 py-2 transition">
+          Sign In
+        </a>
+        <a href="signup.html" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition hover:-translate-y-0.5">
+          <span>Start Free</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= HERO SECTION ================= -->
+  <section class="relative pt-16 pb-20 lg:pt-24 lg:pb-32 hero-glow grid-pattern overflow-hidden border-b border-slate-800/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-8">
+      
+      <!-- Top Pill -->
+      <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-xs font-medium text-emerald-300 shadow-sm animate-fade-in">
+        <span class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span>Built for Interview Preparation • 100 Challenges • Zero Setup</span>
+      </div>
+
+      <!-- Main Headline -->
+      <div class="max-w-4xl mx-auto space-y-4">
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.12]">
+          Where Engineers Forge <br>
+          <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+            Algorithmic Mastery.
+          </span>
+        </h1>
+        <p class="text-base sm:text-lg lg:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+          Practice 100 curated data structures and algorithm challenges with an in-browser IDE, multi-language sandbox, and instant automated unit test validation.
+        </p>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+        <a href="signup.html" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/35 transition hover:-translate-y-0.5">
+          <span>Get Started Free</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+        <a href="#interactive-demo" class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 text-sm font-semibold border border-slate-700/80 transition">
+          <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <span>Try Interactive Demo</span>
+        </a>
+        <a href="index.html#library" class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-transparent hover:bg-slate-800/40 text-slate-300 text-sm font-semibold transition">
+          <span>Browse 100 Problems &rarr;</span>
+        </a>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="pt-8 max-w-3xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+        <div class="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-xs">
+          <div class="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-400">100</div>
+          <div class="text-xs text-slate-400 font-medium mt-1">Curated Problems</div>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-xs">
+          <div class="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-400">4</div>
+          <div class="text-xs text-slate-400 font-medium mt-1">Languages (Py, JS, Java, C++)</div>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-xs">
+          <div class="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-400">&lt; 50ms</div>
+          <div class="text-xs text-slate-400 font-medium mt-1">Sandbox Execution</div>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-xs">
+          <div class="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-400">100%</div>
+          <div class="text-xs text-slate-400 font-medium mt-1">Free to Practice</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= INTERACTIVE CODE RUNNER DEMO ================= -->
+  <section id="interactive-demo" class="py-20 bg-[#0c1220] border-b border-slate-800/80 relative">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <div class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Live Interactive Preview</div>
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">Test your algorithm in real-time</h2>
+        <p class="text-sm text-slate-400">Run code directly on this page without logging in. Experience the instant test feedback.</p>
+      </div>
+
+      <!-- Live Mock IDE Window -->
+      <div class="code-editor-shadow rounded-2xl bg-[#090d16] border border-slate-800 overflow-hidden">
+        
+        <!-- IDE Top Bar -->
+        <div class="flex items-center justify-between px-4 py-3 bg-[#131b2e] border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+            <span class="ml-2 text-xs font-mono text-slate-400 hidden sm:inline">Problem #104 — Pair Sum (Two Sum)</span>
+          </div>
+
+          <!-- Language Selector -->
+          <div class="flex items-center gap-1 bg-[#090d16] p-1 rounded-lg border border-slate-800 text-xs font-mono">
+            <button id="demo-tab-py" onclick="switchDemoLang('python')" class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">Python 3</button>
+            <button id="demo-tab-js" onclick="switchDemoLang('javascript')" class="px-2.5 py-1 rounded text-slate-400 hover:text-white">JavaScript</button>
+            <button id="demo-tab-java" onclick="switchDemoLang('java')" class="px-2.5 py-1 rounded text-slate-400 hover:text-white">Java</button>
+          </div>
+
+          <button id="demo-run-btn" onclick="runDemoCode()" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-sm">
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span>Run Code</span>
+          </button>
+        </div>
+
+        <!-- Editor & Output Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[320px]">
+          
+          <!-- Code Area (7 cols) -->
+          <div class="lg:col-span-7 p-5 font-mono text-xs sm:text-[13px] leading-relaxed text-slate-300 border-b lg:border-b-0 lg:border-r border-slate-800 overflow-x-auto bg-[#090d16]">
+            <pre id="demo-code-view" class="focus:outline-none"><code><span class="text-slate-500"># Given nums = [2, 7, 11, 15] and target = 9</span>
+<span class="text-purple-400">def</span> <span class="text-blue-400 font-bold">pair_sum</span>(nums: list[int], target: int) -&gt; list[int]:
+    seen = {}
+    <span class="text-purple-400">for</span> i, num <span class="text-purple-400">in</span> enumerate(nums):
+        complement = target - num
+        <span class="text-purple-400">if</span> complement <span class="text-purple-400">in</span> seen:
+            <span class="text-purple-400">return</span> [seen[complement], i]
+        seen[num] = i
+    <span class="text-purple-400">return</span> []</code></pre>
+          </div>
+
+          <!-- Output & Test Cases Area (5 cols) -->
+          <div class="lg:col-span-5 p-5 bg-[#0e1626] flex flex-col justify-between font-mono text-xs space-y-4">
+            
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800">
+                <span class="font-sans font-bold text-[11px] uppercase tracking-wider text-slate-400">Test Execution Suite</span>
+                <span id="demo-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Ready to execute</span>
+              </div>
+
+              <!-- Test Case Cards -->
+              <div class="space-y-2 font-mono text-[11px]">
+                <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                  <div class="space-y-0.5">
+                    <span class="text-slate-400 text-[10px]">Case 1: nums = [2,7,11,15], target = 9</span>
+                    <div class="text-emerald-400 font-semibold">Expected: [0, 1]</div>
+                  </div>
+                  <span id="demo-case-1-result" class="text-slate-500 font-bold">Pending</span>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                  <div class="space-y-0.5">
+                    <span class="text-slate-400 text-[10px]">Case 2: nums = [3,2,4], target = 6</span>
+                    <div class="text-emerald-400 font-semibold">Expected: [1, 2]</div>
+                  </div>
+                  <span id="demo-case-2-result" class="text-slate-500 font-bold">Pending</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Runner Action Bar -->
+            <div class="pt-3 border-t border-slate-800 flex items-center justify-between font-sans">
+              <span id="demo-perf-stats" class="text-[11px] text-slate-400 font-mono">Click "Run Code" above</span>
+              <a href="index.html#solve/104" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+                <span>Open in full IDE</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= WHY CODEFORGE (FEATURES) ================= -->
+  <section id="features" class="py-24 bg-[#090d16] border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      
+      <div class="text-center max-w-3xl mx-auto space-y-3">
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Engineered for Developers</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Everything you need to master problem solving</h2>
+        <p class="text-sm sm:text-base text-slate-400">Designed from the ground up to replace clunky legacy judges with a fast, modern, and developer-friendly experience.</p>
+      </div>
+
+      <!-- Feature Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Feature 1 -->
+        <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 hover:border-emerald-500/40 transition hover:shadow-xl hover:shadow-emerald-950/20 space-y-4 group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-white">Full-Featured Online IDE</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Write code with syntax highlighting, auto-indentation, focus mode, and built-in practice timers. Switch seamlessly between Python, JavaScript, Java, and C++.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 hover:border-emerald-500/40 transition hover:shadow-xl hover:shadow-emerald-950/20 space-y-4 group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-white">100 Curated Challenges</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Covers standard data structures and algorithms: Arrays, Hash Maps, Two Pointers, Sliding Window, Linked Lists, Binary Trees, Graphs, and Dynamic Programming.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 hover:border-emerald-500/40 transition hover:shadow-xl hover:shadow-emerald-950/20 space-y-4 group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-white">Instant Sandbox Runner</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Powered by Judge0 sandboxed code execution. Run test cases with custom inputs, measure runtime in milliseconds, and benchmark your memory consumption.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 hover:border-emerald-500/40 transition hover:shadow-xl hover:shadow-emerald-950/20 space-y-4 group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-white">Streak & Progress Analytics</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Monitor daily coding streaks, acceptance rate percentiles, and weekly goals to stay consistent and confident for your interviews.
+          </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 hover:border-emerald-500/40 transition hover:shadow-xl hover:shadow-emerald-950/20 space-y-4 group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-white">Learner Notes &amp; Cheatsheets</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Personal algorithmic notebook. Document invariants, recurrence relations, and Big-O takeaways directly linked to problem IDs with instant search and markdown.
+          </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 hover:border-emerald-500/40 transition hover:shadow-xl hover:shadow-emerald-950/20 space-y-4 group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-white">Developer Community Hub</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Collaborate with peers. Upvote optimal solutions, discuss tradeoffs, and read real interview onsite loop experiences across top tech companies.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= 100 CHALLENGES ROADMAP ================= -->
+  <section id="curriculum" class="py-24 bg-[#0c1220] border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div class="space-y-3">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Curated Curriculum</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Structured algorithm roadmaps</h2>
+          <p class="text-sm text-slate-400 max-w-xl">Master fundamental patterns step by step, from foundational array manipulation to complex dynamic programming.</p>
+        </div>
+        <a href="index.html#library" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 font-semibold text-xs border border-emerald-500/30 transition">
+          <span>Explore All 100 Problems in Library</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+      </div>
+
+      <!-- Roadmap Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Track 1 -->
+        <a href="index.html#library" class="p-6 rounded-2xl bg-[#090d16] border border-slate-800 hover:border-emerald-500/40 transition group block">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
+            <span class="text-2xl">🧩</span>
+            <span class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">20 Problems</span>
+          </div>
+          <h4 class="text-base font-bold text-white mt-4 group-hover:text-emerald-400 transition">Arrays & Hashing</h4>
+          <p class="text-xs text-slate-400 mt-1">Two Sum, Contains Duplicate, Anagrams, Top K Frequent, Group Anagrams.</p>
+          <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-emerald-400 font-semibold">
+            <span>Difficulty: Easy to Medium</span>
+            <span>Start track &rarr;</span>
+          </div>
+        </a>
+
+        <!-- Track 2 -->
+        <a href="index.html#library" class="p-6 rounded-2xl bg-[#090d16] border border-slate-800 hover:border-emerald-500/40 transition group block">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
+            <span class="text-2xl">⚡</span>
+            <span class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">15 Problems</span>
+          </div>
+          <h4 class="text-base font-bold text-white mt-4 group-hover:text-emerald-400 transition">Two Pointers & Sliding Window</h4>
+          <p class="text-xs text-slate-400 mt-1">Valid Palindrome, 3Sum, Container With Most Water, Min Window Substring.</p>
+          <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-emerald-400 font-semibold">
+            <span>Difficulty: Medium</span>
+            <span>Start track &rarr;</span>
+          </div>
+        </a>
+
+        <!-- Track 3 -->
+        <a href="index.html#library" class="p-6 rounded-2xl bg-[#090d16] border border-slate-800 hover:border-emerald-500/40 transition group block">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
+            <span class="text-2xl">📚</span>
+            <span class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">12 Problems</span>
+          </div>
+          <h4 class="text-base font-bold text-white mt-4 group-hover:text-emerald-400 transition">Stacks & Queues</h4>
+          <p class="text-xs text-slate-400 mt-1">Valid Parentheses, Min Stack, Daily Temperatures, Evaluate Reverse Polish.</p>
+          <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-emerald-400 font-semibold">
+            <span>Difficulty: Easy to Medium</span>
+            <span>Start track &rarr;</span>
+          </div>
+        </a>
+
+        <!-- Track 4 -->
+        <a href="index.html#library" class="p-6 rounded-2xl bg-[#090d16] border border-slate-800 hover:border-emerald-500/40 transition group block">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
+            <span class="text-2xl">🌲</span>
+            <span class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">18 Problems</span>
+          </div>
+          <h4 class="text-base font-bold text-white mt-4 group-hover:text-emerald-400 transition">Binary Trees & Search</h4>
+          <p class="text-xs text-slate-400 mt-1">Invert Binary Tree, Maximum Depth, Level Order Traversal, Lowest Common Ancestor.</p>
+          <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-emerald-400 font-semibold">
+            <span>Difficulty: Medium to Hard</span>
+            <span>Start track &rarr;</span>
+          </div>
+        </a>
+
+        <!-- Track 5 -->
+        <a href="index.html#library" class="p-6 rounded-2xl bg-[#090d16] border border-slate-800 hover:border-emerald-500/40 transition group block">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
+            <span class="text-2xl">🔁</span>
+            <span class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">20 Problems</span>
+          </div>
+          <h4 class="text-base font-bold text-white mt-4 group-hover:text-emerald-400 transition">Dynamic Programming</h4>
+          <p class="text-xs text-slate-400 mt-1">Climbing Stairs, Coin Change, Longest Increasing Subsequence, House Robber.</p>
+          <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-emerald-400 font-semibold">
+            <span>Difficulty: Medium to Hard</span>
+            <span>Start track &rarr;</span>
+          </div>
+        </a>
+
+        <!-- Track 6 -->
+        <a href="index.html#library" class="p-6 rounded-2xl bg-[#090d16] border border-slate-800 hover:border-emerald-500/40 transition group block">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
+            <span class="text-2xl">🕸️</span>
+            <span class="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">15 Problems</span>
+          </div>
+          <h4 class="text-base font-bold text-white mt-4 group-hover:text-emerald-400 transition">Graphs & Topological Sort</h4>
+          <p class="text-xs text-slate-400 mt-1">Number of Islands, Clone Graph, Course Schedule, Word Ladder, Pacific Atlantic.</p>
+          <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-emerald-400 font-semibold">
+            <span>Difficulty: Medium to Hard</span>
+            <span>Start track &rarr;</span>
+          </div>
+        </a>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <section id="how-it-works" class="py-24 bg-[#090d16] border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Streamlined Workflow</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">How CodeForge helps you succeed</h2>
+        <p class="text-sm text-slate-400">Three simple steps to transform small daily coding sessions into interview confidence.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Step 1 -->
+        <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 space-y-4 relative">
+          <span class="text-5xl font-extrabold font-mono text-emerald-500/20">01</span>
+          <h3 class="text-lg font-bold text-white">Select Your Challenge</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Browse the catalog by difficulty (Easy, Medium, Hard) or algorithm topics. Pick targeted problems to strengthen your weak areas.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 space-y-4 relative">
+          <span class="text-5xl font-extrabold font-mono text-emerald-500/20">02</span>
+          <h3 class="text-lg font-bold text-white">Code & Test Instantly</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Write clean solutions with starter templates in Python, JS, C++, or Java. Run against sample test cases and custom inputs in seconds.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 space-y-4 relative">
+          <span class="text-5xl font-extrabold font-mono text-emerald-500/20">03</span>
+          <h3 class="text-lg font-bold text-white">Submit & Benchmark</h3>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Submit your solution against rigorous hidden test suites. Check your runtime percentile, memory efficiency, and keep your daily streak alive.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= FREQUENTLY ASKED QUESTIONS ================= -->
+  <section id="faq" class="py-24 bg-[#0c1220] border-b border-slate-800/80">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      
+      <div class="text-center space-y-3">
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Common Questions</span>
+        <h2 class="text-3xl font-extrabold text-white tracking-tight">Frequently Asked Questions</h2>
+        <p class="text-sm text-slate-400">Everything you need to know about using CodeForge as a guest or member.</p>
+      </div>
+
+      <!-- FAQ List -->
+      <div class="space-y-4 text-sm">
+        
+        <details class="p-5 rounded-2xl bg-[#090d16] border border-slate-800 group" open>
+          <summary class="font-bold text-white cursor-pointer list-none flex items-center justify-between">
+            <span>Can I practice on CodeForge without creating an account?</span>
+            <span class="text-emerald-400 group-open:rotate-180 transition">&darr;</span>
+          </summary>
+          <p class="mt-3 text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Yes! Guests can browse the entire catalog of 100 problems and run code freely in the Web IDE. Creating a free account allows you to save progress, earn daily streaks, track solved problems, and author your own challenges.
+          </p>
+        </details>
+
+        <details class="p-5 rounded-2xl bg-[#090d16] border border-slate-800 group">
+          <summary class="font-bold text-white cursor-pointer list-none flex items-center justify-between">
+            <span>What programming languages are supported?</span>
+            <span class="text-emerald-400 group-open:rotate-180 transition">&darr;</span>
+          </summary>
+          <p class="mt-3 text-xs sm:text-sm text-slate-400 leading-relaxed">
+            CodeForge supports Python 3, JavaScript (Node.js), Java (OpenJDK), and C++ (GCC). Each challenge includes starter code templates and type definitions tailored to your chosen language.
+          </p>
+        </details>
+
+        <details class="p-5 rounded-2xl bg-[#090d16] border border-slate-800 group">
+          <summary class="font-bold text-white cursor-pointer list-none flex items-center justify-between">
+            <span>Do I need to install any software or local compilers?</span>
+            <span class="text-emerald-400 group-open:rotate-180 transition">&darr;</span>
+          </summary>
+          <p class="mt-3 text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Zero installation required. Code execution runs securely in an isolated sandbox. All you need is a modern web browser.
+          </p>
+        </details>
+
+        <details class="p-5 rounded-2xl bg-[#090d16] border border-slate-800 group">
+          <summary class="font-bold text-white cursor-pointer list-none flex items-center justify-between">
+            <span>How does the automated grading runner work?</span>
+            <span class="text-emerald-400 group-open:rotate-180 transition">&darr;</span>
+          </summary>
+          <p class="mt-3 text-xs sm:text-sm text-slate-400 leading-relaxed">
+            When you click "Run Code", the platform executes your code against public sample cases with stdout logging. When you click "Submit", it evaluates against comprehensive hidden edge-case suites, verifying constraints, time limits, and memory usage.
+          </p>
+        </details>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= FINAL CALL TO ACTION ================= -->
+  <section class="py-24 bg-gradient-to-b from-[#0c1220] to-[#090d16] relative overflow-hidden">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-8">
+      
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 mx-auto flex items-center justify-center text-slate-950 shadow-2xl shadow-emerald-500/40">
+        <svg class="w-8 h-8 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+      </div>
+
+      <div class="max-w-2xl mx-auto space-y-3">
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+          Ready to sharpen your coding skills?
+        </h2>
+        <p class="text-base text-slate-400">
+          Join developers who practice daily and land offers at top technology companies.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+        <a href="signup.html" class="px-7 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-xl shadow-emerald-500/30 transition hover:-translate-y-0.5">
+          Create Free Account
+        </a>
+        <a href="index.html#library" class="px-6 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm border border-slate-700 transition">
+          Browse Library as Guest
+        </a>
+        <a href="login.html" class="px-6 py-4 text-emerald-400 hover:text-emerald-300 font-semibold text-sm transition">
+          Sign In &rarr;
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="py-12 bg-[#060910] border-t border-slate-800/80 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-mono font-bold text-xs">CF</div>
+        <span class="font-bold text-slate-300 text-sm">CodeForge</span>
+        <span>&copy; 2026 CodeForge Engine. Built for aspiring and professional engineers.</span>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <a href="index.html#library" class="hover:text-emerald-400 transition">Practice Library</a>
+        <a href="login.html" class="hover:text-emerald-400 transition">Login</a>
+        <a href="signup.html" class="hover:text-emerald-400 transition">Sign Up</a>
+        <a href="https://github.com/dangrangto06/mock-project-code" target="_blank" rel="noopener" class="hover:text-emerald-400 transition flex items-center gap-1">
+          <span>GitHub</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        </a>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Interactive Demo Script -->
+  <script>
+    const DEMO_SNIPPETS = {
+      python: {
+        code: `# Given nums = [2, 7, 11, 15] and target = 9
+def pair_sum(nums: list[int], target: int) -> list[int]:
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []`,
+        tab: 'demo-tab-py'
+      },
+      javascript: {
+        code: `// Given nums = [2, 7, 11, 15] and target = 9
+function pairSum(nums, target) {
+    const seen = new Map();
+    for (let i = 0; i < nums.length; i++) {
+        const complement = target - nums[i];
+        if (seen.has(complement)) {
+            return [seen.get(complement), i];
+        }
+        seen.set(nums[i], i);
+    }
+    return [];
+}`,
+        tab: 'demo-tab-js'
+      },
+      java: {
+        code: `// Given nums = [2, 7, 11, 15] and target = 9
+class Solution {
+    public int[] pairSum(int[] nums, int target) {
+        Map<Integer, Integer> seen = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+            if (seen.containsKey(complement)) {
+                return new int[] { seen.get(complement), i };
+            }
+            seen.put(nums[i], i);
+        }
+        return new int[0];
+    }
+}`,
+        tab: 'demo-tab-java'
+      }
+    };
+
+    function switchDemoLang(lang) {
+      ['demo-tab-py', 'demo-tab-js', 'demo-tab-java'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.className = "px-2.5 py-1 rounded text-slate-400 hover:text-white";
+        }
+      });
+      const activeEl = document.getElementById(DEMO_SNIPPETS[lang].tab);
+      if (activeEl) {
+        activeEl.className = "px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30";
+      }
+      document.getElementById('demo-code-view').textContent = DEMO_SNIPPETS[lang].code;
+    }
+
+    function runDemoCode() {
+      const btn = document.getElementById('demo-run-btn');
+      const statusBadge = document.getElementById('demo-status-badge');
+      const case1 = document.getElementById('demo-case-1-result');
+      const case2 = document.getElementById('demo-case-2-result');
+      const stats = document.getElementById('demo-perf-stats');
+
+      btn.disabled = true;
+      btn.innerHTML = `<svg class="animate-spin w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Executing...`;
+      statusBadge.textContent = "Running sandbox...";
+      statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30";
+
+      setTimeout(() => {
+        case1.textContent = "Passed [0, 1] ✓";
+        case1.className = "text-emerald-400 font-bold";
+      }, 400);
+
+      setTimeout(() => {
+        case2.textContent = "Passed [1, 2] ✓";
+        case2.className = "text-emerald-400 font-bold";
+
+        statusBadge.textContent = "Accepted (2/2 Passed)";
+        statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        stats.textContent = "Runtime: 28 ms • Memory: 16.8 MB (Beats 96.4%)";
+
+        btn.disabled = false;
+        btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-current text-white" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>Run Again</span>`;
+      }, 750);
+    }
+  </script>
+
+</body>
+</html>

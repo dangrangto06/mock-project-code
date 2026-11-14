@@ -12,7 +12,7 @@ window.CodeForgeApp = (function () {
   const PAGE_SIZE = 10;
 
   const TOKEN_KEY = 'codeforge_token';
-  const USER_KEY  = 'codeforge_user';
+  const USER_KEY = 'codeforge_user';
 
   // Detect login state from storage (set by login.js / signup.js)
   function getStoredUser() {
@@ -54,10 +54,12 @@ window.CodeForgeApp = (function () {
     updateAuthUI();
     updateDashboardForUser();
     handleRoute(window.location.hash.replace('#', '') || 'dashboard');
-    
+
     // Initialize child modules
     if (window.CodeForgeIDE) CodeForgeIDE.init();
     if (window.CodeForgeEditor) CodeForgeEditor.init();
+    if (window.CodeForgeNotes) CodeForgeNotes.init();
+    if (window.CodeForgeCommunity) CodeForgeCommunity.init();
   }
 
   function setupHashRouting() {
@@ -132,7 +134,7 @@ window.CodeForgeApp = (function () {
       const oldHtml = btn.innerHTML;
       btn.disabled = true;
       btn.innerHTML = `<svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Signing in...`;
-      
+
       setTimeout(() => {
         btn.disabled = false;
         btn.innerHTML = oldHtml;
@@ -151,7 +153,7 @@ window.CodeForgeApp = (function () {
       const oldHtml = btn.innerHTML;
       btn.disabled = true;
       btn.innerHTML = `<svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Creating account...`;
-      
+
       setTimeout(() => {
         btn.disabled = false;
         btn.innerHTML = oldHtml;
@@ -171,7 +173,7 @@ window.CodeForgeApp = (function () {
       localStorage.removeItem(USER_KEY);
       sessionStorage.removeItem(TOKEN_KEY);
       sessionStorage.removeItem(USER_KEY);
-    } catch (_) {}
+    } catch (_) { }
     updateAuthUI();
     const dropdown = document.getElementById('dropdown-user-menu');
     if (dropdown) dropdown.classList.add('hidden');
@@ -186,6 +188,8 @@ window.CodeForgeApp = (function () {
     // Elements
     const pageDashboard = document.getElementById('page-dashboard');
     const pageLibrary = document.getElementById('page-library');
+    const pageNotes = document.getElementById('page-notes');
+    const pageCommunity = document.getElementById('page-community');
     const pageIde = document.getElementById('page-ide');
     const pageCreateProblem = document.getElementById('page-create-problem');
     const pageLogin = document.getElementById('page-login');
@@ -195,6 +199,8 @@ window.CodeForgeApp = (function () {
     // Hide all pages first
     if (pageDashboard) pageDashboard.classList.add('hidden');
     if (pageLibrary) pageLibrary.classList.add('hidden');
+    if (pageNotes) pageNotes.classList.add('hidden');
+    if (pageCommunity) pageCommunity.classList.add('hidden');
     if (pageIde) pageIde.classList.add('hidden');
     if (pageCreateProblem) pageCreateProblem.classList.add('hidden');
     if (pageLogin) pageLogin.classList.add('hidden');
@@ -207,9 +213,11 @@ window.CodeForgeApp = (function () {
     // Top Navigation Links highlight
     const navOverview = document.getElementById('nav-overview');
     const navPractice = document.getElementById('nav-practice');
+    const navNotes = document.getElementById('nav-notes');
+    const navCommunity = document.getElementById('nav-community');
 
     const resetTopNav = () => {
-      [navOverview, navPractice].forEach(link => {
+      [navOverview, navPractice, navNotes, navCommunity].forEach(link => {
         if (!link) return;
         link.className = "text-sm text-gray-600 hover:text-gray-900 transition font-normal pb-4 border-b-2 border-transparent";
       });
@@ -225,13 +233,15 @@ window.CodeForgeApp = (function () {
     // Reset Sidebar Links highlight
     const sidebarLinks = document.querySelectorAll('.sidebar-nav-item');
     sidebarLinks.forEach(item => {
-      item.className = "sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition";
+      item.classList.remove('bg-emerald-50', 'text-emerald-800', 'font-medium');
+      item.classList.add('text-gray-600', 'hover:bg-gray-100', 'hover:text-gray-900');
     });
 
     const activateSidebarLink = (id) => {
       const el = document.getElementById(id);
       if (el) {
-        el.className = "sidebar-nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-800 transition";
+        el.classList.remove('text-gray-600', 'hover:bg-gray-100', 'hover:text-gray-900');
+        el.classList.add('bg-emerald-50', 'text-emerald-800', 'font-medium');
       }
     };
 
@@ -254,6 +264,20 @@ window.CodeForgeApp = (function () {
       activateSidebarLink('sb-library');
       document.body.classList.remove('focus-mode');
       renderProblemTable();
+    } else if (route === 'notes') {
+      if (pageNotes) pageNotes.classList.remove('hidden');
+      if (sidebarContainer) sidebarContainer.classList.remove('hidden');
+      activateTopNav(navNotes);
+      activateSidebarLink('sb-notes');
+      document.body.classList.remove('focus-mode');
+      if (window.CodeForgeNotes) CodeForgeNotes.renderNotes();
+    } else if (route === 'community') {
+      if (pageCommunity) pageCommunity.classList.remove('hidden');
+      if (sidebarContainer) sidebarContainer.classList.remove('hidden');
+      activateTopNav(navCommunity);
+      activateSidebarLink('sb-community');
+      document.body.classList.remove('focus-mode');
+      if (window.CodeForgeCommunity) CodeForgeCommunity.renderDiscussions();
     } else if (route === 'create-problem') {
       if (pageCreateProblem) pageCreateProblem.classList.remove('hidden');
       if (sidebarContainer) sidebarContainer.classList.remove('hidden');
@@ -578,6 +602,12 @@ window.CodeForgeApp = (function () {
     const navPractice = document.getElementById('nav-practice');
     if (navPractice) navPractice.addEventListener('click', () => navigate('library'));
 
+    const navNotes = document.getElementById('nav-notes');
+    if (navNotes) navNotes.addEventListener('click', () => navigate('notes'));
+
+    const navCommunity = document.getElementById('nav-community');
+    if (navCommunity) navCommunity.addEventListener('click', () => navigate('community'));
+
     // Sidebar navigation clicks
     const sbDashboard = document.getElementById('sb-dashboard');
     if (sbDashboard) sbDashboard.addEventListener('click', () => navigate('dashboard'));
@@ -587,6 +617,12 @@ window.CodeForgeApp = (function () {
 
     const sbMyProblems = document.getElementById('sb-my-problems');
     if (sbMyProblems) sbMyProblems.addEventListener('click', () => navigate('create-problem'));
+
+    const sbNotes = document.getElementById('sb-notes');
+    if (sbNotes) sbNotes.addEventListener('click', () => navigate('notes'));
+
+    const sbCommunity = document.getElementById('sb-community');
+    if (sbCommunity) sbCommunity.addEventListener('click', () => navigate('community'));
 
     const sbSaved = document.getElementById('sb-saved');
     if (sbSaved) {
