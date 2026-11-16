@@ -1,8 +1,19 @@
 // CodeForge Frontend API Client with auto-fallback to local mock data
 
 window.CodeForgeAPI = (function () {
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = 'http://localhost:8080/api';
+  const TOKEN_KEY = 'codeforge_token';
   let isBackendOnline = false;
+
+  // Get stored JWT token for authenticated requests
+  function getAuthHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    try {
+      const token = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+    } catch (_) {}
+    return headers;
+  }
 
   // Check backend status on startup
   async function checkBackend() {
@@ -22,9 +33,12 @@ window.CodeForgeAPI = (function () {
   async function getOverview() {
     if (isBackendOnline) {
       try {
-        const res = await fetch(`${API_BASE}/overview`);
-        const json = await res.json();
-        if (json.success) return json.data;
+        const res = await fetch(`${API_BASE}/overview`, { headers: getAuthHeaders() });
+        if (res.ok) {
+          const json = await res.json();
+          // Backend returns the OverviewResponse object directly
+          return json;
+        }
       } catch (e) {
         console.warn("Failed to fetch overview, using fallback.", e);
       }
@@ -32,7 +46,7 @@ window.CodeForgeAPI = (function () {
     return {
       user: CodeForgeData.currentUser,
       stats: {
-        totalProblems: 240,
+        totalProblems: CodeForgeData.problems.length,
         solvedCount: CodeForgeData.currentUser.solvedCount
       }
     };
@@ -43,9 +57,11 @@ window.CodeForgeAPI = (function () {
     if (isBackendOnline) {
       try {
         const query = new URLSearchParams(params).toString();
-        const res = await fetch(`${API_BASE}/problems?${query}`);
-        const json = await res.json();
-        if (json.success) return json.data;
+        const res = await fetch(`${API_BASE}/problems?${query}`, { headers: getAuthHeaders() });
+        if (res.ok) {
+          const json = await res.json();
+          return json;
+        }
       } catch (e) {
         console.warn("Failed to fetch problems from API, using fallback.", e);
       }
@@ -59,11 +75,13 @@ window.CodeForgeAPI = (function () {
       try {
         const res = await fetch(`${API_BASE}/execute/run`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify(payload)
         });
-        const json = await res.json();
-        if (json.success) return json;
+        if (res.ok) {
+          const json = await res.json();
+          return json;
+        }
       } catch (e) {
         console.warn("Run code API error, using local simulation.", e);
       }
@@ -83,11 +101,13 @@ window.CodeForgeAPI = (function () {
       try {
         const res = await fetch(`${API_BASE}/execute/submit`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify(payload)
         });
-        const json = await res.json();
-        if (json.success) return json;
+        if (res.ok) {
+          const json = await res.json();
+          return json;
+        }
       } catch (e) {
         console.warn("Submit code API error, using local simulation.", e);
       }
@@ -107,17 +127,19 @@ window.CodeForgeAPI = (function () {
       try {
         const res = await fetch(`${API_BASE}/problems`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify(payload)
         });
-        const json = await res.json();
-        if (json.success) return json.data;
+        if (res.ok) {
+          const json = await res.json();
+          return json;
+        }
       } catch (e) {
         console.warn("Create problem API error, using local fallback.", e);
       }
     }
     const newProb = {
-      id: CodeForgeData.problems.length + 104,
+      id: Math.max(0, ...CodeForgeData.problems.map(p => p.id)) + 1,
       title: payload.title,
       difficulty: payload.difficulty,
       topics: payload.topics,
@@ -142,4 +164,3 @@ window.CodeForgeAPI = (function () {
     createProblem
   };
 })();
-

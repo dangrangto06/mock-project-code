@@ -9,16 +9,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * REST controller managing remote code execution and solution judging.
+ *
+ * <p>Exposes endpoints under {@code /api/execute} for sandbox dry-runs (evaluating custom test inputs)
+ * and formal solution submissions (evaluating against all test cases and tracking database records).</p>
+ */
 @RestController
 @RequestMapping("/api/execute")
 @RequiredArgsConstructor
 public class ExecutionController {
 
+    /** Service coordinating code compilation, testing, and submission logging. */
     private final ExecutionService executionService;
 
     /**
-     * POST /api/execute/run
-     * Run code against a custom input (no submission persisted).
+     * Executes arbitrary solution code against custom standard input in an isolated sandbox.
+     *
+     * <p>HTTP Endpoint: {@code POST /api/execute/run}</p>
+     * <p>Does not record a submission in the database; designed for interactive IDE testing.</p>
+     *
+     * @param request The execution request containing language, code, and optional stdin.
+     * @return {@link ResponseEntity} with HTTP 200 OK and {@link ExecutionDto.RunResponse} execution results.
      */
     @PostMapping("/run")
     public ResponseEntity<ExecutionDto.RunResponse> run(
@@ -27,8 +39,15 @@ public class ExecutionController {
     }
 
     /**
-     * POST /api/execute/submit
-     * Submit code against all hidden test cases; persists a Submission record.
+     * Submits solution code for full judging against all exercise test cases and records a submission.
+     *
+     * <p>HTTP Endpoint: {@code POST /api/execute/submit}</p>
+     * <p>Extracts the user identity from Spring Security's {@link Authentication} object.
+     * Persists a {@link com.codeforge.entity.Submission} entity and updates user progress.</p>
+     *
+     * @param request        The submission request specifying problem ID, language, and source code.
+     * @param authentication Security context representing the authenticated user (or null if anonymous).
+     * @return {@link ResponseEntity} with HTTP 200 OK and {@link ExecutionDto.SubmitResponse} evaluation verdict.
      */
     @PostMapping("/submit")
     public ResponseEntity<ExecutionDto.SubmitResponse> submit(
@@ -40,8 +59,11 @@ public class ExecutionController {
     }
 
     /**
-     * GET /api/execute/health
-     * Health check for the execution engine.
+     * Diagnostic health check for the code execution engine.
+     *
+     * <p>HTTP Endpoint: {@code GET /api/execute/health}</p>
+     *
+     * @return {@link ResponseEntity} with HTTP 200 OK and execution service operational status.
      */
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> health() {

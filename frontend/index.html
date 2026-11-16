@@ -63,9 +63,9 @@
               class="text-sm font-semibold text-emerald-800 pb-4 border-b-2 border-emerald-600 transition">Overview</a>
             <a id="nav-practice" href="#library"
               class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Practice</a>
-            <a href="#learn"
-              class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Learn</a>
-            <a href="#community"
+            <a id="nav-notes" href="#notes"
+              class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Notes</a>
+            <a id="nav-community" href="#community"
               class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Community</a>
             <a href="about.html"
               class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">About</a>
@@ -87,7 +87,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
-              <span>7-day streak</span>
+              <span id="header-streak-text">7-day streak</span>
             </div>
 
             <!-- Notification Bell -->
@@ -105,11 +105,12 @@
               <div id="btn-user-avatar"
                 class="flex items-center gap-2 pl-2 border-l border-gray-200 cursor-pointer group select-none">
                 <div
-                  class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-semibold text-xs border border-emerald-300">
-                  AM
+                  class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-semibold text-xs border border-emerald-300"
+                  id="header-avatar-initials">
+                  --
                 </div>
-                <span class="text-xs font-medium text-gray-700 group-hover:text-gray-900 hidden sm:inline">Alex
-                  Morgan</span>
+                <span id="header-user-name"
+                  class="text-xs font-medium text-gray-700 group-hover:text-gray-900 hidden sm:inline"></span>
                 <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600 transition" fill="none"
                   stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -120,8 +121,8 @@
               <div id="dropdown-user-menu"
                 class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-[#e5eae7] py-1.5 text-xs text-gray-700 hidden z-50">
                 <div class="px-3 py-2 border-b border-gray-100">
-                  <div class="font-semibold text-gray-900">Alex Morgan</div>
-                  <div class="text-[11px] text-gray-400">alex@codeforge.io</div>
+                  <div id="dropdown-user-fullname" class="font-semibold text-gray-900"></div>
+                  <div id="dropdown-user-email" class="text-[11px] text-gray-400"></div>
                 </div>
                 <a href="#dashboard" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-gray-700">
                   <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,9 +155,11 @@
 
           <!-- GUEST / LOGGED OUT BUTTONS -->
           <div id="header-guest-section" class="flex items-center gap-3 hidden">
-            <a href="#login"
+            <a href="welcome.html"
+              class="text-xs font-semibold text-emerald-700 hover:text-emerald-800 transition px-2 py-1">About</a>
+            <a href="login.html"
               class="text-xs font-semibold text-gray-700 hover:text-emerald-700 transition px-2 py-1">Sign in</a>
-            <a href="#signup"
+            <a href="signup.html"
               class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs">Create
               account</a>
           </div>
@@ -237,16 +240,30 @@
                 </svg>
                 <span>My problems</span>
               </div>
-              <span class="px-1.5 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600 rounded">3</span>
+              <span id="sb-my-problems-count"
+                class="px-1.5 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600 rounded">1</span>
             </button>
-            <button
+            <button id="sb-notes"
+              class="sidebar-nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition text-left">
+              <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                  </path>
+                </svg>
+                <span>Notes</span>
+              </div>
+              <span id="sb-notes-count"
+                class="px-1.5 py-0.5 text-[11px] font-medium bg-emerald-50 text-emerald-800 rounded">4</span>
+            </button>
+            <button id="sb-community"
               class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition text-left">
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
                 </path>
               </svg>
-              <span>Notes</span>
+              <span>Community</span>
             </button>
           </nav>
         </div>
@@ -270,6 +287,17 @@
           Explore learning paths &rarr;
         </a>
       </div>
+
+      <!-- Log out button -->
+      <button id="sb-logout"
+        class="mt-4 w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-rose-50 hover:text-rose-700 transition text-left group">
+        <svg class="w-4 h-4 text-gray-400 group-hover:text-rose-500 transition" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+        <span>Sign out</span>
+      </button>
     </aside>
 
     <!-- ================= MAIN CONTENT AREA ================= -->
@@ -283,9 +311,10 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Your overview / Friday,
-              November 6</div>
-            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-0.5">Keep the momentum, Hieu.</h1>
+            <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase" id="dashboard-date">Your
+              overview</div>
+            <h1 id="dashboard-greeting" class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-0.5">Keep
+              the momentum.</h1>
             <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Small steps add up. You're building something great.</p>
           </div>
           <div>
@@ -400,7 +429,7 @@
                     Find two numbers that add up to a target. Build your intuition for fast lookups with a hash map.
                   </p>
                   <div class="text-xs text-gray-400 font-mono pt-1">
-                    #104 &middot; Arrays &middot; Hash map &middot; ~15 min
+                    #1 &middot; Arrays &middot; Hash map &middot; ~15 min
                   </div>
                 </div>
 
@@ -637,7 +666,7 @@
                 <span
                   class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-[10px]">&check;</span>
                 <span class="font-medium text-gray-900">Pair Sum</span>
-                <span class="text-gray-400 font-mono text-[11px]">#104</span>
+                <span class="text-gray-400 font-mono text-[11px]">#1</span>
               </div>
               <div class="flex items-center gap-4 text-gray-500">
                 <span class="font-mono text-emerald-700">32 ms</span>
@@ -692,8 +721,8 @@
             <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Practice / Problem library
             </div>
             <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-0.5">One problem closer.</h1>
-            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Sharpen your skills with 240 curated coding challenges,
-              from first steps to interview-ready.</p>
+            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Sharpen your skills with <span
+                id="library-total-copy">100</span> curated coding challenges, from first steps to interview-ready.</p>
           </div>
           <div>
             <button id="btn-create-problem-lib"
@@ -719,8 +748,9 @@
               </svg>
             </div>
             <div>
-              <div class="text-sm font-bold text-gray-900">48 solved. Keep going.</div>
-              <div class="text-xs text-gray-500">You've completed 20% of the library.</div>
+              <div id="lib-solved-title" class="text-sm font-bold text-gray-900">0 solved. Your first one is waiting.
+              </div>
+              <div id="lib-solved-sub" class="text-xs text-gray-500">You've completed 0% of the library.</div>
             </div>
           </div>
 
@@ -728,15 +758,15 @@
           <div class="flex items-center gap-4 text-xs font-medium text-gray-700">
             <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>Easy <span class="font-bold text-gray-900">32/80</span></span>
+              <span>Easy <span id="lib-count-easy" class="font-bold text-gray-900 font-mono">0/34</span></span>
             </div>
             <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-              <span>Medium <span class="font-bold text-gray-900">14/120</span></span>
+              <span>Medium <span id="lib-count-medium" class="font-bold text-gray-900 font-mono">0/50</span></span>
             </div>
             <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-              <span>Hard <span class="font-bold text-gray-900">2/40</span></span>
+              <span>Hard <span id="lib-count-hard" class="font-bold text-gray-900 font-mono">0/16</span></span>
             </div>
           </div>
 
@@ -764,17 +794,18 @@
               <button id="tab-filter-all"
                 class="px-3 py-2 text-sm text-emerald-800 font-semibold border-b-2 border-emerald-600 transition flex items-center gap-1.5">
                 <span>All problems</span>
-                <span class="px-1.5 py-0.2 rounded text-[11px] bg-emerald-50 text-emerald-700">240</span>
+                <span id="tab-count-all"
+                  class="px-1.5 py-0.2 rounded text-[11px] bg-emerald-50 text-emerald-700">100</span>
               </button>
               <button id="tab-filter-saved"
                 class="px-3 py-2 text-sm text-gray-500 hover:text-gray-800 font-normal border-b-2 border-transparent transition flex items-center gap-1.5">
                 <span>Saved</span>
-                <span class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">18</span>
+                <span id="tab-count-saved" class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">0</span>
               </button>
               <button id="tab-filter-my"
                 class="px-3 py-2 text-sm text-gray-500 hover:text-gray-800 font-normal border-b-2 border-transparent transition flex items-center gap-1.5">
                 <span>My problems</span>
-                <span class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">3</span>
+                <span id="tab-count-my" class="px-1.5 py-0.2 rounded text-[11px] bg-gray-100 text-gray-600">1</span>
               </button>
             </div>
             <div class="text-xs text-gray-400 hidden sm:block">
@@ -799,8 +830,8 @@
             </div>
 
             <!-- Dropdown: Difficulty -->
-            <div class="flex items-center gap-2">
-              <select id="filter-difficulty-select"
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="filter-difficulty-select" aria-label="Filter by difficulty"
                 class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
                 <option value="all">Difficulty</option>
                 <option value="Easy">Easy</option>
@@ -809,18 +840,14 @@
               </select>
 
               <!-- Dropdown: Topics -->
-              <select
-                class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
+              <select id="filter-topic-select" aria-label="Filter by topic"
+                class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs max-w-[9rem]">
                 <option value="all">Topics</option>
-                <option value="arrays">Arrays</option>
-                <option value="strings">Strings</option>
-                <option value="hash-map">Hash map</option>
-                <option value="sorting">Sorting</option>
-                <option value="heap">Heap</option>
+                <!-- Options are generated from the problem catalog by app.js -->
               </select>
 
               <!-- Dropdown: Status -->
-              <select
+              <select id="filter-status-select" aria-label="Filter by status"
                 class="text-xs py-2 px-3 rounded-lg border border-[#d1d9d4] bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-xs">
                 <option value="all">Status</option>
                 <option value="solved">Solved</option>
@@ -854,7 +881,11 @@
                   <th class="py-3 px-4">Problem</th>
                   <th class="py-3 px-4 w-24">Difficulty</th>
                   <th class="py-3 px-4">Topics</th>
-                  <th class="py-3 px-4 w-28 text-right">Acceptance &darr;</th>
+                  <th class="py-3 px-4 w-36 text-right whitespace-nowrap" aria-sort="none" id="th-acceptance">
+                    <button id="sort-acceptance" type="button"
+                      class="uppercase tracking-wider font-semibold hover:text-gray-800 transition focus:outline-none">Acceptance
+                      <span id="sort-acceptance-arrow" class="text-gray-400">&udarr;</span></button>
+                  </th>
                   <th class="py-3 px-4 text-center w-12"></th>
                 </tr>
               </thead>
@@ -863,6 +894,36 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Footer: result count + pagination -->
+          <div
+            class="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3.5 border-t border-gray-100 bg-white">
+            <div id="library-showing" class="text-xs text-gray-500">Showing 1&ndash;10 of 100 problems</div>
+            <nav id="library-pagination" class="flex items-center gap-1.5" aria-label="Pagination"></nav>
+          </div>
+        </div>
+
+        <!-- Status legend -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-gray-400">
+          <div class="flex items-center gap-4">
+            <span class="uppercase tracking-wider">Your progress</span>
+            <span class="inline-flex items-center gap-1.5 text-gray-500">
+              <span
+                class="inline-flex items-center justify-center w-3.5 h-3.5 text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200"><svg
+                  class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg></span>Solved
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-gray-500">
+              <span
+                class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-amber-200 bg-amber-50"><span
+                  class="w-1.5 h-1.5 rounded-full bg-amber-500"></span></span>In progress
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-gray-500">
+              <span class="inline-block w-3.5 h-3.5 rounded-full border border-gray-300"></span>Not started
+            </span>
+          </div>
+          <div>Find your next challenge. Make it a habit.</div>
         </div>
 
       </section>
@@ -887,7 +948,7 @@
               <span>Problem library</span>
             </button>
             <span class="text-gray-300">|</span>
-            <span class="text-xs font-semibold text-gray-900">104. Pair Sum</span>
+            <span class="text-xs font-semibold text-gray-900">1. Pair Sum</span>
             <span
               class="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">In
               progress</span>
@@ -934,7 +995,11 @@
               class="border-b border-gray-200 px-4 flex items-center gap-6 pt-2 text-xs font-medium text-gray-500 flex-shrink-0">
               <button class="pb-2.5 border-b-2 border-emerald-600 text-emerald-800 font-semibold">Description</button>
               <button class="pb-2.5 border-b-2 border-transparent hover:text-gray-800">Editorial</button>
-              <button class="pb-2.5 border-b-2 border-transparent hover:text-gray-800">Solutions</button>
+              <button onclick="CodeForgeApp.navigate('community')"
+                class="pb-2.5 border-b-2 border-transparent hover:text-gray-800 transition">Community &amp;
+                Solutions</button>
+              <button onclick="CodeForgeApp.navigate('notes')"
+                class="pb-2.5 border-b-2 border-transparent hover:text-gray-800 transition">My Notes</button>
               <button class="pb-2.5 border-b-2 border-transparent hover:text-gray-800">Submissions</button>
             </div>
 
@@ -943,7 +1008,7 @@
               <!-- Title & Bookmark -->
               <div class="flex items-start justify-between">
                 <div>
-                  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">104. Pair Sum</h1>
+                  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">1. Pair Sum</h1>
                   <!-- Pills -->
                   <div class="flex flex-wrap items-center gap-2 mt-2">
                     <span
@@ -957,11 +1022,23 @@
                       problem</span>
                   </div>
                 </div>
-                <button class="text-emerald-600 hover:text-emerald-700 p-1">
-                  <svg class="w-5 h-5 fill-emerald-600" viewBox="0 0 24 24">
-                    <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
-                  </svg>
-                </button>
+                <div class="flex items-center gap-2">
+                  <button
+                    onclick="CodeForgeNotes.openCreateModal(); document.getElementById('note-problem-select').value='104';"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition shadow-xs"
+                    title="Add note for this challenge">
+                    <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <span>+ Note</span>
+                  </button>
+                  <button class="text-emerald-600 hover:text-emerald-700 p-1" title="Bookmark">
+                    <svg class="w-5 h-5 fill-emerald-600" viewBox="0 0 24 24">
+                      <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               <!-- Author & Date -->
@@ -1043,7 +1120,7 @@
                   class="bg-transparent text-xs text-gray-200 font-medium focus:outline-none cursor-pointer">
                   <option value="python" class="bg-gray-900">Python 3</option>
                   <option value="javascript" class="bg-gray-900">JavaScript</option>
-                  <option value="cpp" class="bg-gray-900">C++</option>
+                  <option value="java" class="bg-gray-900">Java</option>
                 </select>
               </div>
 
@@ -1081,7 +1158,7 @@
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                   </path>
                 </svg>
-                solution.py
+                <span id="editor-filename">solution.py</span>
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
               </span>
             </div>
@@ -1406,7 +1483,6 @@ Return the answer in any order.
                 <option selected>Python 3</option>
                 <option>JavaScript</option>
                 <option>TypeScript</option>
-                <option>C++</option>
                 <option>Java</option>
               </select>
               <p class="text-[11px] text-gray-400">Used for the starter code and test runner.</p>
@@ -1460,6 +1536,151 @@ Return the answer in any order.
 
           </div>
 
+        </div>
+
+      </section>
+
+
+      <!-- ======================================================== -->
+      <!-- PAGE 4A: LEARNER NOTES (#notes)                          -->
+      <!-- ======================================================== -->
+      <section id="page-notes" class="p-6 lg:p-8 space-y-6 hidden">
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Learner Space / Notebook</div>
+            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-0.5">Algorithm Notes & Cheatsheets
+            </h1>
+            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Review key patterns, problem takeaways, and algorithmic
+              templates.</p>
+          </div>
+          <button id="btn-create-note"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold transition shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>New Note</span>
+          </button>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div
+          class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-[#e5eae7]">
+          <!-- Search Input -->
+          <div class="relative flex-1">
+            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input id="notes-search-input" type="text" placeholder="Search notes by title, tag, or content..."
+              class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-transparent focus:border-emerald-500 focus:bg-white focus:outline-none bg-gray-50 text-gray-800">
+          </div>
+
+          <!-- Tag Filter Chips -->
+          <div class="flex items-center gap-1.5 overflow-x-auto text-xs py-1" id="notes-tag-filters">
+            <button
+              class="notes-tag-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 transition"
+              data-tag="all">All Notes</button>
+            <button
+              class="notes-tag-btn px-2.5 py-1 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-100 transition"
+              data-tag="Arrays">Arrays</button>
+            <button
+              class="notes-tag-btn px-2.5 py-1 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-100 transition"
+              data-tag="Sliding Window">Sliding Window</button>
+            <button
+              class="notes-tag-btn px-2.5 py-1 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-100 transition"
+              data-tag="Dynamic Programming">DP</button>
+            <button
+              class="notes-tag-btn px-2.5 py-1 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-100 transition"
+              data-tag="Binary Search">Binary Search</button>
+          </div>
+        </div>
+
+        <!-- Notes Grid -->
+        <div id="notes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="notes-empty-state"
+          class="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-300 p-8 space-y-3 hidden">
+          <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-bold text-gray-800">No notes found</h3>
+          <p class="text-xs text-gray-500 max-w-sm mx-auto">Create a note to save algorithmic patterns and takeaways for
+            your upcoming technical interviews.</p>
+        </div>
+
+      </section>
+
+
+      <!-- ======================================================== -->
+      <!-- PAGE 4B: LEARNER COMMUNITY (#community)                  -->
+      <!-- ======================================================== -->
+      <section id="page-community" class="p-6 lg:p-8 space-y-6 hidden">
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Community / Discussions</div>
+            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-0.5">Developer Discussions &
+              Solutions</h1>
+            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Share optimal solutions, ask algorithmic questions, and
+              learn together.</p>
+          </div>
+          <button id="btn-create-discussion"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold transition shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <span>Start Discussion</span>
+          </button>
+        </div>
+
+        <!-- Filter Tabs & Category Bar -->
+        <div
+          class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-[#e5eae7]">
+          <!-- Category Tabs -->
+          <div class="flex items-center gap-1.5 overflow-x-auto text-xs py-1" id="community-category-tabs">
+            <button
+              class="comm-cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 transition"
+              data-category="all">All Topics</button>
+            <button
+              class="comm-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition"
+              data-category="Solutions">Solutions</button>
+            <button
+              class="comm-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition"
+              data-category="Questions">Questions</button>
+            <button
+              class="comm-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition"
+              data-category="Interview Prep">Interview Prep</button>
+            <button
+              class="comm-cat-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition"
+              data-category="Tips">Tips & Tricks</button>
+          </div>
+
+          <!-- Search Input -->
+          <div class="relative w-full md:w-64">
+            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input id="community-search-input" type="text" placeholder="Search posts..."
+              class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-transparent focus:border-emerald-500 focus:bg-white focus:outline-none bg-gray-50 text-gray-800">
+          </div>
+        </div>
+
+        <!-- Discussions Feed -->
+        <div id="community-posts-feed" class="space-y-4">
+          <!-- Rendered dynamically -->
         </div>
 
       </section>
@@ -1529,7 +1750,7 @@ Return the answer in any order.
             <div class="space-y-1">
               <div class="flex items-center justify-between">
                 <label class="block text-xs font-semibold text-gray-700">Password</label>
-                <a href="#login"
+                <a href="login.html"
                   onclick="CodeForgeApp.showToast('Password reset link simulated: check your email!', 'info')"
                   class="text-[11px] text-emerald-700 hover:text-emerald-900 font-medium">Forgot password?</a>
               </div>
@@ -1554,7 +1775,7 @@ Return the answer in any order.
           <!-- Footer link -->
           <div class="text-center text-xs text-gray-500 pt-2 border-t border-gray-100">
             Don't have an account?
-            <a href="#signup" class="font-semibold text-emerald-700 hover:text-emerald-900 transition">Create
+            <a href="signup.html" class="font-semibold text-emerald-700 hover:text-emerald-900 transition">Create
               account</a>
           </div>
 
@@ -1648,8 +1869,8 @@ Return the answer in any order.
               <input id="signup-terms" type="checkbox" required checked
                 class="h-3.5 w-3.5 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded mt-0.5">
               <label for="signup-terms" class="ml-2 block text-[11px] text-gray-600 leading-tight">
-                I agree to the <a href="#signup" class="text-emerald-700 underline">Terms of Service</a> and <a
-                  href="#signup" class="text-emerald-700 underline">Privacy Policy</a>.
+                I agree to the <a href="signup.html" class="text-emerald-700 underline">Terms of Service</a> and <a
+                  href="signup.html" class="text-emerald-700 underline">Privacy Policy</a>.
               </label>
             </div>
 
@@ -1662,7 +1883,7 @@ Return the answer in any order.
           <!-- Footer link -->
           <div class="text-center text-xs text-gray-500 pt-2 border-t border-gray-100">
             Already have an account?
-            <a href="#login" class="font-semibold text-emerald-700 hover:text-emerald-900 transition">Sign in</a>
+            <a href="login.html" class="font-semibold text-emerald-700 hover:text-emerald-900 transition">Sign in</a>
           </div>
 
         </div>
@@ -1717,12 +1938,216 @@ Return the answer in any order.
     </div>
   </div>
 
+  <!-- ================= CREATE / EDIT NOTE MODAL ================= -->
+  <div id="note-modal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+        <h3 id="note-modal-title" class="text-base font-bold text-gray-900">Create New Note</h3>
+        <button id="btn-close-note-modal" type="button" class="text-gray-400 hover:text-gray-600 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="note-form" class="space-y-4">
+        <div class="space-y-1">
+          <label class="block text-xs font-semibold text-gray-700">Note Title *</label>
+          <input id="note-title-input" type="text" required placeholder="e.g. 1-Pass Hash Map Pattern for Two Sum"
+            class="w-full px-3.5 py-2 text-xs rounded-lg border border-[#d1d9d4] focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium text-gray-800">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-gray-700">Linked Problem (Optional)</label>
+            <select id="note-problem-select"
+              class="w-full px-3 py-2 text-xs rounded-lg border border-[#d1d9d4] focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white text-gray-800">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-gray-700">Tags (comma-separated)</label>
+            <input id="note-tags-input" type="text" placeholder="Arrays, Hash map, Cheatsheet"
+              class="w-full px-3 py-2 text-xs rounded-lg border border-[#d1d9d4] focus:outline-none focus:ring-1 focus:ring-emerald-500 text-gray-800">
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <div class="flex items-center justify-between">
+            <label class="block text-xs font-semibold text-gray-700">Content / Key Takeaways *</label>
+            <span class="text-[11px] text-gray-400">Markdown code `...` &amp; **bold** supported</span>
+          </div>
+          <textarea id="note-content-input" rows="7" required
+            placeholder="Write down invariant conditions, recurrence relation, tricky edge cases, or complexity..."
+            class="w-full p-3 text-xs font-mono leading-relaxed text-gray-800 rounded-lg border border-[#d1d9d4] focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-y"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-gray-100">
+          <button id="btn-cancel-note-modal" type="button"
+            class="px-4 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-700 hover:bg-gray-50 transition">
+            Cancel
+          </button>
+          <button id="btn-save-note" type="submit"
+            class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition">
+            Save Note
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= CREATE DISCUSSION MODAL ================= -->
+  <div id="discussion-modal"
+    class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+        <h3 class="text-base font-bold text-gray-900">Start a Discussion</h3>
+        <button id="btn-close-disc-modal" type="button" class="text-gray-400 hover:text-gray-600 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="discussion-form" class="space-y-4">
+        <div class="space-y-1">
+          <label class="block text-xs font-semibold text-gray-700">Discussion Title *</label>
+          <input id="disc-title-input" type="text" required placeholder="e.g. Optimal approach for 3Sum without TLE"
+            class="w-full px-3.5 py-2 text-xs rounded-lg border border-[#d1d9d4] focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium text-gray-800">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-gray-700">Category *</label>
+            <select id="disc-category-select"
+              class="w-full px-3 py-2 text-xs rounded-lg border border-[#d1d9d4] focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white text-gray-800 font-medium">
+              <option value="Solutions">Solutions</option>
+              <option value="Questions">Questions</option>
+              <option value="Interview Prep">Interview Prep</option>
+              <option value="Tips">Tips &amp; Tricks</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-gray-700">Related Problem (Optional)</label>
+            <select id="disc-problem-select"
+              class="w-full px-3 py-2 text-xs rounded-lg border border-[#d1d9d4] focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white text-gray-800">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <div class="flex items-center justify-between">
+            <label class="block text-xs font-semibold text-gray-700">Post Content *</label>
+            <span class="text-[11px] text-gray-400">Markdown code `...` &amp; **bold** supported</span>
+          </div>
+          <textarea id="disc-content-input" rows="7" required
+            placeholder="Explain your approach, paste complexity analysis, or describe where you are getting stuck..."
+            class="w-full p-3 text-xs font-sans leading-relaxed text-gray-800 rounded-lg border border-[#d1d9d4] focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-y"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-gray-100">
+          <button id="btn-cancel-disc-modal" type="button"
+            class="px-4 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-700 hover:bg-gray-50 transition">
+            Cancel
+          </button>
+          <button id="btn-submit-discussion" type="submit"
+            class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition">
+            Publish Discussion
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= DISCUSSION VIEW & REPLIES MODAL ================= -->
+  <div id="discussion-view-modal"
+    class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div
+      class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-gray-200 overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <span id="view-post-cat-badge"
+            class="px-2.5 py-0.5 rounded text-xs font-semibold border bg-emerald-50 text-emerald-800 border-emerald-200">Solutions</span>
+          <div id="view-post-problem-container"></div>
+        </div>
+        <button id="btn-close-disc-view-modal" type="button" class="text-gray-400 hover:text-gray-600 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+        <!-- Post Details -->
+        <div class="space-y-4">
+          <h2 id="view-post-title" class="text-xl font-bold text-gray-900 leading-snug"></h2>
+
+          <div class="flex items-center justify-between text-xs pb-3 border-b border-gray-100">
+            <div class="flex items-center gap-2">
+              <div id="view-post-author-avatar"
+                class="w-6 h-6 rounded-full bg-emerald-800 text-white font-mono text-[10px] font-bold flex items-center justify-center">
+                AM</div>
+              <span id="view-post-author-name" class="font-bold text-gray-900"></span>
+              <span id="view-post-author-role"></span>
+              <span class="text-gray-300">&middot;</span>
+              <span id="view-post-time" class="text-gray-400 font-medium"></span>
+            </div>
+
+            <!-- Upvote in view modal -->
+            <button id="view-post-upvote-btn" type="button"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 font-medium text-xs transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" />
+              </svg>
+              <span id="view-post-upvote-count" class="font-bold font-mono">0</span>
+            </button>
+          </div>
+
+          <!-- Content -->
+          <div id="view-post-body" class="text-xs sm:text-sm text-gray-800 leading-relaxed font-sans space-y-2"></div>
+        </div>
+
+        <!-- Replies Section -->
+        <div class="space-y-3 pt-3 border-t border-gray-100">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider" id="view-post-replies-count">Replies
+            </h4>
+          </div>
+
+          <!-- Replies List -->
+          <div id="disc-replies-list" class="space-y-3">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Add Reply Form -->
+          <form id="disc-reply-form" class="space-y-2 pt-3 border-t border-gray-100">
+            <label class="block text-xs font-semibold text-gray-700">Add to discussion</label>
+            <textarea id="disc-reply-input" rows="3" required
+              placeholder="Share your insight, ask a clarification, or suggest an optimization..."
+              class="w-full p-3 text-xs rounded-lg border border-[#d1d9d4] focus:outline-none focus:ring-1 focus:ring-emerald-500 leading-relaxed text-gray-800 resize-y"></textarea>
+            <div class="flex justify-end">
+              <button id="btn-submit-reply" type="submit"
+                class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition">
+                Submit Reply
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Container -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- Application Logic Scripts -->
   <script src="js/data.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/notes.js"></script>
+  <script src="js/community.js"></script>
   <script src="js/ide.js"></script>
   <script src="js/editor.js"></script>
   <script src="js/app.js"></script>
