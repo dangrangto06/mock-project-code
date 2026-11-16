@@ -71,25 +71,25 @@ public class User {
      * Consecutive active practice days count displayed on the user dashboard.
      */
     @Builder.Default
-    private Integer streakDays = 7;
+    private Integer streakDays = 0;
 
     /**
      * Total number of coding challenges solved successfully with an Accepted submission.
      */
     @Builder.Default
-    private Integer solvedCount = 48;
+    private Integer solvedCount = 0;
 
     /**
      * Overall submission acceptance percentage (accepted / total submissions * 100).
      */
     @Builder.Default
-    private BigDecimal acceptanceRate = new BigDecimal("76.20");
+    private BigDecimal acceptanceRate = BigDecimal.ZERO;
 
     /**
      * Cumulative active practice time spent inside the CodeForge IDE in hours.
      */
     @Builder.Default
-    private BigDecimal practiceTimeHours = new BigDecimal("12.50");
+    private BigDecimal practiceTimeHours = BigDecimal.ZERO;
 
     /**
      * Timestamp recording when the user account was registered.

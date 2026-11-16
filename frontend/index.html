@@ -235,20 +235,20 @@
           </nav>
         </div>
 
-      </div>
-
-      <!-- Bottom Card: One step every day -->
-      <div class="p-3.5 rounded-xl bg-[#f0fdf4] border border-[#dcfce7] mt-6">
-        <div class="flex items-center gap-2 mb-1">
-          <div class="w-4 h-4 rounded-full bg-emerald-600 flex items-center justify-center text-white">
-            <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="3"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg>
+        <!-- Sidebar Card: One step every day -->
+        <div class="p-3.5 rounded-xl bg-[#f0fdf4] border border-[#dcfce7] mt-4">
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-4 h-4 rounded-full bg-emerald-600 flex items-center justify-center text-white">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="3"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg>
+            </div>
+            <span class="text-xs font-semibold text-emerald-950">One step every day</span>
           </div>
-          <span class="text-xs font-semibold text-emerald-950">One step every day</span>
+          <p class="text-[11px] text-gray-600 leading-tight mb-2">Your next solution is your next breakthrough.</p>
+          <a href="#learning-paths" class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1">
+            Explore learning paths &rarr;
+          </a>
         </div>
-        <p class="text-[11px] text-gray-600 leading-tight mb-2">Your next solution is your next breakthrough.</p>
-        <a href="#learning-paths" class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1">
-          Explore learning paths &rarr;
-        </a>
+
       </div>
 
       <!-- Log out button -->
@@ -290,8 +290,8 @@
               <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>
             </div>
             <div class="flex items-baseline gap-2">
-              <span id="dashboard-solved-count" class="text-2xl font-bold text-gray-900">48</span>
-              <span class="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">+8 this week</span>
+              <span id="dashboard-solved-count" class="text-2xl font-bold text-gray-900">0</span>
+              <span id="dashboard-solved-delta" class="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">+0 this week</span>
             </div>
           </div>
 
@@ -302,8 +302,8 @@
               <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
             </div>
             <div class="flex items-baseline gap-2">
-              <span id="dashboard-streak" class="text-2xl font-bold text-gray-900">7 days</span>
-              <span class="text-[11px] text-gray-400">Personal best: 12</span>
+              <span id="dashboard-streak" class="text-2xl font-bold text-gray-900">0 days</span>
+              <span id="dashboard-streak-best" class="text-[11px] text-gray-400">Personal best: 0</span>
             </div>
           </div>
 
@@ -314,8 +314,8 @@
               <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
             </div>
             <div class="flex items-baseline gap-2">
-              <span id="dashboard-acceptance" class="text-2xl font-bold text-gray-900">76.2%</span>
-              <span class="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">&uarr; 4.1%</span>
+              <span id="dashboard-acceptance" class="text-2xl font-bold text-gray-900">0%</span>
+              <span id="dashboard-acceptance-delta" class="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">+0%</span>
             </div>
           </div>
 
@@ -326,8 +326,8 @@
               <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v5l3 3"></path></svg>
             </div>
             <div class="flex items-baseline gap-2">
-              <span class="text-2xl font-bold text-gray-900">12.5h</span>
-              <span class="text-[11px] text-gray-400">+2.4h this week</span>
+              <span id="dashboard-practice-time" class="text-2xl font-bold text-gray-900">0h</span>
+              <span id="dashboard-practice-delta" class="text-[11px] text-gray-400">+0h this week</span>
             </div>
           </div>
         </div>
@@ -343,22 +343,19 @@
                   <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
                   Your next challenge
                 </span>
-                <span class="text-gray-400 text-xs">Arrays &amp; hashing &middot; Step 13 of 20</span>
+                <span id="dashboard-next-meta" class="text-gray-400 text-xs">Arrays &amp; hashing</span>
               </div>
 
               <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mt-2">
                 <div class="space-y-2">
                   <div class="flex items-center gap-2.5">
-                    <h2 class="text-xl font-bold text-gray-900">Pair Sum</h2>
-                    <span class="px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Easy</span>
-                    <span class="px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">In progress</span>
+                    <h2 id="dashboard-next-title" class="text-xl font-bold text-gray-900">Pair Sum</h2>
+                    <span id="dashboard-next-diff" class="px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Easy</span>
+                    <span id="dashboard-next-status" class="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">Start</span>
                   </div>
-                  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-md">
+                  <p id="dashboard-next-desc" class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-md">
                     Find two numbers that add up to a target. Build your intuition for fast lookups with a hash map.
                   </p>
-                  <div class="text-xs text-gray-400 font-mono pt-1">
-                    #1 &middot; Arrays &middot; Hash map &middot; ~15 min
-                  </div>
                 </div>
 
                 <!-- Right Visual Box -->
@@ -376,9 +373,9 @@
             <!-- Card Bottom Bar -->
             <div class="flex items-center justify-between pt-5 mt-4 border-t border-gray-100">
               <button id="btn-continue-solving" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs sm:text-sm transition shadow-sm">
-                <span>&rarr; Continue solving</span>
+                <span>&rarr; Start challenge</span>
               </button>
-              <span class="text-xs text-gray-400">Last opened 25 minutes ago</span>
+              <span id="dashboard-next-last-opened" class="text-xs text-gray-400">Not started yet</span>
             </div>
           </div>
 
@@ -392,62 +389,48 @@
 
               <div class="my-3">
                 <div class="flex items-baseline gap-1.5">
-                  <span class="text-3xl font-bold text-gray-900">8</span>
-                  <span class="text-sm text-gray-400 font-medium">/ 10 problems</span>
+                  <span id="dashboard-weekly-done" class="text-3xl font-bold text-gray-900">0</span>
+                  <span class="text-sm text-gray-400 font-medium">/ <span id="dashboard-weekly-target">5</span> problems</span>
                 </div>
                 
                 <!-- Progress bar -->
                 <div class="w-full h-2 rounded-full bg-gray-100 overflow-hidden mt-2 mb-2">
-                  <div class="h-full bg-emerald-600 rounded-full" style="width: 80%"></div>
+                  <div id="dashboard-weekly-bar" class="h-full bg-emerald-600 rounded-full transition-all" style="width: 0%"></div>
                 </div>
 
-                <p class="text-xs text-gray-500">Just 2 more to reach your goal. You've got this.</p>
+                <p id="dashboard-weekly-caption" class="text-xs text-gray-500">Solve problems this week to build momentum towards your goal.</p>
               </div>
             </div>
 
             <!-- Weekly Days tracker -->
             <div class="pt-4 border-t border-gray-100">
-              <div class="flex justify-between items-center text-center">
+              <div id="dashboard-weekly-days" class="flex justify-between items-center text-center">
                 <div class="space-y-1">
-                  <div class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs border border-emerald-200 mx-auto">
-                    &check;
-                  </div>
-                  <span class="text-[10px] text-gray-500 font-medium">M</span>
+                  <div class="w-6 h-6 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-xs border border-gray-200 mx-auto">&bull;</div>
+                  <span class="text-[10px] text-gray-400">M</span>
                 </div>
                 <div class="space-y-1">
-                  <div class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs border border-emerald-200 mx-auto">
-                    &check;
-                  </div>
-                  <span class="text-[10px] text-gray-500 font-medium">T</span>
+                  <div class="w-6 h-6 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-xs border border-gray-200 mx-auto">&bull;</div>
+                  <span class="text-[10px] text-gray-400">T</span>
                 </div>
                 <div class="space-y-1">
-                  <div class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs border border-emerald-200 mx-auto">
-                    &check;
-                  </div>
-                  <span class="text-[10px] text-gray-500 font-medium">W</span>
+                  <div class="w-6 h-6 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-xs border border-gray-200 mx-auto">&bull;</div>
+                  <span class="text-[10px] text-gray-400">W</span>
                 </div>
                 <div class="space-y-1">
-                  <div class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs border border-emerald-200 mx-auto">
-                    &check;
-                  </div>
-                  <span class="text-[10px] text-gray-500 font-medium">T</span>
+                  <div class="w-6 h-6 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-xs border border-gray-200 mx-auto">&bull;</div>
+                  <span class="text-[10px] text-gray-400">T</span>
                 </div>
                 <div class="space-y-1">
-                  <div class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs border border-emerald-200 mx-auto">
-                    &check;
-                  </div>
-                  <span class="text-[10px] text-gray-500 font-medium">F</span>
+                  <div class="w-6 h-6 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-xs border border-gray-200 mx-auto">&bull;</div>
+                  <span class="text-[10px] text-gray-400">F</span>
                 </div>
                 <div class="space-y-1">
-                  <div class="w-6 h-6 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-xs border border-gray-200 mx-auto">
-                    &bull;
-                  </div>
+                  <div class="w-6 h-6 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-xs border border-gray-200 mx-auto">&bull;</div>
                   <span class="text-[10px] text-gray-400">S</span>
                 </div>
                 <div class="space-y-1">
-                  <div class="w-6 h-6 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-xs border border-gray-200 mx-auto">
-                    &bull;
-                  </div>
+                  <div class="w-6 h-6 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-xs border border-gray-200 mx-auto">&bull;</div>
                   <span class="text-[10px] text-gray-400">S</span>
                 </div>
               </div>
@@ -463,75 +446,8 @@
             <a href="#learning-paths" class="text-xs font-semibold text-emerald-700 hover:text-emerald-900">Explore all paths &rarr;</a>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Path 1 -->
-            <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-sm hover:border-emerald-300 transition cursor-pointer group" onclick="CodeForgeApp.openLearningPath('arrays')">
-              <div class="flex items-start justify-between">
-                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-mono text-sm border border-emerald-200">
-                  { }
-                </div>
-                <svg class="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-              </div>
-              <div class="mt-3">
-                <h4 class="text-sm font-semibold text-gray-900 group-hover:text-emerald-800 transition">Arrays &amp; hashing</h4>
-                <p class="text-xs text-gray-500">Build your foundations</p>
-              </div>
-              <div class="mt-4 pt-3 border-t border-gray-100">
-                <div class="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden mb-1.5">
-                  <div class="h-full bg-emerald-600 rounded-full" style="width: 60%"></div>
-                </div>
-                <div class="flex items-center justify-between text-[11px] text-gray-400">
-                  <span>12 of 20 completed</span>
-                  <span class="font-medium text-gray-600">60%</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Path 2 -->
-            <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-sm hover:border-emerald-300 transition cursor-pointer group" onclick="CodeForgeApp.openLearningPath('strings')">
-              <div class="flex items-start justify-between">
-                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-mono text-sm border border-emerald-200">
-                  &harr;
-                </div>
-                <svg class="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-              </div>
-              <div class="mt-3">
-                <h4 class="text-sm font-semibold text-gray-900 group-hover:text-emerald-800 transition">Two pointers &amp; strings</h4>
-                <p class="text-xs text-gray-500">Solve with less space</p>
-              </div>
-              <div class="mt-4 pt-3 border-t border-gray-100">
-                <div class="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden mb-1.5">
-                  <div class="h-full bg-emerald-600 rounded-full" style="width: 33%"></div>
-                </div>
-                <div class="flex items-center justify-between text-[11px] text-gray-400">
-                  <span>4 of 12 completed</span>
-                  <span class="font-medium text-gray-600">33%</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Path 3 -->
-            <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-sm hover:border-emerald-300 transition cursor-pointer group" onclick="CodeForgeApp.openLearningPath('stacks')">
-              <div class="flex items-start justify-between">
-                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-mono text-sm border border-emerald-200">
-                  &sim;
-                </div>
-                <svg class="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-              </div>
-              <div class="mt-3">
-                <h4 class="text-sm font-semibold text-gray-900 group-hover:text-emerald-800 transition">Trees, stacks &amp; heaps</h4>
-                <p class="text-xs text-gray-500">Connect the concepts</p>
-              </div>
-              <div class="mt-4 pt-3 border-t border-gray-100">
-                <div class="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden mb-1.5">
-                  <div class="h-full bg-emerald-600 rounded-full" style="width: 11%"></div>
-                </div>
-                <div class="flex items-center justify-between text-[11px] text-gray-400">
-                  <span>2 of 18 completed</span>
-                  <span class="font-medium text-gray-600">11%</span>
-                </div>
-              </div>
-            </div>
+          <div id="dashboard-learning-paths" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Learning paths or empty state rendered dynamically -->
           </div>
         </div>
 

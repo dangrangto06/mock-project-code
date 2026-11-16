@@ -198,7 +198,7 @@ window.CodeForgeApp = (function () {
   function applyOverviewData(overview) {
     if (!overview) return;
 
-    // 1. Dashboard Greeting & User Stats
+    // 1. Dashboard Greeting & User Stats Cards
     if (overview.user) {
       const u = overview.user;
       const greetingEl = document.getElementById('dashboard-greeting');
@@ -207,33 +207,222 @@ window.CodeForgeApp = (function () {
         greetingEl.textContent = `Keep the momentum, ${name}.`;
       }
 
-      // Solved Count
+      // Card 1: Problems Solved & Delta
       const solvedEl = document.getElementById('dashboard-solved-count');
       if (solvedEl && u.solvedCount !== undefined && u.solvedCount !== null) {
         solvedEl.textContent = u.solvedCount;
       }
+      const solvedDeltaEl = document.getElementById('dashboard-solved-delta');
+      if (solvedDeltaEl) {
+        const weekSolved = u.solvedWeek !== undefined && u.solvedWeek !== null ? u.solvedWeek : 0;
+        solvedDeltaEl.textContent = `+${weekSolved} this week`;
+      }
 
-      // Current Streak
+      // Card 2: Current Streak & Personal Best
       const streakEl = document.getElementById('dashboard-streak');
       if (streakEl && u.streakDays !== undefined && u.streakDays !== null) {
-        streakEl.textContent = `${u.streakDays} days`;
+        streakEl.textContent = `${u.streakDays} ${u.streakDays === 1 ? 'day' : 'days'}`;
+      }
+      const streakBestEl = document.getElementById('dashboard-streak-best');
+      if (streakBestEl) {
+        const streak = u.streakDays || 0;
+        streakBestEl.textContent = `Personal best: ${streak}`;
       }
       const headerStreakEl = document.getElementById('header-streak-text');
       if (headerStreakEl && u.streakDays !== undefined && u.streakDays !== null) {
         headerStreakEl.textContent = `${u.streakDays}-day streak`;
       }
 
-      // Acceptance Rate
+      // Card 3: Acceptance Rate & Delta
       const acceptanceEl = document.getElementById('dashboard-acceptance');
       if (acceptanceEl && u.acceptanceRate !== undefined && u.acceptanceRate !== null) {
         acceptanceEl.textContent = u.acceptanceRate;
       }
+      const acceptanceDeltaEl = document.getElementById('dashboard-acceptance-delta');
+      if (acceptanceDeltaEl) {
+        const delta = u.acceptanceDelta || '+0%';
+        acceptanceDeltaEl.textContent = delta;
+      }
+
+      // Card 4: Practice Time & Delta
+      const practiceEl = document.getElementById('dashboard-practice-time');
+      if (practiceEl && u.practiceTime !== undefined && u.practiceTime !== null) {
+        practiceEl.textContent = u.practiceTime;
+      }
+      const practiceDeltaEl = document.getElementById('dashboard-practice-delta');
+      if (practiceDeltaEl) {
+        const pDelta = u.practiceDelta || '+0h';
+        practiceDeltaEl.textContent = `${pDelta} this week`;
+      }
     }
 
-    // 2. Recent Activity List
+    // 2. Your Next Challenge Card
+    if (overview.nextChallenge) {
+      const nc = overview.nextChallenge;
+      setText('dashboard-next-title', nc.title || 'Coding Challenge');
+      setText('dashboard-next-meta', nc.meta || nc.stepInfo || 'Arrays & hashing');
+      setText('dashboard-next-desc', nc.description || 'Solve this recommended problem to practice your problem-solving intuition.');
+      setText('dashboard-next-last-opened', nc.lastOpened || 'Not started yet');
+
+      // Next Challenge Status Badge
+      const statusBadge = document.getElementById('dashboard-next-status');
+      if (statusBadge) {
+        const statusText = nc.status || 'Start';
+        statusBadge.textContent = statusText;
+        statusBadge.className = 'px-2 py-0.5 rounded text-xs font-medium border';
+        if (statusText === 'Solved') {
+          statusBadge.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
+        } else if (statusText === 'Continue') {
+          statusBadge.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
+        } else {
+          statusBadge.classList.add('bg-gray-100', 'text-gray-700', 'border-gray-200');
+        }
+      }
+
+      // Next Challenge Difficulty Badge
+      const diffBadge = document.getElementById('dashboard-next-diff');
+      if (diffBadge) {
+        const diff = nc.difficulty || 'Easy';
+        diffBadge.textContent = diff;
+        diffBadge.className = 'px-2 py-0.5 rounded text-xs font-medium border ' +
+          (diff === 'Easy' ? 'badge-easy' : (diff === 'Medium' ? 'badge-medium' : 'badge-hard'));
+      }
+
+      // Next Challenge Button
+      const solveBtn = document.getElementById('btn-continue-solving');
+      if (solveBtn) {
+        const actionText = nc.status === 'Solved'
+          ? '&rarr; Solve again'
+          : (nc.status === 'Continue' ? '&rarr; Continue solving' : '&rarr; Start challenge');
+        solveBtn.innerHTML = `<span>${actionText}</span>`;
+        solveBtn.onclick = () => {
+          if (nc.id) {
+            CodeForgeApp.openProblem(nc.id);
+          } else {
+            CodeForgeApp.navigate('library');
+          }
+        };
+      }
+    }
+
+    // 3. Your Weekly Goal
+    if (overview.weeklyGoal) {
+      const wg = overview.weeklyGoal;
+      setText('dashboard-weekly-done', String(wg.done ?? 0));
+      setText('dashboard-weekly-target', String(wg.target ?? 5));
+
+      const barEl = document.getElementById('dashboard-weekly-bar');
+      if (barEl) {
+        const pct = Math.min(100, Math.max(0, wg.pct ?? 0));
+        barEl.style.width = `${pct}%`;
+      }
+
+      const captionEl = document.getElementById('dashboard-weekly-caption');
+      if (captionEl) {
+        const done = wg.done ?? 0;
+        const target = wg.target ?? 5;
+        if (done >= target) {
+          captionEl.textContent = "Weekly goal achieved! Outstanding work.";
+        } else if (done > 0) {
+          const remaining = target - done;
+          captionEl.textContent = `Just ${remaining} more to reach your goal. You've got this.`;
+        } else {
+          captionEl.textContent = "Solve problems this week to build momentum towards your goal.";
+        }
+      }
+
+      const daysEl = document.getElementById('dashboard-weekly-days');
+      if (daysEl && Array.isArray(wg.days)) {
+        daysEl.innerHTML = wg.days.map(d => {
+          const letter = d.day ? d.day.substring(0, 1) : 'D';
+          if (d.done) {
+            return `
+              <div class="space-y-1">
+                <div class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs border border-emerald-200 mx-auto">
+                  &check;
+                </div>
+                <span class="text-[10px] text-gray-500 font-medium">${escapeHtml(letter)}</span>
+              </div>
+            `;
+          } else {
+            return `
+              <div class="space-y-1">
+                <div class="w-6 h-6 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-xs border border-gray-200 mx-auto">
+                  &bull;
+                </div>
+                <span class="text-[10px] text-gray-400">${escapeHtml(letter)}</span>
+              </div>
+            `;
+          }
+        }).join('');
+      }
+    }
+
+    // 4. Learning Paths (Dynamic Cards & Empty State)
+    if (overview.learningPaths && Array.isArray(overview.learningPaths)) {
+      renderDashboardLearningPaths(overview.learningPaths);
+    }
+
+    // 5. Recent Activity List
     if (overview.recentActivity) {
       renderRecentActivity(overview.recentActivity);
     }
+  }
+
+  function renderDashboardLearningPaths(paths) {
+    const container = document.getElementById('dashboard-learning-paths');
+    if (!container) return;
+
+    const hasAnyProgress = paths.some(p => p.completed && p.completed > 0);
+
+    if (!hasAnyProgress) {
+      container.innerHTML = `
+        <div class="col-span-1 md:col-span-3 bg-white p-8 rounded-xl border border-[#e5eae7] shadow-sm text-center flex flex-col items-center justify-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center font-mono text-xl border border-emerald-200">
+            🎯
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-gray-900">You haven't started any learning path yet.</h4>
+            <p class="text-xs text-gray-500 mt-1">Structured learning paths guide you from fundamentals to advanced algorithmic techniques step-by-step.</p>
+          </div>
+          <button type="button" onclick="CodeForgeApp.navigate('learning-paths')" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs sm:text-sm transition shadow-sm">
+            <span>Explore Learning paths &rarr;</span>
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = paths.map(lp => {
+      const completed = lp.completed || 0;
+      const total = lp.total || 0;
+      const pct = lp.pct || 0;
+      const icon = lp.icon || '🧩';
+
+      return `
+        <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-sm hover:border-emerald-300 transition cursor-pointer group" onclick="CodeForgeApp.openLearningPath('${escapeHtml(lp.id)}')">
+          <div class="flex items-start justify-between">
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-mono text-sm border border-emerald-200">
+              ${escapeHtml(icon)}
+            </div>
+            <svg class="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          </div>
+          <div class="mt-3">
+            <h4 class="text-sm font-semibold text-gray-900 group-hover:text-emerald-800 transition">${escapeHtml(lp.title)}</h4>
+            <p class="text-xs text-gray-500">${escapeHtml(lp.subtitle || 'Build your foundations')}</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-gray-100">
+            <div class="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden mb-1.5">
+              <div class="h-full bg-emerald-600 rounded-full transition-all" style="width: ${pct}%"></div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-gray-400">
+              <span>${completed} of ${total} completed</span>
+              <span class="font-medium text-gray-600">${pct}%</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   function renderRecentActivity(activities) {

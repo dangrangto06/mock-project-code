@@ -11,12 +11,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -94,71 +97,169 @@ public class OverviewService {
                 .days(weekDays)
                 .build();
 
+        // ── Solved Exercise IDs ───────────────────────────────────────────────
+        Set<Long> solvedIds = (user != null)
+                ? userSubs.stream()
+                        .filter(s -> "Accepted".equalsIgnoreCase(s.getStatus()) && s.getExercise() != null)
+                        .map(s -> s.getExercise().getId())
+                        .collect(Collectors.toSet())
+                : Set.of();
+
         // ── User summary ──────────────────────────────────────────────────────
         OverviewResponse.UserSummary userSummary = new OverviewResponse.UserSummary();
         if (user != null) {
-            String firstName = user.getFullName() != null
+            String firstName = user.getFullName() != null && !user.getFullName().isBlank()
                     ? user.getFullName().split(" ")[0] : user.getUsername();
             String initials = buildInitials(user.getFullName());
 
-            userSummary.setName(user.getFullName());
+            userSummary.setName(user.getFullName() != null ? user.getFullName() : user.getUsername());
             userSummary.setInitials(initials);
             userSummary.setGreetingName(firstName);
             userSummary.setStreakDays(user.getStreakDays() != null ? user.getStreakDays() : 0);
-            userSummary.setSolvedCount(user.getSolvedCount() != null ? user.getSolvedCount() : 0);
+            userSummary.setSolvedCount(user.getSolvedCount() != null ? user.getSolvedCount() : solvedIds.size());
             userSummary.setSolvedWeek(weeklyDoneCount);
-            userSummary.setAcceptanceRate(user.getAcceptanceRate() != null
-                    ? user.getAcceptanceRate().toPlainString() + "%" : "0%");
-            userSummary.setAcceptanceDelta("+2.1%");
-            userSummary.setPracticeTime(user.getPracticeTimeHours() != null
-                    ? user.getPracticeTimeHours().toPlainString() + "h" : "0h");
-            userSummary.setPracticeDelta("+1.5h");
+
+            if (userSubs.isEmpty()) {
+                userSummary.setAcceptanceRate("0%");
+                userSummary.setAcceptanceDelta("+0%");
+                userSummary.setPracticeTime("0h");
+                userSummary.setPracticeDelta("+0h");
+            } else {
+                userSummary.setAcceptanceRate(user.getAcceptanceRate() != null && user.getAcceptanceRate().compareTo(BigDecimal.ZERO) > 0
+                        ? user.getAcceptanceRate().toPlainString() + "%" : "0%");
+
+                // Compute real acceptanceDelta
+                long thisWeekSubs = userSubs.stream()
+                        .filter(s -> s.getSubmittedAt() != null && !s.getSubmittedAt().toLocalDate().isBefore(monday))
+                        .count();
+                long thisWeekAccepted = userSubs.stream()
+                        .filter(s -> s.getSubmittedAt() != null && !s.getSubmittedAt().toLocalDate().isBefore(monday) && "Accepted".equalsIgnoreCase(s.getStatus()))
+                        .count();
+                long priorSubs = userSubs.stream()
+                        .filter(s -> s.getSubmittedAt() != null && s.getSubmittedAt().toLocalDate().isBefore(monday))
+                        .count();
+                long priorAccepted = userSubs.stream()
+                        .filter(s -> s.getSubmittedAt() != null && s.getSubmittedAt().toLocalDate().isBefore(monday) && "Accepted".equalsIgnoreCase(s.getStatus()))
+                        .count();
+
+                if (priorSubs > 0 && thisWeekSubs > 0) {
+                    double priorRate = priorAccepted * 100.0 / priorSubs;
+                    double currentRate = userSubs.stream().filter(s -> "Accepted".equalsIgnoreCase(s.getStatus())).count() * 100.0 / userSubs.size();
+                    double delta = currentRate - priorRate;
+                    userSummary.setAcceptanceDelta((delta >= 0 ? "+" : "") + String.format(Locale.US, "%.1f%%", delta));
+                } else if (thisWeekSubs > 0) {
+                    double currentRate = userSubs.stream().filter(s -> "Accepted".equalsIgnoreCase(s.getStatus())).count() * 100.0 / userSubs.size();
+                    userSummary.setAcceptanceDelta(String.format(Locale.US, "+%.1f%%", currentRate));
+                } else {
+                    userSummary.setAcceptanceDelta("+0%");
+                }
+
+                // Practice time & delta
+                userSummary.setPracticeTime(user.getPracticeTimeHours() != null && user.getPracticeTimeHours().compareTo(BigDecimal.ZERO) > 0
+                        ? user.getPracticeTimeHours().toPlainString() + "h" : "0h");
+                double thisWeekHours = Math.round(thisWeekSubs * 0.25 * 10.0) / 10.0;
+                userSummary.setPracticeDelta(thisWeekHours > 0
+                        ? String.format(Locale.US, "+%.1fh", thisWeekHours)
+                        : "+0h");
+            }
         } else {
             // Anonymous guest defaults
             userSummary.setName("Guest");
             userSummary.setInitials("G");
             userSummary.setGreetingName("Guest");
+            userSummary.setStreakDays(0);
+            userSummary.setSolvedCount(0);
+            userSummary.setSolvedWeek(0);
+            userSummary.setAcceptanceRate("0%");
+            userSummary.setAcceptanceDelta("+0%");
+            userSummary.setPracticeTime("0h");
+            userSummary.setPracticeDelta("+0h");
         }
 
         // ── Next challenge ────────────────────────────────────────────────────
         List<Exercise> allExercises = exerciseRepository.findAll();
+        List<Exercise> approvedExercises = allExercises.stream()
+                .filter(e -> e.getModerationStatus() == null || "APPROVED".equalsIgnoreCase(e.getModerationStatus()))
+                .toList();
+
         Exercise nextEx = null;
         if (user != null) {
-            Set<Long> solvedIds = userSubs.stream()
-                    .filter(s -> "Accepted".equalsIgnoreCase(s.getStatus()) && s.getExercise() != null)
-                    .map(s -> s.getExercise().getId())
-                    .collect(Collectors.toSet());
-            nextEx = allExercises.stream()
+            nextEx = approvedExercises.stream()
                     .filter(e -> !solvedIds.contains(e.getId()))
                     .findFirst()
-                    .orElse(allExercises.isEmpty() ? null : allExercises.get(0));
+                    .orElse(approvedExercises.isEmpty() ? null : approvedExercises.get(0));
         } else {
-            nextEx = allExercises.isEmpty() ? null : allExercises.get(0);
+            nextEx = approvedExercises.isEmpty() ? null : approvedExercises.get(0);
         }
 
-        OverviewResponse.NextChallenge nextChallenge = nextEx != null
-                ? OverviewResponse.NextChallenge.builder()
-                        .id(nextEx.getId())
-                        .title(nextEx.getTitle())
-                        .difficulty(nextEx.getDifficulty())
-                        .status("Continue")
-                        .description(nextEx.getDescription() != null
-                                ? nextEx.getDescription().substring(0, Math.min(120, nextEx.getDescription().length())) + "…"
-                                : "")
-                        .meta(nextEx.getTopics())
-                        .stepInfo("Step 1 of 3")
-                        .target(10)
-                        .previewNumbers(List.of(2, 7, 11, 15))
-                        .goal("Solve the challenge to build your intuition")
-                        .lastOpened("Recently opened")
-                        .build()
-                : null;
+        OverviewResponse.NextChallenge nextChallenge = null;
+        if (nextEx != null) {
+            String challengeStatus = "Start";
+            String lastOpenedStr = "Not started yet";
+
+            if (user != null && !userSubs.isEmpty()) {
+                final Long exId = nextEx.getId();
+                List<Submission> exSubs = userSubs.stream()
+                        .filter(s -> s.getExercise() != null && exId.equals(s.getExercise().getId()))
+                        .toList();
+
+                if (exSubs.isEmpty()) {
+                    challengeStatus = "Start";
+                    lastOpenedStr = "Not started yet";
+                } else {
+                    boolean isSolved = exSubs.stream().anyMatch(s -> "Accepted".equalsIgnoreCase(s.getStatus()));
+                    challengeStatus = isSolved ? "Solved" : "Continue";
+                    LocalDateTime lastSubTime = exSubs.get(0).getSubmittedAt();
+                    if (lastSubTime != null) {
+                        lastOpenedStr = "Last attempted " + lastSubTime.format(DateTimeFormatter.ofPattern("MMM d"));
+                    } else {
+                        lastOpenedStr = "Recently opened";
+                    }
+                }
+            }
+
+            nextChallenge = OverviewResponse.NextChallenge.builder()
+                    .id(nextEx.getId())
+                    .title(nextEx.getTitle())
+                    .difficulty(nextEx.getDifficulty())
+                    .status(challengeStatus)
+                    .description(nextEx.getDescription() != null
+                            ? nextEx.getDescription().substring(0, Math.min(120, nextEx.getDescription().length())) + "…"
+                            : "")
+                    .meta(nextEx.getTopics())
+                    .stepInfo(nextEx.getTopics() != null ? nextEx.getTopics() : "Algorithm")
+                    .target(10)
+                    .previewNumbers(List.of(2, 7, 11, 15))
+                    .goal("Solve the challenge to build your intuition")
+                    .lastOpened(lastOpenedStr)
+                    .build();
+        }
 
         // ── Learning paths ────────────────────────────────────────────────────
+        List<String> track1Keywords = List.of("arrays", "hash map", "hash set", "prefix sum");
+        List<String> track2Keywords = List.of("strings", "sorting", "two pointers");
+        List<String> track3Keywords = List.of("stacks", "heap", "trees");
+
+        List<Exercise> track1Exercises = approvedExercises.stream().filter(e -> matchesTrack(e, track1Keywords)).toList();
+        List<Exercise> track2Exercises = approvedExercises.stream().filter(e -> matchesTrack(e, track2Keywords)).toList();
+        List<Exercise> track3Exercises = approvedExercises.stream().filter(e -> matchesTrack(e, track3Keywords)).toList();
+
+        int track1Total = track1Exercises.size();
+        int track1Completed = (int) track1Exercises.stream().filter(e -> solvedIds.contains(e.getId())).count();
+        int track1Pct = track1Total > 0 ? (int) Math.round((track1Completed * 100.0) / track1Total) : 0;
+
+        int track2Total = track2Exercises.size();
+        int track2Completed = (int) track2Exercises.stream().filter(e -> solvedIds.contains(e.getId())).count();
+        int track2Pct = track2Total > 0 ? (int) Math.round((track2Completed * 100.0) / track2Total) : 0;
+
+        int track3Total = track3Exercises.size();
+        int track3Completed = (int) track3Exercises.stream().filter(e -> solvedIds.contains(e.getId())).count();
+        int track3Pct = track3Total > 0 ? (int) Math.round((track3Completed * 100.0) / track3Total) : 0;
+
         List<OverviewResponse.LearningPath> learningPaths = List.of(
-                new OverviewResponse.LearningPath("arrays", "Arrays & Hashing", "Foundation", "🧩", 12, 20, 60),
-                new OverviewResponse.LearningPath("dp", "Dynamic Programming", "Intermediate", "🔁", 5, 15, 33),
-                new OverviewResponse.LearningPath("graphs", "Graphs & Trees", "Advanced", "🌲", 3, 18, 17)
+                new OverviewResponse.LearningPath("arrays", "Arrays & Hashing", "Foundation", "🧩", track1Completed, track1Total, track1Pct),
+                new OverviewResponse.LearningPath("strings", "Two Pointers & Strings", "Essentials", "↔", track2Completed, track2Total, track2Pct),
+                new OverviewResponse.LearningPath("stacks", "Trees, Stacks & Heaps", "Problem Solving", "🌲", track3Completed, track3Total, track3Pct)
         );
 
         // ── Recent activity ───────────────────────────────────────────────────
@@ -201,5 +302,19 @@ public class OverviewService {
         String[] parts = fullName.trim().split("\\s+");
         if (parts.length == 1) return parts[0].substring(0, 1).toUpperCase();
         return (parts[0].substring(0, 1) + parts[parts.length - 1].substring(0, 1)).toUpperCase();
+    }
+
+    /**
+     * Checks if an exercise matches any of the track's topic keywords.
+     */
+    private boolean matchesTrack(Exercise e, List<String> keywords) {
+        if (e == null || e.getTopics() == null || e.getTopics().isBlank()) return false;
+        String lowerTopics = e.getTopics().toLowerCase();
+        for (String kw : keywords) {
+            if (lowerTopics.contains(kw.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

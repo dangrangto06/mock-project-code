@@ -271,4 +271,41 @@ class Group2IntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
     }
+
+    @Test
+    @DisplayName("Task 2: Dynamic Real Metrics for new user with zero submissions")
+    void testNewUserDynamicOverviewMetrics() {
+        User brandNewUser = User.builder()
+                .username("brand_new_coder")
+                .email("brand_new@codeforge.io")
+                .fullName("New Coder")
+                .passwordHash("hashed")
+                .role("Learner")
+                .build();
+        brandNewUser = userRepository.save(brandNewUser);
+
+        OverviewResponse overview = overviewService.getOverview(brandNewUser.getUsername());
+        assertNotNull(overview);
+        assertNotNull(overview.getUser());
+
+        // Delta metrics must not be hardcoded dummy stats
+        assertEquals("+0%", overview.getUser().getAcceptanceDelta());
+        assertEquals("+0h", overview.getUser().getPracticeDelta());
+        assertEquals("0%", overview.getUser().getAcceptanceRate());
+        assertEquals("0h", overview.getUser().getPracticeTime());
+
+        // Next challenge should be in Start state
+        assertNotNull(overview.getNextChallenge());
+        assertEquals("Start", overview.getNextChallenge().getStatus());
+        assertEquals("Not started yet", overview.getNextChallenge().getLastOpened());
+
+        // Learning paths should compute real exercise totals with 0 completed
+        assertNotNull(overview.getLearningPaths());
+        assertEquals(3, overview.getLearningPaths().size());
+        for (OverviewResponse.LearningPath lp : overview.getLearningPaths()) {
+            assertEquals(0, lp.getCompleted(), "New user should have 0 completed in " + lp.getTitle());
+            assertEquals(0, lp.getPct(), "New user should have 0% progress in " + lp.getTitle());
+            assertTrue(lp.getTotal() > 0, "Curated track should have exercises: " + lp.getTitle());
+        }
+    }
 }
