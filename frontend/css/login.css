@@ -178,6 +178,7 @@ button, input { font: inherit; }
 }
 .btn-outline:hover { border-color: #c9d2cd; background: #fafcfb; }
 .btn-outline:disabled { opacity: .7; cursor: progress; }
+.btn-outline + .btn-outline { margin-top: 12px; }   /* stacked social buttons (GitHub, Google) */
 
 .divider {
   position: relative; margin: 32px 0 30px;
