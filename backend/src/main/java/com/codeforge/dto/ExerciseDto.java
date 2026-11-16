@@ -69,6 +69,16 @@ public class ExerciseDto {
     private String updatedDate;
 
     /**
+     * Moderation status: 'PENDING', 'APPROVED', or 'REJECTED'.
+     */
+    private String moderationStatus;
+
+    /**
+     * Administrator feedback reason if problem is rejected.
+     */
+    private String rejectionReason;
+
+    /**
      * Full problem description statement in Markdown.
      */
     private String description;

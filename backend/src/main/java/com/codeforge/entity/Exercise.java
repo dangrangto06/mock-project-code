@@ -140,4 +140,17 @@ public class Exercise {
      */
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    /**
+     * Moderation workflow status: 'PENDING', 'APPROVED', or 'REJECTED'.
+     */
+    @Builder.Default
+    @Column(length = 20)
+    private String moderationStatus = "APPROVED";
+
+    /**
+     * Feedback explanation provided by an administrator upon rejection.
+     */
+    @Column(length = 500)
+    private String rejectionReason;
 }

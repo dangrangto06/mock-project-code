@@ -78,20 +78,30 @@ public class ExerciseService {
                 return List.of();
             }
             exercises = exercises.stream()
-                    .filter(e -> Boolean.TRUE.equals(e.getIsCustom()) && e.getAuthor() != null && e.getAuthor().getId().equals(user.getId()))
+                    .filter(e -> e.getAuthor() != null && e.getAuthor().getId().equals(user.getId()))
                     .collect(Collectors.toList());
         } else if ("saved".equalsIgnoreCase(tab)) {
             if (user == null) {
                 return List.of();
             }
             exercises = exercises.stream()
+                    .filter(this::isApproved)
                     .filter(e -> savedExerciseRepository.existsByUserIdAndExerciseId(user.getId(), e.getId()))
+                    .collect(Collectors.toList());
+        } else {
+            // "all" tab: approved problems, plus any problems authored by the current user so they persist on refresh
+            exercises = exercises.stream()
+                    .filter(e -> isApproved(e) || (user != null && e.getAuthor() != null && e.getAuthor().getId().equals(user.getId())))
                     .collect(Collectors.toList());
         }
 
         return exercises.stream()
                 .map(e -> toDto(e, user))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isApproved(Exercise e) {
+        return e.getModerationStatus() == null || "APPROVED".equalsIgnoreCase(e.getModerationStatus());
     }
 
     /**
@@ -146,10 +156,20 @@ public class ExerciseService {
         exercise.setIsCustom(true);
         exercise.setCreatedAt(LocalDateTime.now());
     
-        userRepository.findByUsername(username).ifPresent(exercise::setAuthor);
+        User author = userRepository.findByUsername(username)
+                .or(() -> userRepository.findByEmail(username))
+                .orElse(null);
+
+        if (author != null) {
+            exercise.setAuthor(author);
+            boolean isAdmin = "ADMIN".equalsIgnoreCase(author.getRole());
+            exercise.setModerationStatus(isAdmin ? "APPROVED" : "PENDING");
+        } else {
+            exercise.setModerationStatus("PENDING");
+        }
     
         Exercise saved = exerciseRepository.save(exercise);
-        return toDto(saved, null);
+        return toDto(saved, author);
     }
 
     // ── Mappers ───────────────────────────────────────────────────────────────
@@ -211,7 +231,10 @@ public class ExerciseService {
                 .author(authorName)
                 .description(e.getDescription())
                 .constraints(e.getConstraints())
+                .starterCode(e.getStarterCodePython())
                 .testCases(testCaseDtos)
+                .moderationStatus(e.getModerationStatus() != null ? e.getModerationStatus() : "APPROVED")
+                .rejectionReason(e.getRejectionReason())
                 .build();
     }
 
@@ -261,6 +284,7 @@ public class ExerciseService {
                 .map(s -> SubmissionDto.builder()
                         .id(s.getId())
                         .exerciseId(s.getExercise() != null ? s.getExercise().getId() : exerciseId)
+                        .exerciseTitle(s.getExercise() != null ? s.getExercise().getTitle() : "Problem #" + exerciseId)
                         .status(s.getStatus())
                         .language(s.getLanguage())
                         .runtime(s.getRuntimeMs() != null ? s.getRuntimeMs() + " ms" : "—")

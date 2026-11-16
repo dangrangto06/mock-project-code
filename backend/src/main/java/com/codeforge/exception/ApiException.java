@@ -50,6 +50,16 @@ public class ApiException extends RuntimeException {
     }
 
     /**
+     * Factory method creating an HTTP 403 Forbidden exception.
+     *
+     * @param message The forbidden error message.
+     * @return New {@link ApiException} instance with status 403.
+     */
+    public static ApiException forbidden(String message) {
+        return new ApiException(403, message);
+    }
+
+    /**
      * Factory method creating an HTTP 409 Conflict exception.
      *
      * @param message The conflict error message (e.g. duplicate username or email).

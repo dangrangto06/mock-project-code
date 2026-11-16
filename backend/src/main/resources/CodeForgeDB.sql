@@ -6,10 +6,15 @@
 --
 -- Architectural Role:
 -- Defines the foundational relational schema representing core platform entities:
--- 1. dbo.users       - Identity credentials, roles, and gamified practice metrics.
--- 2. dbo.exercises   - Algorithmic problems, constraints, and starter codes.
--- 3. dbo.test_cases  - Standard verification suites and sample test cases.
--- 4. dbo.submissions - Code execution submissions, performance telemetry, verdicts.
+-- 1. dbo.users              - Identity credentials, roles, tokens, and gamified practice metrics.
+-- 2. dbo.exercises          - Algorithmic problems, constraints, and starter codes.
+-- 3. dbo.test_cases         - Standard verification suites and sample test cases.
+-- 4. dbo.submissions        - Code execution submissions, performance telemetry, verdicts.
+-- 5. dbo.saved_exercises    - Bookmarked exercises per user.
+-- 6. dbo.notes              - Learner study notes, pattern templates, and takeaway memos.
+-- 7. dbo.discussions        - Community discussion threads, questions, and solution guides.
+-- 8. dbo.discussion_replies - Discussion thread responses and comments.
+-- 9. dbo.discussion_upvotes - Discussion thread upvote tracking.
 -- ==============================================================================
 
 USE CodeForgeDb;
@@ -17,7 +22,7 @@ GO
 
 -- ==============================================================================
 -- 1. Table: dbo.users (Corresponds to User.java entity)
--- Stores account identities, BCrypt password hashes, and user statistics.
+-- Stores account identities, BCrypt password hashes, reset tokens, and user statistics.
 -- ==============================================================================
 CREATE TABLE dbo.users (
     id                   BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Auto-incrementing primary key
@@ -30,6 +35,8 @@ CREATE TABLE dbo.users (
     solved_count         INT NULL,                                  -- Number of accepted problems solved
     acceptance_rate      NUMERIC(19,2) NULL,                        -- Overall acceptance rate (percentage)
     practice_time_hours  NUMERIC(19,2) NULL,                        -- Total practice duration in hours
+    reset_token          VARCHAR(255) NULL,                         -- UUID token for password reset
+    reset_token_expiry   DATETIME2 NULL,                            -- Expiration timestamp for password reset
     created_at           DATETIME2 NULL                             -- Registration timestamp
 );
 GO
@@ -54,6 +61,8 @@ CREATE TABLE dbo.exercises (
     memory_limit_mb         INT NULL,                              -- Maximum allowed memory in MB
     is_custom               BIT NULL,                              -- 1 if user-created, 0 if system problem
     author_id               BIGINT NULL,                           -- Foreign key referencing author in dbo.users
+    moderation_status       VARCHAR(20) DEFAULT 'APPROVED' NOT NULL, -- Moderation status: 'PENDING' | 'APPROVED' | 'REJECTED'
+    rejection_reason        VARCHAR(500) NULL,                     -- Feedback reason from administrator upon rejection
     created_at              DATETIME2 NULL,                        -- Problem creation timestamp
     CONSTRAINT fk_exercises_author FOREIGN KEY (author_id) REFERENCES dbo.users(id)
 );
@@ -94,5 +103,87 @@ CREATE TABLE dbo.submissions (
     submitted_at        DATETIME2 NULL,                            -- Submission timestamp
     CONSTRAINT fk_submissions_user     FOREIGN KEY (user_id)     REFERENCES dbo.users(id),
     CONSTRAINT fk_submissions_exercise FOREIGN KEY (exercise_id) REFERENCES dbo.exercises(id)
+);
+GO
+
+-- ==============================================================================
+-- 5. Table: dbo.saved_exercises (Corresponds to SavedExercise.java entity)
+-- Stores bookmarked problems for users.
+-- ==============================================================================
+CREATE TABLE dbo.saved_exercises (
+    id               BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    user_id          BIGINT NOT NULL,
+    exercise_id      BIGINT NOT NULL,
+    created_at       DATETIME2 NULL,
+    CONSTRAINT uk_saved_exercises_user_exercise UNIQUE (user_id, exercise_id),
+    CONSTRAINT fk_saved_exercises_user FOREIGN KEY (user_id) REFERENCES dbo.users(id),
+    CONSTRAINT fk_saved_exercises_exercise FOREIGN KEY (exercise_id) REFERENCES dbo.exercises(id)
+);
+GO
+
+-- ==============================================================================
+-- 6. Table: dbo.notes (Corresponds to Note.java entity)
+-- Stores learner personal study notes, templates, and takeaways.
+-- ==============================================================================
+CREATE TABLE dbo.notes (
+    id               BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    user_id          BIGINT NOT NULL,
+    title            VARCHAR(255) NOT NULL,
+    problem_id       BIGINT NULL,
+    problem_title    VARCHAR(255) NULL,
+    tags             VARCHAR(255) NULL,
+    content          TEXT NOT NULL,
+    updated_at       DATETIME2 NULL,
+    CONSTRAINT fk_notes_user FOREIGN KEY (user_id) REFERENCES dbo.users(id)
+);
+GO
+
+-- ==============================================================================
+-- 7. Table: dbo.discussions (Corresponds to Discussion.java entity)
+-- Stores community discussion threads, questions, and solution breakdowns.
+-- ==============================================================================
+CREATE TABLE dbo.discussions (
+    id               BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    author_id        BIGINT NOT NULL,
+    title            VARCHAR(255) NOT NULL,
+    category         VARCHAR(50) NOT NULL,
+    problem_id       BIGINT NULL,
+    problem_title    VARCHAR(255) NULL,
+    content          TEXT NOT NULL,
+    upvotes          INT DEFAULT 0 NOT NULL,
+    moderation_status VARCHAR(20) DEFAULT 'APPROVED' NOT NULL,
+    rejection_reason  VARCHAR(500) NULL,
+    created_at       DATETIME2 NULL,
+    CONSTRAINT fk_discussions_author FOREIGN KEY (author_id) REFERENCES dbo.users(id)
+);
+GO
+
+-- ==============================================================================
+-- 8. Table: dbo.discussion_replies (Corresponds to DiscussionReply.java entity)
+-- Stores threaded replies to community discussions.
+-- ==============================================================================
+CREATE TABLE dbo.discussion_replies (
+    id               BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    discussion_id    BIGINT NOT NULL,
+    author_id        BIGINT NOT NULL,
+    content          TEXT NOT NULL,
+    created_at       DATETIME2 NULL,
+    CONSTRAINT fk_discussion_replies_discussion FOREIGN KEY (discussion_id) REFERENCES dbo.discussions(id) ON DELETE CASCADE,
+    CONSTRAINT fk_discussion_replies_author FOREIGN KEY (author_id) REFERENCES dbo.users(id)
+);
+GO
+
+-- ==============================================================================
+-- 9. Table: dbo.discussion_upvotes (Corresponds to DiscussionUpvote.java entity)
+-- Tracks upvote interactions for discussions to enforce single-upvote idempotency.
+-- ==============================================================================
+CREATE TABLE dbo.discussion_upvotes (
+    id               BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    discussion_id    BIGINT NOT NULL,
+    user_id          BIGINT NOT NULL,
+    created_at       DATETIME2 NULL,
+    CONSTRAINT uk_discussion_upvotes UNIQUE (discussion_id, user_id),
+    CONSTRAINT fk_discussion_upvotes_discussion FOREIGN KEY (discussion_id) REFERENCES dbo.discussions(id) ON DELETE CASCADE,
+    CONSTRAINT fk_discussion_upvotes_user FOREIGN KEY (user_id) REFERENCES dbo.users(id)
 );
 GO

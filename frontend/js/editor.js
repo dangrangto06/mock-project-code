@@ -242,7 +242,13 @@ window.CodeForgeEditor = (function () {
           if (created && !CodeForgeData.problems.some(p => p.id === created.id)) {
             CodeForgeData.problems.unshift(created);
           }
-          CodeForgeApp.showToast("Problem published to the CodeForge library!", "success");
+          const user = (window.CodeForgeApp && CodeForgeApp.getUser) ? CodeForgeApp.getUser() : null;
+          const isAdmin = user && ((user.role && user.role.toLowerCase() === 'admin') || (user.roles && user.roles.includes('ADMIN')));
+          if (isAdmin || (created && created.moderationStatus === 'APPROVED')) {
+            CodeForgeApp.showToast("Published immediately!", "success");
+          } else {
+            CodeForgeApp.showToast("Submitted for admin approval! You'll see it publicly once verified.", "info");
+          }
           CodeForgeApp.navigate('library');
         } catch (err) {
           if (err.message === 'UNAUTHORIZED') {

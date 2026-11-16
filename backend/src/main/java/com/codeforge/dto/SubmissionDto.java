@@ -17,6 +17,7 @@ public class SubmissionDto {
 
     private Long id;
     private Long exerciseId;
+    private String exerciseTitle;
     private String status;
     private String language;
     private String runtime;

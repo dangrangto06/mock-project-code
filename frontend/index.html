@@ -32,11 +32,11 @@
     }
   </script>
 </head>
-<body class="bg-[#fbfdfc] text-[#19211d] min-h-screen flex flex-col antialiased selection:bg-emerald-100 selection:text-emerald-900">
+<body class="bg-[#f1f5f9] text-[#19211d] min-h-screen flex flex-col antialiased selection:bg-emerald-100 selection:text-emerald-900">
 
   <!-- ================= TOP NAVIGATION BAR (Shared) ================= -->
   <header class="bg-white border-b border-[#e5eae7] sticky top-0 z-40">
-    <div class="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-full px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14">
         
         <!-- Left: Logo & Nav items -->
@@ -58,11 +58,27 @@
             <a id="nav-practice" href="#library" class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Practice</a>
             <a id="nav-notes" href="#notes" class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Notes</a>
             <a id="nav-community" href="#community" class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Community</a>
+            <a id="nav-admin" href="#admin" class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition hidden flex items-center gap-1.5">
+              <span>Admin</span>
+              <span id="nav-admin-badge" class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 hidden">0</span>
+            </a>
           </nav>
         </div>
 
         <!-- Right: Streak & User profile / Auth buttons -->
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
+          <!-- Theme Toggle Button (Light / Dark) -->
+          <button id="btn-theme-toggle" type="button" title="Toggle Light / Dark theme" class="p-1.5 text-gray-500 hover:text-gray-800 transition rounded-full hover:bg-gray-100">
+            <!-- Moon icon (shown in light mode) -->
+            <svg id="icon-theme-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+            <!-- Sun icon (shown in dark mode) -->
+            <svg id="icon-theme-sun" class="w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </button>
+
           <!-- LOGGED IN USER SECTION -->
           <div id="header-user-section" class="flex items-center gap-4">
             <!-- Streak -->
@@ -74,11 +90,24 @@
               <span id="header-streak-text">7-day streak</span>
             </div>
 
-            <!-- Notification Bell -->
-            <button class="relative p-1.5 text-gray-500 hover:text-gray-800 transition rounded-full hover:bg-gray-100">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-              <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white"></span>
-            </button>
+            <!-- Notification Bell & Dropdown -->
+            <div class="relative">
+              <button id="btn-notification-bell" type="button" title="Notifications" class="relative p-1.5 text-gray-500 hover:text-gray-800 transition rounded-full hover:bg-gray-100">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                <span id="notification-unread-dot" class="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white"></span>
+              </button>
+
+              <!-- Notification Dropdown Panel -->
+              <div id="dropdown-notifications" class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-[#e5eae7] py-2 text-xs text-gray-700 hidden z-50">
+                <div class="px-3.5 py-2 border-b border-gray-100 flex items-center justify-between">
+                  <span class="font-bold text-gray-900 text-xs">Notifications</span>
+                  <button id="btn-mark-notifications-read" type="button" class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800">Mark all as read</button>
+                </div>
+                <div id="notifications-list" class="max-h-64 overflow-y-auto divide-y divide-gray-100">
+                  <!-- Populated dynamically by app.js -->
+                </div>
+              </div>
+            </div>
 
             <!-- User Avatar & Dropdown -->
             <div class="relative">
@@ -100,9 +129,17 @@
                   <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
                   <span>Dashboard</span>
                 </a>
+                <button id="dropdown-my-problems-link" type="button" class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-gray-700 text-left">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                  <span>My problems</span>
+                </button>
                 <a href="#create-problem" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-gray-700">
                   <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                  <span>My problems</span>
+                  <span>Create challenge</span>
+                </a>
+                <a id="dropdown-admin-link" href="#admin" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-gray-700 hidden">
+                  <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                  <span>Admin Console</span>
                 </a>
                 <div class="border-t border-gray-100 my-1"></div>
                 <button id="btn-auth-logout" class="w-full flex items-center gap-2 px-3 py-2 text-rose-600 hover:bg-rose-50 text-left">
@@ -126,7 +163,7 @@
   </header>
 
   <!-- ================= APP CONTAINER ================= -->
-  <div class="flex-1 flex max-w-[1536px] w-full mx-auto">
+  <div id="app-layout-container" class="flex-1 flex w-full max-w-full mx-auto">
     
     <!-- ================= LEFT SIDEBAR (Used in Dashboard, Library, and Edit) ================= -->
     <aside id="main-sidebar" class="sidebar-container w-60 border-r border-[#e5eae7] bg-white p-4 hidden lg:flex flex-col justify-between flex-shrink-0 min-h-[calc(100vh-3.5rem)]">
@@ -144,11 +181,11 @@
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
               <span>Problem library</span>
             </button>
-            <button class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition text-left">
+            <button id="sb-learning-paths" class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition text-left">
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
               <span>Learning paths</span>
             </button>
-            <button class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition text-left">
+            <button id="sb-submissions" class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition text-left">
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               <span>My submissions</span>
             </button>
@@ -184,6 +221,20 @@
           </nav>
         </div>
 
+        <!-- Section: Administration (Only visible to Admin) -->
+        <div id="sb-admin-section" class="hidden">
+          <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase px-3 mb-2">Management</div>
+          <nav class="space-y-1">
+            <button id="sb-admin" class="sidebar-nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition text-left">
+              <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <span>Admin Console</span>
+              </div>
+              <span id="sb-admin-badge" class="px-1.5 py-0.5 text-[11px] font-bold bg-amber-100 text-amber-800 rounded hidden">0</span>
+            </button>
+          </nav>
+        </div>
+
       </div>
 
       <!-- Bottom Card: One step every day -->
@@ -195,7 +246,7 @@
           <span class="text-xs font-semibold text-emerald-950">One step every day</span>
         </div>
         <p class="text-[11px] text-gray-600 leading-tight mb-2">Your next solution is your next breakthrough.</p>
-        <a href="#library" class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1">
+        <a href="#learning-paths" class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1">
           Explore learning paths &rarr;
         </a>
       </div>
@@ -208,7 +259,7 @@
     </aside>
 
     <!-- ================= MAIN CONTENT AREA ================= -->
-    <main class="flex-1 min-w-0 bg-[#fbfdfc]">
+    <main class="flex-1 min-w-0 bg-[#f1f5f9]">
 
       <!-- ======================================================== -->
       <!-- PAGE 1: DASHBOARD (Overview - Image 4)                  -->
@@ -409,12 +460,12 @@
         <div>
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-bold text-gray-900">Your learning paths</h3>
-            <a href="#library" class="text-xs font-semibold text-emerald-700 hover:text-emerald-900">Explore all paths &rarr;</a>
+            <a href="#learning-paths" class="text-xs font-semibold text-emerald-700 hover:text-emerald-900">Explore all paths &rarr;</a>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Path 1 -->
-            <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-sm hover:border-emerald-300 transition cursor-pointer group" onclick="CodeForgeApp.navigate('library')">
+            <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-sm hover:border-emerald-300 transition cursor-pointer group" onclick="CodeForgeApp.openLearningPath('arrays')">
               <div class="flex items-start justify-between">
                 <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-mono text-sm border border-emerald-200">
                   { }
@@ -437,7 +488,7 @@
             </div>
 
             <!-- Path 2 -->
-            <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-sm hover:border-emerald-300 transition cursor-pointer group" onclick="CodeForgeApp.navigate('library')">
+            <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-sm hover:border-emerald-300 transition cursor-pointer group" onclick="CodeForgeApp.openLearningPath('strings')">
               <div class="flex items-start justify-between">
                 <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-mono text-sm border border-emerald-200">
                   &harr;
@@ -445,7 +496,7 @@
                 <svg class="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
               </div>
               <div class="mt-3">
-                <h4 class="text-sm font-semibold text-gray-900 group-hover:text-emerald-800 transition">Two pointers</h4>
+                <h4 class="text-sm font-semibold text-gray-900 group-hover:text-emerald-800 transition">Two pointers &amp; strings</h4>
                 <p class="text-xs text-gray-500">Solve with less space</p>
               </div>
               <div class="mt-4 pt-3 border-t border-gray-100">
@@ -460,7 +511,7 @@
             </div>
 
             <!-- Path 3 -->
-            <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-sm hover:border-emerald-300 transition cursor-pointer group" onclick="CodeForgeApp.navigate('library')">
+            <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-sm hover:border-emerald-300 transition cursor-pointer group" onclick="CodeForgeApp.openLearningPath('stacks')">
               <div class="flex items-start justify-between">
                 <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-mono text-sm border border-emerald-200">
                   &sim;
@@ -468,7 +519,7 @@
                 <svg class="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
               </div>
               <div class="mt-3">
-                <h4 class="text-sm font-semibold text-gray-900 group-hover:text-emerald-800 transition">Trees &amp; graphs</h4>
+                <h4 class="text-sm font-semibold text-gray-900 group-hover:text-emerald-800 transition">Trees, stacks &amp; heaps</h4>
                 <p class="text-xs text-gray-500">Connect the concepts</p>
               </div>
               <div class="mt-4 pt-3 border-t border-gray-100">
@@ -488,7 +539,7 @@
         <div class="bg-white rounded-xl border border-[#e5eae7] p-5 shadow-sm">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-bold text-gray-900">Recent activity</h3>
-            <a href="#library" class="text-xs font-semibold text-emerald-700 hover:text-emerald-900">View submissions &rarr;</a>
+            <a href="#submissions" class="text-xs font-semibold text-emerald-700 hover:text-emerald-900">View submissions &rarr;</a>
           </div>
 
           <div id="dashboard-recent-activity" class="divide-y divide-gray-100 text-xs">
@@ -706,6 +757,111 @@
 
 
       <!-- ======================================================== -->
+      <!-- PAGE 2A: LEARNING PATHS / STUDY PLANS (#learning-paths)  -->
+      <!-- ======================================================== -->
+      <section id="page-learning-paths" class="p-6 lg:p-8 space-y-6 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Workspace / Structured Study Plans</div>
+            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-0.5">Learning Paths</h1>
+            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Follow curated algorithmic study plans from foundational data structures to interview mastery.</p>
+          </div>
+          <button onclick="CodeForgeApp.navigate('library')" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-[#e5eae7] hover:bg-gray-50 text-gray-700 text-xs sm:text-sm font-semibold transition shadow-xs">
+            <span>Full Problem Library &rarr;</span>
+          </button>
+        </div>
+
+        <!-- 4 Track Cards Grid -->
+        <div id="learning-paths-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated dynamically by app.js -->
+        </div>
+
+        <!-- Selected Track Detail & Problem List -->
+        <div class="bg-white rounded-xl border border-[#e5eae7] overflow-hidden shadow-xs">
+          <div class="px-5 py-4 border-b border-[#e5eae7] bg-gray-50/75 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+              <h2 id="learning-path-detail-title" class="text-base font-bold text-gray-900">Arrays &amp; Hashing Foundations</h2>
+              <p id="learning-path-detail-sub" class="text-xs text-gray-500">Master O(1) hash lookups, prefix sums, and linear array traversal.</p>
+            </div>
+            <span id="learning-path-detail-badge" class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 self-start sm:self-center">0 / 0 Solved</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-[#e5eae7] bg-gray-50/50 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  <th class="py-3 px-4 w-14 text-center">Status</th>
+                  <th class="py-3 px-4">Challenge</th>
+                  <th class="py-3 px-4">Difficulty</th>
+                  <th class="py-3 px-4">Topics</th>
+                  <th class="py-3 px-4">Acceptance</th>
+                  <th class="py-3 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="learning-path-problems-tbody" class="divide-y divide-gray-100 text-xs">
+                <!-- Populated dynamically by app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ======================================================== -->
+      <!-- PAGE 2B: MY SUBMISSIONS HISTORY (#submissions)           -->
+      <!-- ======================================================== -->
+      <section id="page-submissions" class="p-6 lg:p-8 space-y-6 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Workspace / Evaluation History</div>
+            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-0.5">My Submissions</h1>
+            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Review every solution evaluation, runtime benchmark, and verdict across all challenges.</p>
+          </div>
+          <button onclick="CodeForgeApp.navigate('library')" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold transition shadow-sm">
+            <span>Browse Problems &rarr;</span>
+          </button>
+        </div>
+
+        <!-- Summary KPI Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-xs">
+            <div class="text-xs text-gray-500 font-medium">Total Submissions</div>
+            <div id="sub-page-total" class="text-2xl font-bold text-gray-900 font-mono mt-1">0</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-xs">
+            <div class="text-xs text-gray-500 font-medium">Accepted Verdicts</div>
+            <div id="sub-page-accepted" class="text-2xl font-bold text-emerald-700 font-mono mt-1">0</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-[#e5eae7] shadow-xs">
+            <div class="text-xs text-gray-500 font-medium">Pass Rate</div>
+            <div id="sub-page-rate" class="text-2xl font-bold text-gray-900 font-mono mt-1">0.0%</div>
+          </div>
+        </div>
+
+        <!-- Submissions Table -->
+        <div class="bg-white rounded-xl border border-[#e5eae7] overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-[#e5eae7] bg-gray-50/75 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                  <th class="py-3 px-4">Verdict</th>
+                  <th class="py-3 px-4">Problem</th>
+                  <th class="py-3 px-4">Language</th>
+                  <th class="py-3 px-4">Runtime</th>
+                  <th class="py-3 px-4">Memory</th>
+                  <th class="py-3 px-4">Submitted</th>
+                  <th class="py-3 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="user-submissions-table-body" class="divide-y divide-gray-100 text-xs">
+                <!-- Populated dynamically by app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ======================================================== -->
       <!-- PAGE 3: PROBLEM SOLVING IDE (Workspace - Image 1)       -->
       <!-- ======================================================== -->
       <section id="page-ide" class="flex flex-col h-[calc(100vh-3.5rem)] hidden">
@@ -719,7 +875,7 @@
               <span>Problem library</span>
             </button>
             <span class="text-gray-300">|</span>
-            <span id="ide-header-problem-title" class="text-xs font-semibold text-gray-900">1. Pair Sum</span>
+            <span id="ide-header-problem-title" class="text-xs font-semibold text-gray-900">104. Pair Sum</span>
             <span id="ide-header-problem-status" class="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">In progress</span>
           </div>
 
@@ -727,9 +883,9 @@
           <div class="flex items-center gap-4">
             <!-- Pagination -->
             <div class="flex items-center gap-1.5 text-xs text-gray-500">
-              <button class="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-gray-700">&lt;</button>
-              <span class="font-mono text-xs">13 / 20</span>
-              <button class="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-gray-700">&gt;</button>
+              <button id="ide-btn-prev-problem" type="button" title="Previous problem" class="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-gray-700 transition">&lt;</button>
+              <span id="ide-problem-counter" class="font-mono text-xs">1 / 7</span>
+              <button id="ide-btn-next-problem" type="button" title="Next problem" class="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-gray-700 transition">&gt;</button>
             </div>
 
             <!-- Timer -->
@@ -767,7 +923,7 @@
                 <!-- Title & Bookmark -->
                 <div class="flex items-start justify-between">
                   <div>
-                    <h1 id="ide-problem-title" class="text-2xl font-bold text-gray-900 tracking-tight">1. Pair Sum</h1>
+                    <h1 id="ide-problem-title" class="text-2xl font-bold text-gray-900 tracking-tight">104. Pair Sum</h1>
                     <!-- Pills -->
                     <div id="ide-problem-pills" class="flex flex-wrap items-center gap-2 mt-2">
                       <span id="ide-problem-difficulty" class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Easy</span>
@@ -776,7 +932,7 @@
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
-                    <button onclick="CodeForgeNotes.openCreateModal(); document.getElementById('note-problem-select').value='104';" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition shadow-xs" title="Add note for this challenge">
+                    <button id="ide-btn-add-note" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition shadow-xs" title="Add note for this challenge">
                       <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                       <span>+ Note</span>
                     </button>
@@ -805,28 +961,25 @@
                 </p>
               </div>
 
-              <!-- Example 1 -->
-              <div class="space-y-2">
-                <div class="text-xs font-bold text-gray-900">Example 1</div>
-                <div class="p-3.5 bg-[#f6f8f7] rounded-lg border border-[#e5eae7] text-xs font-mono space-y-1">
-                  <div><span class="text-gray-500">Input:</span> nums = [2,7,11,15], target = 9</div>
-                  <div><span class="text-gray-500">Output:</span> [0,1]</div>
+              <!-- Dynamic Problem Examples -->
+              <div id="ide-problem-examples" class="space-y-4">
+                <!-- Example 1 -->
+                <div class="space-y-2">
+                  <div class="text-xs font-bold text-gray-900">Example 1</div>
+                  <div class="p-3.5 bg-[#f6f8f7] rounded-lg border border-[#e5eae7] text-xs font-mono space-y-1">
+                    <div><span class="text-gray-500">Input:</span> nums = [2,7,11,15], target = 9</div>
+                    <div><span class="text-gray-500">Output:</span> [0,1]</div>
+                  </div>
                 </div>
-                <p class="text-xs text-gray-500">
-                  Because nums[0] + nums[1] == 2 + 7 == 9, return [0,1].
-                </p>
-              </div>
 
-              <!-- Example 2 -->
-              <div class="space-y-2">
-                <div class="text-xs font-bold text-gray-900">Example 2</div>
-                <div class="p-3.5 bg-[#f6f8f7] rounded-lg border border-[#e5eae7] text-xs font-mono space-y-1">
-                  <div><span class="text-gray-500">Input:</span> nums = [3,2,4], target = 6</div>
-                  <div><span class="text-gray-500">Output:</span> [1,2]</div>
+                <!-- Example 2 -->
+                <div class="space-y-2">
+                  <div class="text-xs font-bold text-gray-900">Example 2</div>
+                  <div class="p-3.5 bg-[#f6f8f7] rounded-lg border border-[#e5eae7] text-xs font-mono space-y-1">
+                    <div><span class="text-gray-500">Input:</span> nums = [3,2,4], target = 6</div>
+                    <div><span class="text-gray-500">Output:</span> [1,2]</div>
+                  </div>
                 </div>
-                <p class="text-xs text-gray-500">
-                  The numbers at indices 1 and 2 add up to 6.
-                </p>
               </div>
 
               <!-- Constraints -->
@@ -837,6 +990,20 @@
                   <li>-10<sup>9</sup> &le; nums[i], target &le; 10<sup>9</sup></li>
                   <li>Exactly one valid answer exists.</li>
                 </ul>
+              </div>
+            </div>
+
+            <!-- Editorial View -->
+            <div id="ide-view-editorial" class="space-y-5 hidden">
+              <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                <div>
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Official Solution Guide</span>
+                  <h3 id="ide-editorial-title" class="text-lg font-bold text-gray-900 mt-0.5">Approach &amp; Complexity Breakdown</h3>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">Optimal O(n)</span>
+              </div>
+              <div id="ide-editorial-body" class="space-y-4 text-xs sm:text-sm text-gray-700 leading-relaxed">
+                <!-- Populated dynamically by ide.js -->
               </div>
             </div>
 
@@ -871,13 +1038,13 @@
               <!-- Controls -->
               <div class="flex items-center gap-3 text-xs text-gray-400">
                 <span class="text-[11px] text-gray-500">Auto-saved</span>
-                <button title="Reset code" class="p-1 hover:text-white transition">
+                <button id="btn-ide-reset-code" type="button" title="Reset code to default starter template" class="p-1 hover:text-white transition">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>
                 </button>
-                <button title="Format code" class="p-1 hover:text-white transition">
+                <button id="btn-ide-format-code" type="button" title="Format code" class="p-1 hover:text-white transition">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
-                <button title="Expand" class="p-1 hover:text-white transition">
+                <button id="btn-ide-expand" type="button" title="Expand full screen" class="p-1 hover:text-white transition">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                 </button>
               </div>
@@ -895,29 +1062,29 @@
             <!-- Visual Code Area with line numbers -->
             <div class="flex-1 flex overflow-hidden relative font-mono text-xs md:text-sm">
               <!-- Line Numbers Column -->
-              <div id="editor-line-numbers" class="w-12 bg-[#080f0c] py-3 select-none flex flex-col border-r border-[#15231c]">
+              <div id="editor-line-numbers" class="w-12 bg-[#080f0c] py-3 select-none flex flex-col border-r border-[#15231c] overflow-hidden">
                 <!-- Populated by ide.js -->
               </div>
               
               <!-- Code Lines Display -->
-              <div id="editor-code-content" class="flex-1 py-3 overflow-y-auto dark-scroll select-text">
+              <div id="editor-code-content" class="flex-1 py-3 overflow-auto dark-scroll select-none pointer-events-none">
                 <!-- Populated by ide.js -->
               </div>
 
-              <!-- Hidden real editable textarea behind for smooth typing -->
-              <textarea id="editor-real-input" class="absolute inset-0 opacity-0 cursor-text pointer-events-auto resize-none p-3 font-mono" spellcheck="false"></textarea>
+              <!-- Real editable textarea overlay with visible blinking caret -->
+              <textarea id="editor-real-input" class="absolute left-12 right-0 top-0 bottom-0 py-3 px-3 leading-[1.6rem] font-mono text-xs md:text-sm whitespace-pre overflow-auto dark-scroll cursor-text pointer-events-auto resize-none" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
             </div>
 
             <!-- Editor Status Bar -->
             <div class="h-6 bg-[#080f0c] border-t border-[#15231c] px-4 flex items-center justify-between text-[11px] text-gray-500 font-mono flex-shrink-0">
-              <div>Ln 9, Col 43</div>
+              <div id="editor-ln-col">Ln 1, Col 1</div>
               <div id="editor-cursor-stats">Spaces: 4 &middot; UTF-8 &middot; Python 3.12</div>
             </div>
 
             <!-- Action Controls Bar (Run & Submit) -->
             <div class="h-12 bg-white border-t border-[#e5eae7] px-4 flex items-center justify-between flex-shrink-0">
               <div class="text-xs text-gray-400 hidden sm:flex items-center gap-1">
-                <span class="font-mono bg-gray-100 border border-gray-200 px-1 rounded text-[10px]">⌘</span>
+                <span class="font-mono bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded text-[10px]">Ctrl + Enter</span>
                 <span>to run</span>
               </div>
 
@@ -936,73 +1103,98 @@
               </div>
             </div>
 
-            <!-- Test Console Pane (Bottom) -->
-            <div class="h-44 bg-white border-t border-[#e5eae7] flex flex-col flex-shrink-0 overflow-hidden">
+            <!-- Test Console Pane (Bottom - LeetCode-style Testcase / Test Result) -->
+            <div id="ide-bottom-console" class="h-64 bg-white border-t border-[#e5eae7] flex flex-col flex-shrink-0 overflow-hidden transition-all">
               <!-- Console Tabs -->
-              <div class="h-8 border-b border-gray-200 px-4 flex items-center justify-between flex-shrink-0">
+              <div class="h-9 border-b border-gray-200 px-4 flex items-center justify-between flex-shrink-0 bg-gray-50/60">
                 <div class="flex items-center gap-5">
-                  <button id="tab-test-cases" class="pb-1.5 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-xs font-medium cursor-pointer">
-                    Test cases
+                  <button id="tab-test-cases" type="button" class="pb-2 pt-2 border-b-2 border-emerald-600 text-emerald-800 font-semibold text-xs flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    <span>Testcase</span>
                   </button>
-                  <button id="tab-test-results" class="pb-1.5 border-b-2 border-emerald-600 text-emerald-800 font-semibold text-xs flex items-center gap-1 cursor-pointer">
+                  <button id="tab-test-results" type="button" class="pb-2 pt-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-xs font-medium flex items-center gap-1.5 cursor-pointer">
                     <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                    Test results
+                    <span>Test Result</span>
                   </button>
                 </div>
 
-                <button class="text-gray-400 hover:text-gray-600">
+                <button id="btn-toggle-console" type="button" title="Toggle console height" class="text-gray-400 hover:text-gray-600 p-1">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
               </div>
 
-              <!-- Console Body (Test Results View) -->
-              <div id="view-test-results" class="flex-1 p-3.5 overflow-y-auto space-y-3">
-                <!-- Status Row -->
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2 text-xs font-semibold text-emerald-700">
-                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>
-                    <span>All sample tests passed</span>
-                  </div>
-                  <div class="text-xs text-gray-500 font-mono">
-                    2 / 2 passed &middot; Runtime: <span class="text-emerald-700 font-semibold">32 ms</span>
-                  </div>
+              <!-- Console Body 1: Testcase View (Default when opening problem) -->
+              <div id="view-test-cases" class="flex-1 p-3.5 overflow-y-auto space-y-3 text-xs">
+                <div id="testcase-pills-bar" class="flex items-center gap-2">
+                  <!-- Populated dynamically by ide.js -->
                 </div>
-
-                <!-- Case Selection Buttons -->
-                <div class="flex items-center gap-2">
-                  <button id="case-btn-1" class="px-3 py-1 text-xs font-medium rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5 shadow-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                    Case 1
-                  </button>
-                  <button id="case-btn-2" class="px-3 py-1 text-xs font-medium rounded-md bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200 flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                    Case 2
-                  </button>
-                </div>
-
-                <!-- Case Details I/O Table -->
-                <div class="space-y-1.5 text-xs font-mono">
-                  <div class="flex items-start gap-4">
-                    <span class="text-gray-400 w-20 text-[11px] uppercase tracking-wider font-sans">Input</span>
-                    <span id="test-case-input" class="bg-gray-50 px-2 py-0.5 rounded border border-gray-200 text-gray-800">nums = [2,7,11,15], target = 9</span>
+                <div class="space-y-2 font-mono">
+                  <div>
+                    <div class="text-[11px] font-sans font-semibold text-gray-500 uppercase tracking-wider mb-1">Input =</div>
+                    <input id="testcase-custom-input" type="text" class="w-full px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 font-mono text-xs focus:outline-none focus:border-emerald-500" value="nums = [2,7,11,15], target = 9">
                   </div>
-                  <div class="flex items-start gap-4">
-                    <span class="text-gray-400 w-20 text-[11px] uppercase tracking-wider font-sans">Your output</span>
-                    <span id="test-case-output" class="bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-emerald-800 font-bold">[0, 1]</span>
-                  </div>
-                  <div class="flex items-start gap-4">
-                    <span class="text-gray-400 w-20 text-[11px] uppercase tracking-wider font-sans">Expected</span>
-                    <span id="test-case-expected" class="bg-gray-50 px-2 py-0.5 rounded border border-gray-200 text-gray-800">[0, 1]</span>
+                  <div>
+                    <div class="text-[11px] font-sans font-semibold text-gray-500 uppercase tracking-wider mb-1">Expected Output =</div>
+                    <div id="testcase-expected-preview" class="px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 font-mono text-xs">[0, 1]</div>
                   </div>
                 </div>
               </div>
 
-              <!-- Console Body (Test Cases View - Hidden by default) -->
-              <div id="view-test-cases" class="flex-1 p-3.5 overflow-y-auto space-y-2 hidden text-xs font-mono">
-                <div class="text-gray-500 font-sans text-xs">Define your custom test inputs:</div>
-                <div class="p-2 rounded bg-gray-50 border border-gray-200 text-gray-800">
-                  nums = [2, 7, 11, 15]<br>
-                  target = 9
+              <!-- Console Body 2: Test Result View -->
+              <div id="view-test-results" class="flex-1 p-3.5 overflow-y-auto space-y-3 hidden">
+                <!-- Empty state before first run -->
+                <div id="test-result-empty" class="h-full flex flex-col items-center justify-center text-gray-400 text-xs py-8">
+                  <span>You must run your code first</span>
+                </div>
+
+                <!-- Loading state while executing -->
+                <div id="test-result-loading" class="h-full flex items-center justify-center gap-2.5 text-xs text-gray-500 py-8 hidden">
+                  <svg class="w-4 h-4 animate-spin text-emerald-600" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                  </svg>
+                  <span class="font-medium">Running sample test cases in sandbox...</span>
+                </div>
+
+                <!-- Populated Result Content -->
+                <div id="test-result-content" class="space-y-3 hidden">
+                  <!-- Verdict Status Row -->
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div id="test-result-verdict-badge" class="flex items-center gap-2 text-sm font-bold text-emerald-700">
+                      <span>Accepted</span>
+                    </div>
+                    <div id="test-result-metrics" class="text-xs text-gray-500 font-mono">
+                      2 / 2 testcases passed &middot; Runtime: <span class="text-emerald-700 font-semibold">32 ms</span> &middot; Memory: <span class="font-semibold">17.0 MB</span>
+                    </div>
+                  </div>
+
+                  <!-- Case Selection Buttons -->
+                  <div id="test-result-case-tabs" class="flex items-center gap-2">
+                    <button id="case-btn-1" type="button" class="px-3 py-1 text-xs font-medium rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5 shadow-xs">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                      Case 1
+                    </button>
+                    <button id="case-btn-2" type="button" class="px-3 py-1 text-xs font-medium rounded-md bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200 flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                      Case 2
+                    </button>
+                  </div>
+
+                  <!-- 3 Stacked Boxes: Input, Output, Expected -->
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-mono">
+                    <div class="p-2.5 rounded-lg bg-gray-50 border border-gray-200 space-y-1">
+                      <div class="text-[10px] font-sans font-semibold text-gray-400 uppercase tracking-wider">Input</div>
+                      <div id="test-case-input" class="text-gray-800 break-all">nums = [2,7,11,15], target = 9</div>
+                    </div>
+                    <div id="test-case-output-box" class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 space-y-1">
+                      <div class="text-[10px] font-sans font-semibold text-gray-400 uppercase tracking-wider">Output</div>
+                      <div id="test-case-output" class="text-emerald-800 font-bold break-all">[0, 1]</div>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-gray-50 border border-gray-200 space-y-1">
+                      <div class="text-[10px] font-sans font-semibold text-gray-400 uppercase tracking-wider">Expected</div>
+                      <div id="test-case-expected" class="text-gray-800 font-semibold break-all">[0, 1]</div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1081,7 +1273,7 @@
               <!-- Markdown Editor Container -->
               <div class="border border-[#d1d9d4] rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-emerald-500">
                 <!-- Toolbar -->
-                <div class="h-9 bg-[#fbfdfc] border-b border-[#e5eae7] px-3 flex items-center justify-between text-xs">
+                <div class="h-9 bg-[#f1f5f9] border-b border-[#e5eae7] px-3 flex items-center justify-between text-xs">
                   <div class="flex items-center gap-1">
                     <button id="tab-edit-write" type="button" class="px-3 py-1 text-xs font-semibold rounded bg-white text-gray-800 shadow-xs border border-gray-200">Write</button>
                     <button id="tab-edit-preview" type="button" class="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-800">Preview</button>
@@ -1284,6 +1476,192 @@ Return the answer in any order.
         </div>
 
       </section>
+
+
+      <!-- ======================================================== -->
+      <!-- PAGE 4C: ADMIN CONSOLE & MODERATION DASHBOARD (#admin)    -->
+      <!-- ======================================================== -->
+      <section id="page-admin" class="p-6 lg:p-8 space-y-6 hidden">
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-semibold tracking-wider text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded uppercase">Administration</span>
+              <span class="text-xs text-gray-400">&middot;</span>
+              <span class="text-xs text-gray-500 font-medium">Control Center</span>
+            </div>
+            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-1">Platform Moderation &amp; Management</h1>
+            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Review submitted problems, moderate developer discussions, and manage platform roles.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="btn-admin-refresh" type="button" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white border border-[#e5eae7] hover:bg-gray-50 text-gray-700 text-xs sm:text-sm font-semibold transition shadow-xs">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span>Refresh Queue</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Cards Grid (4 Columns) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Total Users -->
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#e5eae7] shadow-xs">
+            <div class="flex items-center justify-between text-gray-500 text-xs font-medium">
+              <span>Total Learners</span>
+              <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+              </div>
+            </div>
+            <div class="mt-2 text-2xl font-bold text-gray-900 font-mono" id="admin-kpi-users">--</div>
+            <div class="mt-1 text-[11px] text-gray-400">Registered CodeForge accounts</div>
+          </div>
+
+          <!-- Total Exercises -->
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#e5eae7] shadow-xs">
+            <div class="flex items-center justify-between text-gray-500 text-xs font-medium">
+              <span>Problem Catalog</span>
+              <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+              </div>
+            </div>
+            <div class="mt-2 text-2xl font-bold text-gray-900 font-mono" id="admin-kpi-problems">--</div>
+            <div class="mt-1 text-[11px] text-gray-400">Published coding challenges</div>
+          </div>
+
+          <!-- Pending Moderation -->
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#e5eae7] shadow-xs">
+            <div class="flex items-center justify-between text-gray-500 text-xs font-medium">
+              <span>Pending Review</span>
+              <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              </div>
+            </div>
+            <div class="mt-2 text-2xl font-bold text-amber-700 font-mono" id="admin-kpi-pending">--</div>
+            <div class="mt-1 text-[11px] text-amber-600 font-medium" id="admin-kpi-pending-sub">Awaiting moderation</div>
+          </div>
+
+          <!-- Total Submissions -->
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#e5eae7] shadow-xs">
+            <div class="flex items-center justify-between text-gray-500 text-xs font-medium">
+              <span>Code Submissions</span>
+              <div class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+            </div>
+            <div class="mt-2 text-2xl font-bold text-gray-900 font-mono" id="admin-kpi-submissions">--</div>
+            <div class="mt-1 text-[11px] text-gray-400">Total evaluations executed</div>
+          </div>
+        </div>
+
+        <!-- Tab Controls -->
+        <div class="border-b border-[#e5eae7] flex items-center gap-6">
+          <button id="tab-admin-mod" class="pb-3 text-sm font-semibold text-emerald-800 border-b-2 border-emerald-600 transition flex items-center gap-2">
+            <span>Moderation Queue</span>
+            <span id="tab-admin-mod-count" class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">0</span>
+          </button>
+          <button id="tab-admin-users" class="pb-3 text-sm text-gray-500 hover:text-gray-800 border-b-2 border-transparent transition flex items-center gap-2 font-medium">
+            <span>User Management</span>
+            <span id="tab-admin-users-count" class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">--</span>
+          </button>
+        </div>
+
+        <!-- ================= VIEW 1: MODERATION QUEUE ================= -->
+        <div id="admin-view-moderation" class="space-y-6">
+          <!-- Pending Problems Section -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-bold text-gray-900">Pending Problem Submissions</h3>
+                <span id="admin-pending-prob-badge" class="px-2 py-0.5 text-xs font-semibold rounded bg-amber-50 text-amber-700 border border-amber-200">0 items</span>
+              </div>
+              <span class="text-xs text-gray-400">Review for algorithmic correctness and test completeness</span>
+            </div>
+            <div id="admin-pending-problems-list" class="space-y-3">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Pending Discussions Section -->
+          <div class="space-y-3 pt-4 border-t border-[#e5eae7]">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-bold text-gray-900">Pending Community Discussions</h3>
+                <span id="admin-pending-disc-badge" class="px-2 py-0.5 text-xs font-semibold rounded bg-amber-50 text-amber-700 border border-amber-200">0 items</span>
+              </div>
+              <span class="text-xs text-gray-400">Review for community guidelines compliance</span>
+            </div>
+            <div id="admin-pending-discussions-list" class="space-y-3">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 2: USER MANAGEMENT ================= -->
+        <div id="admin-view-users" class="space-y-4 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-[#e5eae7]">
+            <div class="relative flex-1 max-w-sm">
+              <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <input id="admin-users-search-input" type="text" placeholder="Search by name, email, or username..." class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-transparent focus:border-emerald-500 focus:bg-white focus:outline-none bg-gray-50 text-gray-800">
+            </div>
+            <div class="text-xs text-gray-500">
+              Select any role dropdown to immediately update user permissions.
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl border border-[#e5eae7] overflow-hidden shadow-xs">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-[#e5eae7] bg-gray-50/75 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                    <th class="py-3 px-4">User</th>
+                    <th class="py-3 px-4">Username</th>
+                    <th class="py-3 px-4">Current Role</th>
+                    <th class="py-3 px-4 text-center">Solved</th>
+                    <th class="py-3 px-4">Registered</th>
+                    <th class="py-3 px-4 text-right">Role Assignment</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-table-body" class="divide-y divide-gray-100 text-xs">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= REJECTION REASON MODAL ================= -->
+      <div id="admin-reject-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full border border-[#e5eae7] shadow-xl overflow-hidden flex flex-col">
+          <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </div>
+              <h3 class="text-sm font-bold text-gray-900" id="admin-reject-modal-title">Reject Submission</h3>
+            </div>
+            <button id="btn-close-reject-modal" type="button" class="text-gray-400 hover:text-gray-600">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="p-6 space-y-4">
+            <div>
+              <div class="text-xs text-gray-500">Item for rejection:</div>
+              <div class="text-sm font-semibold text-gray-900 mt-0.5 truncate" id="admin-reject-item-title">Title</div>
+            </div>
+            <div class="space-y-1.5">
+              <label class="block text-xs font-bold text-gray-700">Rejection Reason <span class="text-rose-500">*</span></label>
+              <textarea id="admin-reject-reason-input" rows="4" placeholder="Explain clearly why this submission is rejected so the author can improve it..." class="w-full p-3 text-xs rounded-lg border border-[#d1d9d4] focus:outline-none focus:ring-1 focus:ring-rose-500 text-gray-800"></textarea>
+              <p class="text-[11px] text-gray-400">The author will be able to see this reason in their submission library or discussion view.</p>
+            </div>
+          </div>
+          <div class="px-6 py-3.5 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-2.5">
+            <button id="btn-cancel-reject" type="button" class="px-3.5 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-100 transition">Cancel</button>
+            <button id="btn-confirm-reject" type="button" class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-xs transition">Confirm Rejection</button>
+          </div>
+        </div>
+      </div>
 
 
       <!-- ======================================================== -->
@@ -1658,6 +2036,7 @@ Return the answer in any order.
   <script src="js/api.js"></script>
   <script src="js/notes.js"></script>
   <script src="js/community.js"></script>
+  <script src="js/admin.js"></script>
   <script src="js/ide.js"></script>
   <script src="js/editor.js"></script>
   <script src="js/app.js"></script>
