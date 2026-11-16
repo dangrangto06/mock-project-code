@@ -375,6 +375,34 @@
     }
   });
 
+  // ===== Google sign-up (logic lives in js/google-auth.js) =====
+  // Same endpoint as login: the backend creates the account on the first Google sign-in.
+
+  const googleBtn = document.getElementById('btn-google');
+  const googleBtnHTML = googleBtn.innerHTML;
+
+  /**
+   * Handles the "Sign up with Google" button via {@code CodeForgeGoogle.signIn()}
+   * (see google-auth.js), then stores the session like a normal registration.
+   */
+  googleBtn.addEventListener('click', async function () {
+    showFormError('');
+    googleBtn.disabled = true;
+    googleBtn.textContent = 'Connecting to Google…';
+    try {
+      const data = await CodeForgeGoogle.signIn();
+      saveSession(data);
+      showToast('Account ready! Welcome to CodeForge.', 'success');
+      setTimeout(() => { window.location.href = REDIRECT_AFTER_SIGNUP; }, 700);
+    } catch (err) {
+      if (err.code === 'MOCK') showToast('Google sign-up is not connected to the backend yet.');
+      else if (err.code !== 'CANCELLED') showFormError(CodeForgeGoogle.friendlyError(err));
+    } finally {
+      googleBtn.disabled = false;
+      googleBtn.innerHTML = googleBtnHTML;
+    }
+  });
+
   // ===== Already signed in -> skip the sign-up page =====
   try {
     if (localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY)) {

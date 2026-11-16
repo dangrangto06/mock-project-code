@@ -313,6 +313,35 @@
   }
   githubBtn.addEventListener('click', startGithubLogin);
 
+  // ===== Google sign-in (logic lives in js/google-auth.js) =====
+
+  const googleBtn = document.getElementById('btn-google');
+  const googleBtnHTML = googleBtn.innerHTML;
+
+  /**
+   * Handles the "Continue with Google" button.
+   *
+   * <p>Delegates the popup + backend exchange to {@code CodeForgeGoogle.signIn()}
+   * (see google-auth.js), then stores the session exactly like a normal login.</p>
+   */
+  googleBtn.addEventListener('click', async function () {
+    showFormError('');
+    googleBtn.disabled = true;
+    googleBtn.textContent = 'Connecting to Google…';
+    try {
+      const data = await CodeForgeGoogle.signIn();
+      saveSession(data, true);
+      showToast('Welcome back' + (data.fullName ? ', ' + data.fullName : '') + '!', 'success');
+      setTimeout(() => { window.location.href = REDIRECT_AFTER_LOGIN; }, 600);
+    } catch (err) {
+      if (err.code === 'MOCK') showToast('Google sign-in is not connected to the backend yet.');
+      else if (err.code !== 'CANCELLED') showFormError(CodeForgeGoogle.friendlyError(err));
+    } finally {
+      googleBtn.disabled = false;
+      googleBtn.innerHTML = googleBtnHTML;
+    }
+  });
+
   // ===== Forgot password modal =====
   const modal = document.getElementById('forgot-modal');
   const forgotForm = document.getElementById('forgot-form');
