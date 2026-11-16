@@ -14,14 +14,14 @@ window.CodeForgeGoogle = (function () {
   // ===== Config =====
   // TODO: create an OAuth Client ID (type "Web application") in Google Cloud Console and paste it here.
   // Add your frontend origin (e.g. http://localhost:5500) to "Authorized JavaScript origins".
-  const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+  const GOOGLE_CLIENT_ID = '890450216432-o1d0lpp4e355tld6u8i0dvpredsjekfn.apps.googleusercontent.com';
 
   // TODO backend: POST { accessToken } -> AuthResponse
   const ENDPOINT = 'http://localhost:8080/api/auth/google';
 
   // true  = backend/Google not set up yet: signIn() rejects with code 'MOCK' (UI preview only)
   // false = run the real flow. Set to false once GOOGLE_CLIENT_ID and the backend endpoint exist.
-  const MOCK_PENDING = true;
+  const MOCK_PENDING = false;
 
   const GSI_SRC = 'https://accounts.google.com/gsi/client';
   let gsiPromise = null;
