@@ -46,4 +46,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return {@code true} if a user exists with this email; {@code false} otherwise.
      */
     Boolean existsByEmail(String email);
+
+    /**
+     * Retrieves a user entity matching the provided password reset token.
+     *
+     * @param resetToken The unique UUID reset token string.
+     * @return An {@link Optional} containing the matched {@link User}, or empty if not found.
+     */
+    Optional<User> findByResetToken(String resetToken);
 }

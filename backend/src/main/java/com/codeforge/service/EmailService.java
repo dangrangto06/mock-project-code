@@ -34,17 +34,18 @@ public class EmailService {
      * @param resetToken Secure one-time password reset token string.
      */
     public void sendPasswordResetEmail(String toEmail, String resetToken) {
-        log.info("Dispatching Password Reset Email to: {}", toEmail);
+        String resetLink = "http://localhost:3000/login.html?resetToken=" + resetToken;
+        log.info("Password reset link for {}: {}", toEmail, resetLink);
         try {
             if (mailSender != null) {
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setTo(toEmail);
                 message.setSubject("CodeForge - Password Reset Request");
-                message.setText("Click here to reset your CodeForge password: http://localhost:3000/#reset-password?token=" + resetToken);
+                message.setText("Click here to reset your CodeForge password: " + resetLink);
                 mailSender.send(message);
                 log.info("Password reset email sent successfully via SMTP.");
             } else {
-                log.info("[Email Service Simulation] Sent password reset link with token {} to {}", resetToken, toEmail);
+                log.info("[Email Service Simulation] Sent password reset link {} to {}", resetLink, toEmail);
             }
         } catch (Exception e) {
             log.warn("SMTP Mail sender unavailable, simulated dispatch: {}", e.getMessage());

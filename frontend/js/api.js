@@ -6,6 +6,15 @@ window.CodeForgeAPI = (function () {
   let isBackendOnline = false;
   let healthPromise = null;
 
+  function getAuthHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    try {
+      const token = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+    } catch (_) {}
+    return headers;
+  }
+
   function checkBackend() {
     if (!healthPromise) {
       healthPromise = fetch(`${API_BASE}/health`, { method: 'GET', signal: AbortSignal.timeout(1500) })
@@ -130,11 +139,13 @@ window.CodeForgeAPI = (function () {
           headers: getAuthHeaders(),
           body: JSON.stringify(payload)
         });
+        if (res.status === 401) throw new Error('UNAUTHORIZED');
         if (res.ok) {
           const json = await res.json();
           return json;
         }
       } catch (e) {
+        if (e.message === 'UNAUTHORIZED') throw e;
         console.warn("Create problem API error, using local fallback.", e);
       }
     }
@@ -152,6 +163,53 @@ window.CodeForgeAPI = (function () {
     return newProb;
   }
 
+  // Toggle bookmark on problem
+  async function toggleBookmark(problemId) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/problems/${problemId}/bookmark`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.status === 401) throw new Error('UNAUTHORIZED');
+        if (res.ok) {
+          const json = await res.json();
+          return json;
+        }
+      } catch (e) {
+        if (e.message === 'UNAUTHORIZED') throw e;
+        console.warn("Toggle bookmark API error, using local fallback.", e);
+      }
+    }
+    const p = (CodeForgeData.problems || []).find(item => item.id === problemId);
+    if (p) {
+      p.saved = !p.saved;
+      return { saved: p.saved };
+    }
+    return null;
+  }
+
+  // Get problem submissions history
+  async function getProblemSubmissions(problemId) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/problems/${problemId}/submissions`, {
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          const json = await res.json();
+          return json;
+        }
+      } catch (e) {
+        console.warn("Failed to fetch problem submissions from API, using fallback.", e);
+      }
+    }
+    const problem = (CodeForgeData.problems || []).find(p => p.id === problemId);
+    return (problem && problem.submissions) || [];
+  }
+
   // Check health on boot
   checkBackend();
 
@@ -161,6 +219,8 @@ window.CodeForgeAPI = (function () {
     getProblems,
     runCode,
     submitSolution,
-    createProblem
+    createProblem,
+    toggleBookmark,
+    getProblemSubmissions
   };
 })();

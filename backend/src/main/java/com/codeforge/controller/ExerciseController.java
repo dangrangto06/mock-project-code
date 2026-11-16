@@ -1,6 +1,7 @@
 package com.codeforge.controller;
 
 import com.codeforge.dto.ExerciseDto;
+import com.codeforge.dto.SubmissionDto;
 import com.codeforge.service.ExerciseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -107,5 +108,43 @@ public class ExerciseController {
         }
         ExerciseDto created = exerciseService.create(request, authentication.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    /**
+     * Toggles the bookmark/saved status of an exercise for the authenticated caller.
+     *
+     * <p>HTTP Endpoint: {@code POST /api/problems/{id}/bookmark}</p>
+     *
+     * @param id             The unique problem ID.
+     * @param authentication Security context representing the calling user.
+     * @return Map with "saved": true or false.
+     */
+    @PostMapping("/{id}/bookmark")
+    public ResponseEntity<?> toggleBookmark(@PathVariable Long id, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Authentication required"));
+        }
+        boolean saved = exerciseService.toggleBookmark(id, authentication.getName());
+        return ResponseEntity.ok(Map.of("saved", saved));
+    }
+
+    /**
+     * Retrieves the current user's submissions history for a specific exercise.
+     *
+     * <p>HTTP Endpoint: {@code GET /api/problems/{id}/submissions}</p>
+     *
+     * @param id             The unique problem ID.
+     * @param authentication Security context representing the calling user.
+     * @return List of {@link SubmissionDto} (empty list if unauthenticated).
+     */
+    @GetMapping("/{id}/submissions")
+    public ResponseEntity<List<SubmissionDto>> getSubmissions(
+            @PathVariable Long id,
+            Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+            return ResponseEntity.ok(List.of());
+        }
+        return ResponseEntity.ok(exerciseService.getSubmissions(id, authentication.getName()));
     }
 }

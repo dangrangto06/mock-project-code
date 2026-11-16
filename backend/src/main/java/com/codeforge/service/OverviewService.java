@@ -1,15 +1,23 @@
 package com.codeforge.service;
 
 import com.codeforge.dto.OverviewResponse;
+import com.codeforge.entity.Exercise;
+import com.codeforge.entity.Submission;
 import com.codeforge.entity.User;
 import com.codeforge.repository.ExerciseRepository;
 import com.codeforge.repository.SubmissionRepository;
 import com.codeforge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -47,10 +55,44 @@ public class OverviewService {
      * @param username The username of the user requesting the overview (or "anonymous").
      * @return Fully populated {@link OverviewResponse} DTO.
      */
+    @Transactional(readOnly = true)
     public OverviewResponse getOverview(String username) {
 
         // Fetch the authenticated user entity from the repository
         User user = userRepository.findByUsername(username).orElse(null);
+
+        // Fetch user submissions once for metrics computation
+        List<Submission> userSubs = (user != null)
+                ? submissionRepository.findByUserIdOrderBySubmittedAtDesc(user.getId())
+                : List.of();
+
+        // ── Weekly goal (Mon–Sun) ─────────────────────────────────────────────
+        LocalDate today = LocalDate.now();
+        LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        String[] dayLabels = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        List<OverviewResponse.DayStatus> weekDays = new ArrayList<>();
+        int weeklyDoneCount = 0;
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate d = monday.plusDays(i);
+            boolean done = false;
+            if (user != null) {
+                done = userSubs.stream()
+                        .anyMatch(s -> s.getSubmittedAt() != null && s.getSubmittedAt().toLocalDate().equals(d));
+            }
+            if (done) weeklyDoneCount++;
+            weekDays.add(new OverviewResponse.DayStatus(dayLabels[i], done));
+        }
+
+        int target = 5;
+        int pct = (user != null && target > 0) ? Math.min(100, (int) Math.round((weeklyDoneCount * 100.0) / target)) : 0;
+
+        OverviewResponse.WeeklyGoal weeklyGoal = OverviewResponse.WeeklyGoal.builder()
+                .done(weeklyDoneCount)
+                .target(target)
+                .pct(pct)
+                .days(weekDays)
+                .build();
 
         // ── User summary ──────────────────────────────────────────────────────
         OverviewResponse.UserSummary userSummary = new OverviewResponse.UserSummary();
@@ -64,7 +106,7 @@ public class OverviewService {
             userSummary.setGreetingName(firstName);
             userSummary.setStreakDays(user.getStreakDays() != null ? user.getStreakDays() : 0);
             userSummary.setSolvedCount(user.getSolvedCount() != null ? user.getSolvedCount() : 0);
-            userSummary.setSolvedWeek(3); // Weekly solved count placeholder
+            userSummary.setSolvedWeek(weeklyDoneCount);
             userSummary.setAcceptanceRate(user.getAcceptanceRate() != null
                     ? user.getAcceptanceRate().toPlainString() + "%" : "0%");
             userSummary.setAcceptanceDelta("+2.1%");
@@ -79,37 +121,38 @@ public class OverviewService {
         }
 
         // ── Next challenge ────────────────────────────────────────────────────
-        OverviewResponse.NextChallenge nextChallenge = exerciseRepository.findAll().stream()
-                .findFirst()
-                .map(e -> OverviewResponse.NextChallenge.builder()
-                        .id(e.getId())
-                        .title(e.getTitle())
-                        .difficulty(e.getDifficulty())
+        List<Exercise> allExercises = exerciseRepository.findAll();
+        Exercise nextEx = null;
+        if (user != null) {
+            Set<Long> solvedIds = userSubs.stream()
+                    .filter(s -> "Accepted".equalsIgnoreCase(s.getStatus()) && s.getExercise() != null)
+                    .map(s -> s.getExercise().getId())
+                    .collect(Collectors.toSet());
+            nextEx = allExercises.stream()
+                    .filter(e -> !solvedIds.contains(e.getId()))
+                    .findFirst()
+                    .orElse(allExercises.isEmpty() ? null : allExercises.get(0));
+        } else {
+            nextEx = allExercises.isEmpty() ? null : allExercises.get(0);
+        }
+
+        OverviewResponse.NextChallenge nextChallenge = nextEx != null
+                ? OverviewResponse.NextChallenge.builder()
+                        .id(nextEx.getId())
+                        .title(nextEx.getTitle())
+                        .difficulty(nextEx.getDifficulty())
                         .status("Continue")
-                        .description(e.getDescription() != null
-                                ? e.getDescription().substring(0, Math.min(120, e.getDescription().length())) + "…"
+                        .description(nextEx.getDescription() != null
+                                ? nextEx.getDescription().substring(0, Math.min(120, nextEx.getDescription().length())) + "…"
                                 : "")
-                        .meta(e.getTopics())
+                        .meta(nextEx.getTopics())
                         .stepInfo("Step 1 of 3")
                         .target(10)
                         .previewNumbers(List.of(2, 7, 11, 15))
-                        .goal("Return indices of two numbers that add up to target")
+                        .goal("Solve the challenge to build your intuition")
                         .lastOpened("Recently opened")
-                        .build())
-                .orElse(null);
-
-        // ── Weekly goal ───────────────────────────────────────────────────────
-        OverviewResponse.WeeklyGoal weeklyGoal = OverviewResponse.WeeklyGoal.builder()
-                .done(3).target(5).pct(60)
-                .days(List.of(
-                        new OverviewResponse.DayStatus("Mon", true),
-                        new OverviewResponse.DayStatus("Tue", true),
-                        new OverviewResponse.DayStatus("Wed", true),
-                        new OverviewResponse.DayStatus("Thu", false),
-                        new OverviewResponse.DayStatus("Fri", false),
-                        new OverviewResponse.DayStatus("Sat", false),
-                        new OverviewResponse.DayStatus("Sun", false)))
-                .build();
+                        .build()
+                : null;
 
         // ── Learning paths ────────────────────────────────────────────────────
         List<OverviewResponse.LearningPath> learningPaths = List.of(
@@ -126,14 +169,14 @@ public class OverviewService {
                     .stream()
                     .map(s -> OverviewResponse.RecentActivityItem.builder()
                             .id(s.getId())
-                            .title(s.getExercise().getTitle())
+                            .title(s.getExercise() != null ? s.getExercise().getTitle() : "Problem #" + s.getId())
                             .status(s.getStatus())
                             .runtime(s.getRuntimeMs() != null ? s.getRuntimeMs() + " ms" : "—")
                             .memory(s.getMemoryMb() != null ? s.getMemoryMb().toPlainString() + " MB" : "—")
                             .date(s.getSubmittedAt() != null
                                     ? s.getSubmittedAt().format(DateTimeFormatter.ofPattern("MMM d, yyyy")) : "")
                             .build())
-                            .collect(Collectors.toList());
+                    .collect(Collectors.toList());
         }
 
         return OverviewResponse.builder()

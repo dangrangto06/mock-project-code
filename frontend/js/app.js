@@ -115,18 +115,9 @@ window.CodeForgeApp = (function () {
     }
   }
 
-  // Update dashboard greeting and stats with the logged-in user's data
-  function updateDashboardForUser() {
+  // Update dashboard greeting and stats with the logged-in user's data and backend overview
+  async function updateDashboardForUser() {
     const user = getStoredUser();
-    if (!user) return;
-
-    const greeting = buildGreeting(user.fullName);
-
-    // Update the greeting heading
-    const greetingEl = document.getElementById('dashboard-greeting');
-    if (greetingEl) {
-      greetingEl.textContent = `Keep the momentum, ${greeting}.`;
-    }
 
     // Update the date line
     const dateEl = document.getElementById('dashboard-date');
@@ -136,6 +127,99 @@ window.CodeForgeApp = (function () {
       const formatted = now.toLocaleDateString('en-US', options);
       dateEl.textContent = `Your overview / ${formatted}`;
     }
+
+    if (user) {
+      const greeting = buildGreeting(user.fullName);
+      const greetingEl = document.getElementById('dashboard-greeting');
+      if (greetingEl) {
+        greetingEl.textContent = `Keep the momentum, ${greeting}.`;
+      }
+    }
+
+    // Call CodeForgeAPI.getOverview() to fetch real telemetry from backend
+    if (window.CodeForgeAPI) {
+      try {
+        const overview = await CodeForgeAPI.getOverview();
+        if (overview) {
+          applyOverviewData(overview);
+        }
+      } catch (e) {
+        console.warn("Could not load overview metrics from API:", e);
+      }
+    }
+  }
+
+  function applyOverviewData(overview) {
+    if (!overview) return;
+
+    // 1. Dashboard Greeting & User Stats
+    if (overview.user) {
+      const u = overview.user;
+      const greetingEl = document.getElementById('dashboard-greeting');
+      if (greetingEl) {
+        const name = u.greetingName || (u.name ? u.name.split(' ')[0] : 'there');
+        greetingEl.textContent = `Keep the momentum, ${name}.`;
+      }
+
+      // Solved Count
+      const solvedEl = document.getElementById('dashboard-solved-count');
+      if (solvedEl && u.solvedCount !== undefined && u.solvedCount !== null) {
+        solvedEl.textContent = u.solvedCount;
+      }
+
+      // Current Streak
+      const streakEl = document.getElementById('dashboard-streak');
+      if (streakEl && u.streakDays !== undefined && u.streakDays !== null) {
+        streakEl.textContent = `${u.streakDays} days`;
+      }
+      const headerStreakEl = document.getElementById('header-streak-text');
+      if (headerStreakEl && u.streakDays !== undefined && u.streakDays !== null) {
+        headerStreakEl.textContent = `${u.streakDays}-day streak`;
+      }
+
+      // Acceptance Rate
+      const acceptanceEl = document.getElementById('dashboard-acceptance');
+      if (acceptanceEl && u.acceptanceRate !== undefined && u.acceptanceRate !== null) {
+        acceptanceEl.textContent = u.acceptanceRate;
+      }
+    }
+
+    // 2. Recent Activity List
+    if (overview.recentActivity) {
+      renderRecentActivity(overview.recentActivity);
+    }
+  }
+
+  function renderRecentActivity(activities) {
+    const container = document.getElementById('dashboard-recent-activity');
+    if (!container) return;
+
+    if (!activities || activities.length === 0) {
+      container.innerHTML = `<div class="py-4 text-center text-gray-400 text-xs">No recent submissions yet. Start solving problems to track your activity!</div>`;
+      return;
+    }
+
+    container.innerHTML = activities.map(item => {
+      const isAccepted = item.status === 'Accepted';
+      const icon = isAccepted
+        ? `<span class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-[10px]">&check;</span>`
+        : `<span class="w-5 h-5 rounded-full bg-rose-50 text-rose-700 flex items-center justify-center font-bold text-[10px]">&times;</span>`;
+
+      return `
+        <div class="py-2.5 flex items-center justify-between hover:bg-gray-50 px-2 rounded transition cursor-pointer" onclick="CodeForgeApp.openProblem(${item.id})">
+          <div class="flex items-center gap-3">
+            ${icon}
+            <span class="font-medium text-gray-900">${escapeHtml(item.title || 'Problem')}</span>
+            <span class="text-gray-400 font-mono text-[11px]">#${item.id}</span>
+          </div>
+          <div class="flex items-center gap-4 text-gray-500">
+            <span class="font-mono text-emerald-700">${escapeHtml(item.runtime || '—')}</span>
+            <span class="font-mono">${escapeHtml(item.memory || '—')}</span>
+            <span class="text-gray-400">${escapeHtml(item.date || '')}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   function handleLoginSubmit() {
@@ -268,6 +352,7 @@ window.CodeForgeApp = (function () {
       activateTopNav(navOverview);
       activateSidebarLink('sb-dashboard');
       document.body.classList.remove('focus-mode');
+      updateDashboardForUser();
     } else if (route === 'library') {
       if (pageLibrary) pageLibrary.classList.remove('hidden');
       if (sidebarContainer) sidebarContainer.classList.remove('hidden');
@@ -299,6 +384,14 @@ window.CodeForgeApp = (function () {
       if (pageIde) pageIde.classList.remove('hidden');
       if (sidebarContainer) sidebarContainer.classList.add('hidden'); // IDE has split full width layout
       activateTopNav(navPractice);
+      if (route.startsWith('solve/')) {
+        const idPart = route.replace('solve/', '');
+        const numId = parseInt(idPart, 10);
+        if (numId) window.CodeForgeCurrentProblemId = numId;
+      }
+      if (window.CodeForgeIDE && window.CodeForgeIDE.loadProblem) {
+        window.CodeForgeIDE.loadProblem(window.CodeForgeCurrentProblemId);
+      }
     } else if (route === 'login') {
       if (pageLogin) pageLogin.classList.remove('hidden');
       if (sidebarContainer) sidebarContainer.classList.add('hidden');
@@ -313,6 +406,7 @@ window.CodeForgeApp = (function () {
       if (sidebarContainer) sidebarContainer.classList.remove('hidden');
       activateTopNav(navOverview);
       activateSidebarLink('sb-dashboard');
+      updateDashboardForUser();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -579,14 +673,38 @@ window.CodeForgeApp = (function () {
   function openProblem(problemId) {
     window.CodeForgeCurrentProblemId = problemId;
     navigate(`ide`);
+    if (window.CodeForgeIDE && window.CodeForgeIDE.loadProblem) {
+      window.CodeForgeIDE.loadProblem(problemId);
+    }
   }
 
-  function toggleBookmark(problemId) {
+  async function toggleBookmark(problemId) {
     const p = CodeForgeData.problems.find(item => item.id === problemId);
-    if (p) {
-      p.saved = !p.saved;
+    if (!p) return;
+
+    try {
+      if (window.CodeForgeAPI) {
+        const res = await CodeForgeAPI.toggleBookmark(problemId);
+        if (res && typeof res.saved === 'boolean') {
+          p.saved = res.saved;
+        } else {
+          p.saved = !p.saved;
+        }
+      } else {
+        p.saved = !p.saved;
+      }
       renderProblemTable();
+      updateLibraryStats();
       showToast(p.saved ? `Saved "${p.title}" to your list` : `Removed "${p.title}" from saved`, "info");
+    } catch (e) {
+      if (e.message === 'UNAUTHORIZED') {
+        showToast("Please sign in to bookmark problems", "warn");
+      } else {
+        p.saved = !p.saved;
+        renderProblemTable();
+        updateLibraryStats();
+        showToast(p.saved ? `Saved "${p.title}" to your list` : `Removed "${p.title}" from saved`, "info");
+      }
     }
   }
 

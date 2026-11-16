@@ -11,8 +11,10 @@ import com.codeforge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,6 +121,7 @@ public class ExecutionService {
      * @return {@link ExecutionDto.SubmitResponse} detailing pass counts, execution metrics, and percentiles.
      * @throws RuntimeException If the target problem ID does not exist.
      */
+    @Transactional
     public ExecutionDto.SubmitResponse submit(ExecutionDto.SubmitRequest req, String username) {
         log.info("Submitting: problemId={} language={}", req.getProblemId(), req.getLanguage());
 
@@ -169,6 +172,12 @@ public class ExecutionService {
         // Persist submission record in database
         try {
             User user = userRepository.findByUsername(username).orElse(null);
+            boolean hadSolvedBefore = false;
+            if (user != null) {
+                hadSolvedBefore = submissionRepository.existsByUserIdAndExerciseIdAndStatus(
+                        user.getId(), exercise.getId(), "Accepted");
+            }
+
             Submission submission = Submission.builder()
                     .exercise(exercise)
                     .user(user)
@@ -184,8 +193,19 @@ public class ExecutionService {
                     .submittedAt(LocalDateTime.now())
                     .build();
             submissionRepository.save(submission);
+
+            if (user != null) {
+                if (allPassed && !hadSolvedBefore) {
+                    user.setSolvedCount((user.getSolvedCount() != null ? user.getSolvedCount() : 0) + 1);
+                }
+                long totalCount = submissionRepository.countByUserId(user.getId());
+                long acceptedCount = submissionRepository.countByUserIdAndStatus(user.getId(), "Accepted");
+                double rate = totalCount > 0 ? (acceptedCount * 100.0 / totalCount) : 0.0;
+                user.setAcceptanceRate(BigDecimal.valueOf(rate).setScale(2, RoundingMode.HALF_UP));
+                userRepository.save(user);
+            }
         } catch (Exception e) {
-            log.warn("Failed to persist submission: {}", e.getMessage());
+            log.warn("Failed to persist submission: {}", e.getMessage(), e);
         }
 
         return ExecutionDto.SubmitResponse.builder()

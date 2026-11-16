@@ -2,14 +2,21 @@ package com.codeforge.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import com.codeforge.dto.ExerciseDto;
+import com.codeforge.dto.SubmissionDto;
 import com.codeforge.entity.Exercise;
+import com.codeforge.entity.SavedExercise;
+import com.codeforge.entity.Submission;
 import com.codeforge.entity.User;
+import com.codeforge.exception.ApiException;
 import com.codeforge.repository.ExerciseRepository;
+import com.codeforge.repository.SavedExerciseRepository;
 import com.codeforge.repository.SubmissionRepository;
 import com.codeforge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +31,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ExerciseService {
 
     /** Repository for accessing and searching {@link Exercise} entities. */
@@ -34,6 +42,9 @@ public class ExerciseService {
 
     /** Repository for checking submission history per exercise. */
     private final SubmissionRepository submissionRepository;
+
+    /** Repository for managing user exercise bookmarks. */
+    private final SavedExerciseRepository savedExerciseRepository;
 
     // ── Query ─────────────────────────────────────────────────────────────────
 
@@ -61,6 +72,22 @@ public class ExerciseService {
 
         // Fetch user entity if authenticated to evaluate problem progress status
         User user = username != null ? userRepository.findByUsername(username).orElse(null) : null;
+
+        if ("my".equalsIgnoreCase(tab)) {
+            if (user == null) {
+                return List.of();
+            }
+            exercises = exercises.stream()
+                    .filter(e -> Boolean.TRUE.equals(e.getIsCustom()) && e.getAuthor() != null && e.getAuthor().getId().equals(user.getId()))
+                    .collect(Collectors.toList());
+        } else if ("saved".equalsIgnoreCase(tab)) {
+            if (user == null) {
+                return List.of();
+            }
+            exercises = exercises.stream()
+                    .filter(e -> savedExerciseRepository.existsByUserIdAndExerciseId(user.getId(), e.getId()))
+                    .collect(Collectors.toList());
+        }
 
         return exercises.stream()
                 .map(e -> toDto(e, user))
@@ -100,6 +127,7 @@ public class ExerciseService {
      * @param username The username of the author.
      * @return The persisted {@link ExerciseDto} representation.
      */
+    @Transactional
     public ExerciseDto create(ExerciseDto.CreateExerciseRequest req, String username) {
         if (req.getTitle() == null || req.getTitle().isBlank()) {
             throw com.codeforge.exception.ApiException.badRequest("Title is required");
@@ -154,14 +182,16 @@ public class ExerciseService {
         // Compute personal progress status for the authenticated user
         String status = "unattempted";
         if (user != null) {
-            List<?> subs = submissionRepository.findByExerciseIdOrderBySubmittedAtDesc(e.getId());
-            if (subs.stream().anyMatch(s -> "Accepted".equals(
-                    ((com.codeforge.entity.Submission) s).getStatus()))) {
+            List<Submission> subs = submissionRepository.findByUserIdAndExerciseIdOrderBySubmittedAtDesc(user.getId(), e.getId());
+            if (subs.stream().anyMatch(s -> "Accepted".equals(s.getStatus()))) {
                 status = "solved";
             } else if (!subs.isEmpty()) {
                 status = "in-progress";
             }
         }
+
+        // Check if the authenticated user has bookmarked this exercise
+        boolean saved = user != null && savedExerciseRepository.existsByUserIdAndExerciseId(user.getId(), e.getId());
 
         // Determine ownership and author display name
         boolean isMine = user != null && e.getAuthor() != null
@@ -176,12 +206,75 @@ public class ExerciseService {
                         ? List.of(e.getTopics().split(",\\s*")) : List.of())
                 .acceptance(acceptance)
                 .status(status)
-                .saved(false)
+                .saved(saved)
                 .isMine(isMine)
                 .author(authorName)
                 .description(e.getDescription())
                 .constraints(e.getConstraints())
                 .testCases(testCaseDtos)
                 .build();
+    }
+
+    /**
+     * Toggles the bookmark status of an exercise for the specified user.
+     *
+     * @param exerciseId The exercise identifier.
+     * @param username   The username of the authenticated user.
+     * @return {@code true} if newly saved; {@code false} if unsaved.
+     */
+    @Transactional
+    public boolean toggleBookmark(Long exerciseId, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> ApiException.unauthorized("User not found: " + username));
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> ApiException.notFound("Exercise not found: " + exerciseId));
+
+        Optional<SavedExercise> existing = savedExerciseRepository.findByUserIdAndExerciseId(user.getId(), exercise.getId());
+        if (existing.isPresent()) {
+            savedExerciseRepository.delete(existing.get());
+            return false;
+        } else {
+            savedExerciseRepository.save(SavedExercise.builder()
+                    .user(user)
+                    .exercise(exercise)
+                    .createdAt(LocalDateTime.now())
+                    .build());
+            return true;
+        }
+    }
+
+    /**
+     * Retrieves the submission history for a specific exercise submitted by the user.
+     *
+     * @param exerciseId The exercise identifier.
+     * @param username   The username of the user.
+     * @return List of {@link SubmissionDto} ordered descending by submission timestamp.
+     */
+    public List<SubmissionDto> getSubmissions(Long exerciseId, String username) {
+        if (username == null) return List.of();
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null) return List.of();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm");
+        return submissionRepository.findByUserIdAndExerciseIdOrderBySubmittedAtDesc(user.getId(), exerciseId)
+                .stream()
+                .map(s -> SubmissionDto.builder()
+                        .id(s.getId())
+                        .exerciseId(s.getExercise() != null ? s.getExercise().getId() : exerciseId)
+                        .status(s.getStatus())
+                        .language(s.getLanguage())
+                        .runtime(s.getRuntimeMs() != null ? s.getRuntimeMs() + " ms" : "—")
+                        .memory(s.getMemoryMb() != null ? s.getMemoryMb().toPlainString() + " MB" : "—")
+                        .runtimeMs(s.getRuntimeMs())
+                        .memoryMb(s.getMemoryMb())
+                        .runtimeBeatsPct(s.getRuntimeBeatsPct())
+                        .memoryBeatsPct(s.getMemoryBeatsPct())
+                        .testsPassed(s.getTestsPassed())
+                        .totalTests(s.getTotalTests())
+                        .sourceCode(s.getSourceCode())
+                        .date(s.getSubmittedAt() != null ? s.getSubmittedAt().format(formatter) : "")
+                        .submittedAt(s.getSubmittedAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

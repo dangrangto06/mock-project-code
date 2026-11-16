@@ -96,4 +96,15 @@ public class User {
      */
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    /**
+     * One-time cryptographically secure password reset token.
+     */
+    @Column(length = 255)
+    private String resetToken;
+
+    /**
+     * Expiration timestamp for the password reset token.
+     */
+    private LocalDateTime resetTokenExpiry;
 }

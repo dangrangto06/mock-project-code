@@ -38,4 +38,24 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
      * @return Up to 5 most recent {@link Submission} entities.
      */
     List<Submission> findTop5ByUserIdOrderBySubmittedAtDesc(Long userId);
+
+    /**
+     * Checks if a user has at least one submission with the specified status for an exercise.
+     */
+    boolean existsByUserIdAndExerciseIdAndStatus(Long userId, Long exerciseId, String status);
+
+    /**
+     * Counts the total number of submissions authored by a user.
+     */
+    long countByUserId(Long userId);
+
+    /**
+     * Counts the number of submissions authored by a user matching a specific status.
+     */
+    long countByUserIdAndStatus(Long userId, String status);
+
+    /**
+     * Retrieves all submissions authored by a user for a specific exercise, ordered chronologically descending.
+     */
+    List<Submission> findByUserIdAndExerciseIdOrderBySubmittedAtDesc(Long userId, Long exerciseId);
 }
