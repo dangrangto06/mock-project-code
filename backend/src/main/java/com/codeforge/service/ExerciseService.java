@@ -1,5 +1,7 @@
 package com.codeforge.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import com.codeforge.dto.ExerciseDto;
 import com.codeforge.entity.Exercise;
 import com.codeforge.entity.User;
@@ -99,18 +101,25 @@ public class ExerciseService {
      * @return The persisted {@link ExerciseDto} representation.
      */
     public ExerciseDto create(ExerciseDto.CreateExerciseRequest req, String username) {
+        if (req.getTitle() == null || req.getTitle().isBlank()) {
+            throw com.codeforge.exception.ApiException.badRequest("Title is required");
+        }
+        long nextId = exerciseRepository.findMaxId() + 1;
+    
         Exercise exercise = new Exercise();
-        exercise.setTitle(req.getTitle());
-        exercise.setDescription(req.getStatement());
+        exercise.setId(nextId);
+        exercise.setTitle(req.getTitle().trim());
+        exercise.setDescription(req.getStatement() != null ? req.getStatement() : "");
         exercise.setDifficulty(req.getDifficulty() != null ? req.getDifficulty() : "Medium");
         exercise.setTopics(req.getTopics() != null ? String.join(", ", req.getTopics()) : "");
+        exercise.setAcceptanceRate(new BigDecimal("100.00"));
         exercise.setTimeLimitMs(2000);
         exercise.setMemoryLimitMb(256);
         exercise.setIsCustom(true);
-
-        // Associate with the author account if present
+        exercise.setCreatedAt(LocalDateTime.now());
+    
         userRepository.findByUsername(username).ifPresent(exercise::setAuthor);
-
+    
         Exercise saved = exerciseRepository.save(exercise);
         return toDto(saved, null);
     }

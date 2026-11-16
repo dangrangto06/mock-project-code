@@ -215,18 +215,45 @@ window.CodeForgeEditor = (function () {
     // Publish Changes Button handler
     const publishBtn = document.getElementById('btn-publish-changes');
     if (publishBtn) {
-      publishBtn.addEventListener('click', () => {
-        publishBtn.innerHTML = `
-          <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-          Publishing...
-        `;
-        setTimeout(() => {
-          publishBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Published`;
+      publishBtn.addEventListener('click', async () => {
+        const titleInput = document.querySelector('#page-create-problem input[type="text"]');
+        const statementInput = document.getElementById('problem-statement-input');
+        const langSelect = document.querySelector('#page-create-problem select');
+
+        const title = titleInput ? titleInput.value.trim() : '';
+        const statement = statementInput ? statementInput.value.trim() : '';
+        if (!title || !statement) {
+          CodeForgeApp.showToast("Please enter both title and statement.", "warn");
+          return;
+        }
+
+        const originalHTML = publishBtn.innerHTML;
+        publishBtn.disabled = true;
+        publishBtn.innerHTML = `Publishing...`;
+
+        try {
+          const created = await CodeForgeAPI.createProblem({
+            title,
+            statement,
+            difficulty: activeDifficulty,
+            topics: tags,
+            language: langSelect ? langSelect.value : 'Python 3'
+          });
+          if (created && !CodeForgeData.problems.some(p => p.id === created.id)) {
+            CodeForgeData.problems.unshift(created);
+          }
           CodeForgeApp.showToast("Problem published to the CodeForge library!", "success");
-          setTimeout(() => {
-            publishBtn.innerHTML = `↗ Publish changes`;
-          }, 2000);
-        }, 700);
+          CodeForgeApp.navigate('library');
+        } catch (err) {
+          if (err.message === 'UNAUTHORIZED') {
+            CodeForgeApp.showToast("Please sign in first to publish a problem.", "warn");
+          } else {
+            CodeForgeApp.showToast("Failed to publish problem.", "warn");
+          }
+        } finally {
+          publishBtn.disabled = false;
+          publishBtn.innerHTML = originalHTML;
+        }
       });
     }
 

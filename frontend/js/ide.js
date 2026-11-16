@@ -277,60 +277,57 @@ window.CodeForgeIDE = (function () {
    * <p>Simulates background compilation and sandbox dispatch, updates the button state
    * with an animated spinner, and switches the console tab to display results.</p>
    */
-  function runCode() {
+  async function runCode() {
     const runBtn = document.getElementById('btn-run-code');
     const originalContent = runBtn.innerHTML;
+    const textarea = document.getElementById('editor-real-input');
+    const code = textarea ? textarea.value : '';
+    const problemId = window.CodeForgeCurrentProblemId || 104;
 
-    // Indicate processing state
     runBtn.disabled = true;
-    runBtn.innerHTML = `
-      <svg class="animate-spin w-3.5 h-3.5 text-gray-700" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      <span>Running tests...</span>
-    `;
+    runBtn.innerHTML = `<span>Running tests...</span>`;
 
-    setTimeout(() => {
-      runBtn.disabled = false;
-      runBtn.innerHTML = originalContent;
-
-      // Ensure test results tab is active
+    try {
+      const res = await CodeForgeAPI.runCode({
+        problemId,
+        language: currentLanguage,
+        code,
+        customInput: ''
+      });
       const tabResults = document.getElementById('tab-test-results');
       if (tabResults) tabResults.click();
-
-      // Show toast notification
-      CodeForgeApp.showToast("All 2 sample test cases passed in 32ms!", "success");
-    }, 700);
+      CodeForgeApp.showToast(`${res.status || 'Done'} (${res.runtime || '32ms'})`, res.success ? "success" : "warn");
+    } finally {
+      runBtn.disabled = false;
+      runBtn.innerHTML = originalContent;
+    }
   }
 
-  /**
-   * Submits solution code for full judging across all hidden and public test cases.
-   *
-   * <p>Simulates judging lifecycle, updates UI with animated status, and launches
-   * the celebration success modal upon completion.</p>
-   */
-  function submitSolution() {
+  async function submitSolution() {
     const submitBtn = document.getElementById('btn-submit-solution');
     const originalContent = submitBtn.innerHTML;
+    const textarea = document.getElementById('editor-real-input');
+    const code = textarea ? textarea.value : '';
+    const problemId = window.CodeForgeCurrentProblemId || 104;
 
-    // Indicate judging state
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `
-      <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      <span>Judging 35 tests...</span>
-    `;
+    submitBtn.innerHTML = `<span>Judging...</span>`;
 
-    setTimeout(() => {
+    try {
+      const res = await CodeForgeAPI.submitSolution({
+        problemId,
+        language: currentLanguage,
+        code
+      });
+      if (res && res.success) {
+        showSuccessModal();
+      } else {
+        CodeForgeApp.showToast(res?.message || "Wrong Answer", "warn");
+      }
+    } finally {
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalContent;
-
-      // Trigger Celebration Modal
-      showSuccessModal();
-    }, 1100);
+    }
   }
 
   /**

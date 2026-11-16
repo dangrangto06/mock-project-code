@@ -4,33 +4,29 @@ window.CodeForgeAPI = (function () {
   const API_BASE = 'http://localhost:8080/api';
   const TOKEN_KEY = 'codeforge_token';
   let isBackendOnline = false;
+  let healthPromise = null;
 
-  // Get stored JWT token for authenticated requests
-  function getAuthHeaders() {
-    const headers = { 'Content-Type': 'application/json' };
-    try {
-      const token = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
-      if (token) headers['Authorization'] = 'Bearer ' + token;
-    } catch (_) {}
-    return headers;
-  }
-
-  // Check backend status on startup
-  async function checkBackend() {
-    try {
-      const res = await fetch(`${API_BASE}/health`, { method: 'GET', signal: AbortSignal.timeout(1200) });
-      if (res.ok) {
-        isBackendOnline = true;
-        console.log("Connected to CodeForge Backend at", API_BASE);
-      }
-    } catch (e) {
-      isBackendOnline = false;
-      console.log("Backend offline, running in standalone client mode.");
+  function checkBackend() {
+    if (!healthPromise) {
+      healthPromise = fetch(`${API_BASE}/health`, { method: 'GET', signal: AbortSignal.timeout(1500) })
+        .then(res => {
+          isBackendOnline = res.ok;
+          if (isBackendOnline) console.log("Connected to CodeForge Backend at", API_BASE);
+          else console.log("Backend offline, running in standalone client mode.");
+          return isBackendOnline;
+        })
+        .catch(() => {
+          isBackendOnline = false;
+          console.log("Backend offline, running in standalone client mode.");
+          return false;
+        });
     }
+    return healthPromise;
   }
 
   // Get overview data
   async function getOverview() {
+    await checkBackend();
     if (isBackendOnline) {
       try {
         const res = await fetch(`${API_BASE}/overview`, { headers: getAuthHeaders() });
@@ -54,6 +50,7 @@ window.CodeForgeAPI = (function () {
 
   // Get problems list
   async function getProblems(params = {}) {
+    await checkBackend();
     if (isBackendOnline) {
       try {
         const query = new URLSearchParams(params).toString();
@@ -71,6 +68,7 @@ window.CodeForgeAPI = (function () {
 
   // Run code against test cases
   async function runCode(payload) {
+    await checkBackend();
     if (isBackendOnline) {
       try {
         const res = await fetch(`${API_BASE}/execute/run`, {
@@ -97,6 +95,7 @@ window.CodeForgeAPI = (function () {
 
   // Submit code
   async function submitSolution(payload) {
+    await checkBackend();
     if (isBackendOnline) {
       try {
         const res = await fetch(`${API_BASE}/execute/submit`, {
@@ -123,6 +122,7 @@ window.CodeForgeAPI = (function () {
 
   // Create problem
   async function createProblem(payload) {
+    await checkBackend();
     if (isBackendOnline) {
       try {
         const res = await fetch(`${API_BASE}/problems`, {

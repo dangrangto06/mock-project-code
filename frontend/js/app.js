@@ -51,6 +51,17 @@ window.CodeForgeApp = (function () {
     setupHashRouting();
     bindGlobalEvents();
     renderProblemTable();
+    if (window.CodeForgeAPI) {
+  CodeForgeAPI.getProblems().then(apiProblems => {
+    if (Array.isArray(apiProblems) && apiProblems.length > 0) {
+      CodeForgeData.problems = apiProblems.map(p => ({
+        ...p,
+        starterCode: p.starterCode || { python: '# Write your solution here\n' }
+      }));
+      renderProblemTable();
+    }
+  });
+}
     updateAuthUI();
     updateDashboardForUser();
     handleRoute(window.location.hash.replace('#', '') || 'dashboard');
@@ -566,6 +577,7 @@ window.CodeForgeApp = (function () {
   }
 
   function openProblem(problemId) {
+    window.CodeForgeCurrentProblemId = problemId;
     navigate(`ide`);
   }
 

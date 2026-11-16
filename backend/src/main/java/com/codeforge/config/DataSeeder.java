@@ -12,6 +12,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -51,6 +52,8 @@ public class DataSeeder implements ApplicationRunner {
     /** Repository for managing exercise test cases and sample verification data. */
     private final TestCaseRepository testCaseRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     /**
      * Executes the database seeding logic upon application startup.
      *
@@ -84,7 +87,7 @@ public class DataSeeder implements ApplicationRunner {
         User alex = User.builder()
                 .username("alex_morgan")
                 .email("alex@codeforge.io")
-                .passwordHash("$2a$10$7EqJtq98hPqEX7fNZaFWoOeV2d6m8C6sX1w/2WjH4Uf31hB7uRfa2")
+                .passwordHash(passwordEncoder.encode("password123"))
                 .fullName("Alex Morgan")
                 .role("Admin")
                 .streakDays(7)
