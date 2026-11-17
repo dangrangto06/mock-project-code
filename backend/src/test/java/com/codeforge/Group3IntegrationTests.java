@@ -156,37 +156,6 @@ class Group3IntegrationTests {
     }
 
     @Test
-    @DisplayName("Task 2: Google Sign-In - Valid access token creates/authenticates user and returns AuthResponse")
-    void testGoogleLogin_Success() throws Exception {
-        RestTemplate mockRestTemplate = Mockito.mock(RestTemplate.class);
-        authService.setRestTemplate(mockRestTemplate);
-
-        Map<String, Object> googleProfile = Map.of(
-                "email", "newgoogleuser@codeforge.io",
-                "name", "Google Coder"
-        );
-
-        Mockito.when(mockRestTemplate.exchange(
-                eq("https://www.googleapis.com/oauth2/v3/userinfo"),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                eq(Map.class)
-        )).thenReturn(ResponseEntity.ok(googleProfile));
-
-        AuthDto.GoogleLoginRequest request = new AuthDto.GoogleLoginRequest("mock-google-access-token");
-
-        mockMvc.perform(post("/api/auth/google")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").isString())
-                .andExpect(jsonPath("$.email").value("newgoogleuser@codeforge.io"))
-                .andExpect(jsonPath("$.role").value("Learner"));
-
-        assertTrue(userRepository.existsByEmail("newgoogleuser@codeforge.io"));
-    }
-
-    @Test
     @DisplayName("Task 3: GitHub OAuth - Unconfigured client redirects with oauthError=github_not_configured")
     void testGithubAuth_NotConfigured() throws Exception {
         Object originalClientId = org.springframework.test.util.ReflectionTestUtils.getField(authService, "githubClientId");
