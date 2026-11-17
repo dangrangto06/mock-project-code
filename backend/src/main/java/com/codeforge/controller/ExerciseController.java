@@ -1,6 +1,7 @@
 package com.codeforge.controller;
 
 import com.codeforge.dto.ExerciseDto;
+import com.codeforge.dto.SubmissionDto;
 import com.codeforge.service.ExerciseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,16 +12,31 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * REST controller managing the CodeForge algorithm problem library.
+ *
+ * <p>Exposes endpoints under {@code /api/problems} to search, filter, retrieve, and author
+ * algorithmic challenges. Enriches problem payloads with contextual status for authenticated callers.</p>
+ */
 @RestController
 @RequestMapping("/api/problems")
 @RequiredArgsConstructor
 public class ExerciseController {
 
+    /** Service layer handling problem retrieval, search algorithms, and authoring. */
     private final ExerciseService exerciseService;
 
     /**
-     * GET /api/problems
-     * List problems with optional filters: search, difficulty, topic, tab.
+     * Retrieves all problems matching optional multi-criteria filters.
+     *
+     * <p>HTTP Endpoint: {@code GET /api/problems}</p>
+     *
+     * @param search         Optional substring query matching problem title or ID.
+     * @param difficulty     Optional difficulty tier filter ("Easy", "Medium", "Hard").
+     * @param topic          Optional category topic filter (e.g. "Arrays", "Hash map").
+     * @param tab            Optional view tab ("all", "saved", "my").
+     * @param authentication Security context representing the calling user.
+     * @return {@link ResponseEntity} with HTTP 200 OK and list of {@link ExerciseDto} objects.
      */
     @GetMapping
     public ResponseEntity<List<ExerciseDto>> getAll(
@@ -35,8 +51,12 @@ public class ExerciseController {
     }
 
     /**
-     * GET /api/problems/random
-     * Returns a random problem.
+     * Selects and returns a random problem from the catalog for the "Pick Random" feature.
+     *
+     * <p>HTTP Endpoint: {@code GET /api/problems/random}</p>
+     *
+     * @param authentication Security context representing the calling user.
+     * @return {@link ResponseEntity} with HTTP 200 OK and random {@link ExerciseDto}, or 404 if no problems exist.
      */
     @GetMapping("/random")
     public ResponseEntity<?> getRandom(Authentication authentication) {
@@ -50,8 +70,13 @@ public class ExerciseController {
     }
 
     /**
-     * GET /api/problems/{id}
-     * Returns full problem detail.
+     * Retrieves complete problem statement and metadata for a specific exercise ID.
+     *
+     * <p>HTTP Endpoint: {@code GET /api/problems/{id}}</p>
+     *
+     * @param id             The unique problem ID to fetch.
+     * @param authentication Security context representing the calling user.
+     * @return {@link ResponseEntity} with HTTP 200 OK and {@link ExerciseDto}, or 404 if not found.
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id, Authentication authentication) {
@@ -63,8 +88,14 @@ public class ExerciseController {
     }
 
     /**
-     * POST /api/problems
-     * Create a new problem (authenticated users only).
+     * Creates a new custom algorithm challenge authored by the authenticated user.
+     *
+     * <p>HTTP Endpoint: {@code POST /api/problems}</p>
+     * <p>Requires a valid Bearer token authentication in the security context.</p>
+     *
+     * @param request        The problem creation parameters (title, statement, difficulty, topics, etc.).
+     * @param authentication Security context representing the authenticated author.
+     * @return {@link ResponseEntity} with HTTP 201 Created and the created {@link ExerciseDto}, or 401 if unauthorized.
      */
     @PostMapping
     public ResponseEntity<?> create(
@@ -77,5 +108,43 @@ public class ExerciseController {
         }
         ExerciseDto created = exerciseService.create(request, authentication.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    /**
+     * Toggles the bookmark/saved status of an exercise for the authenticated caller.
+     *
+     * <p>HTTP Endpoint: {@code POST /api/problems/{id}/bookmark}</p>
+     *
+     * @param id             The unique problem ID.
+     * @param authentication Security context representing the calling user.
+     * @return Map with "saved": true or false.
+     */
+    @PostMapping("/{id}/bookmark")
+    public ResponseEntity<?> toggleBookmark(@PathVariable Long id, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Authentication required"));
+        }
+        boolean saved = exerciseService.toggleBookmark(id, authentication.getName());
+        return ResponseEntity.ok(Map.of("saved", saved));
+    }
+
+    /**
+     * Retrieves the current user's submissions history for a specific exercise.
+     *
+     * <p>HTTP Endpoint: {@code GET /api/problems/{id}/submissions}</p>
+     *
+     * @param id             The unique problem ID.
+     * @param authentication Security context representing the calling user.
+     * @return List of {@link SubmissionDto} (empty list if unauthenticated).
+     */
+    @GetMapping("/{id}/submissions")
+    public ResponseEntity<List<SubmissionDto>> getSubmissions(
+            @PathVariable Long id,
+            Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+            return ResponseEntity.ok(List.of());
+        }
+        return ResponseEntity.ok(exerciseService.getSubmissions(id, authentication.getName()));
     }
 }

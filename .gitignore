@@ -11,3 +11,13 @@ desktop.ini
 *.njsproj
 *.sln
 *.sw?
+
+# Build output
+backend/target/
+
+# Sensitive credentials & environment files
+application-secrets.properties
+**/application-secrets.properties
+.env
+*.env
+

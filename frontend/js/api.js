@@ -4,8 +4,8 @@ window.CodeForgeAPI = (function () {
   const API_BASE = 'http://localhost:8080/api';
   const TOKEN_KEY = 'codeforge_token';
   let isBackendOnline = false;
+  let healthPromise = null;
 
-  // Get stored JWT token for authenticated requests
   function getAuthHeaders() {
     const headers = { 'Content-Type': 'application/json' };
     try {
@@ -15,22 +15,27 @@ window.CodeForgeAPI = (function () {
     return headers;
   }
 
-  // Check backend status on startup
-  async function checkBackend() {
-    try {
-      const res = await fetch(`${API_BASE}/health`, { method: 'GET', signal: AbortSignal.timeout(1200) });
-      if (res.ok) {
-        isBackendOnline = true;
-        console.log("Connected to CodeForge Backend at", API_BASE);
-      }
-    } catch (e) {
-      isBackendOnline = false;
-      console.log("Backend offline, running in standalone client mode.");
+  function checkBackend() {
+    if (!healthPromise) {
+      healthPromise = fetch(`${API_BASE}/health`, { method: 'GET', signal: AbortSignal.timeout(1500) })
+        .then(res => {
+          isBackendOnline = res.ok;
+          if (isBackendOnline) console.log("Connected to CodeForge Backend at", API_BASE);
+          else console.log("Backend offline, running in standalone client mode.");
+          return isBackendOnline;
+        })
+        .catch(() => {
+          isBackendOnline = false;
+          console.log("Backend offline, running in standalone client mode.");
+          return false;
+        });
     }
+    return healthPromise;
   }
 
   // Get overview data
   async function getOverview() {
+    await checkBackend();
     if (isBackendOnline) {
       try {
         const res = await fetch(`${API_BASE}/overview`, { headers: getAuthHeaders() });
@@ -46,7 +51,7 @@ window.CodeForgeAPI = (function () {
     return {
       user: CodeForgeData.currentUser,
       stats: {
-        totalProblems: 240,
+        totalProblems: CodeForgeData.problems.length,
         solvedCount: CodeForgeData.currentUser.solvedCount
       }
     };
@@ -54,9 +59,11 @@ window.CodeForgeAPI = (function () {
 
   // Get problems list
   async function getProblems(params = {}) {
+    await checkBackend();
     if (isBackendOnline) {
       try {
-        const query = new URLSearchParams(params).toString();
+        const queryObj = typeof params === 'string' ? { tab: params } : (params || {});
+        const query = new URLSearchParams(queryObj).toString();
         const res = await fetch(`${API_BASE}/problems?${query}`, { headers: getAuthHeaders() });
         if (res.ok) {
           const json = await res.json();
@@ -71,6 +78,7 @@ window.CodeForgeAPI = (function () {
 
   // Run code against test cases
   async function runCode(payload) {
+    await checkBackend();
     if (isBackendOnline) {
       try {
         const res = await fetch(`${API_BASE}/execute/run`, {
@@ -97,6 +105,7 @@ window.CodeForgeAPI = (function () {
 
   // Submit code
   async function submitSolution(payload) {
+    await checkBackend();
     if (isBackendOnline) {
       try {
         const res = await fetch(`${API_BASE}/execute/submit`, {
@@ -123,6 +132,7 @@ window.CodeForgeAPI = (function () {
 
   // Create problem
   async function createProblem(payload) {
+    await checkBackend();
     if (isBackendOnline) {
       try {
         const res = await fetch(`${API_BASE}/problems`, {
@@ -130,16 +140,18 @@ window.CodeForgeAPI = (function () {
           headers: getAuthHeaders(),
           body: JSON.stringify(payload)
         });
+        if (res.status === 401) throw new Error('UNAUTHORIZED');
         if (res.ok) {
           const json = await res.json();
           return json;
         }
       } catch (e) {
+        if (e.message === 'UNAUTHORIZED') throw e;
         console.warn("Create problem API error, using local fallback.", e);
       }
     }
     const newProb = {
-      id: CodeForgeData.problems.length + 104,
+      id: Math.max(0, ...CodeForgeData.problems.map(p => p.id)) + 1,
       title: payload.title,
       difficulty: payload.difficulty,
       topics: payload.topics,
@@ -152,15 +164,394 @@ window.CodeForgeAPI = (function () {
     return newProb;
   }
 
+  // Toggle bookmark on problem
+  async function toggleBookmark(problemId) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/problems/${problemId}/bookmark`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.status === 401) throw new Error('UNAUTHORIZED');
+        if (res.ok) {
+          const json = await res.json();
+          return json;
+        }
+      } catch (e) {
+        if (e.message === 'UNAUTHORIZED') throw e;
+        console.warn("Toggle bookmark API error, using local fallback.", e);
+      }
+    }
+    const p = (CodeForgeData.problems || []).find(item => item.id === problemId);
+    if (p) {
+      p.saved = !p.saved;
+      return { saved: p.saved };
+    }
+    return null;
+  }
+
+  // Get problem submissions history
+  async function getProblemSubmissions(problemId) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/problems/${problemId}/submissions`, {
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          const json = await res.json();
+          return json;
+        }
+      } catch (e) {
+        console.warn("Failed to fetch problem submissions from API, using fallback.", e);
+      }
+    }
+    const problem = (CodeForgeData.problems || []).find(p => p.id === problemId);
+    return (problem && problem.submissions) || [];
+  }
+
+  // Get all submissions for the logged-in user across all problems
+  async function getUserSubmissions() {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/execute/submissions`, {
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Failed to fetch user submissions from API, using fallback.", e);
+      }
+    }
+    return [];
+  }
+
+  function isAuthenticated() {
+    try {
+      return !!(localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY));
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function isOnline() {
+    return isBackendOnline;
+  }
+
+  // ===== Learner Notes API =====
+
+  async function getNotes() {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/notes`, { headers: getAuthHeaders() });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Failed to fetch notes from API, using fallback.", e);
+      }
+    }
+    const stored = localStorage.getItem('codeforge_notes');
+    if (stored) {
+      try { return JSON.parse(stored); } catch (_) {}
+    }
+    return (window.CodeForgeData && window.CodeForgeData.initialNotes) ? [...window.CodeForgeData.initialNotes] : [];
+  }
+
+  async function createNote(payload) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/notes`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Create note API error, falling back to local.", e);
+      }
+    }
+    return null;
+  }
+
+  async function updateNote(id, payload) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/notes/${id}`, {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Update note API error, falling back to local.", e);
+      }
+    }
+    return null;
+  }
+
+  async function deleteNote(id) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/notes/${id}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          return true;
+        }
+      } catch (e) {
+        console.warn("Delete note API error, falling back to local.", e);
+      }
+    }
+    return false;
+  }
+
+  // ===== Community Discussions API =====
+
+  async function getDiscussions(category) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const url = category && category !== 'all'
+          ? `${API_BASE}/discussions?category=${encodeURIComponent(category)}`
+          : `${API_BASE}/discussions`;
+        const res = await fetch(url, { headers: getAuthHeaders() });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Failed to fetch discussions from API, using fallback.", e);
+      }
+    }
+    const stored = localStorage.getItem('codeforge_discussions');
+    if (stored) {
+      try { return JSON.parse(stored); } catch (_) {}
+    }
+    return (window.CodeForgeData && window.CodeForgeData.initialDiscussions) ? [...window.CodeForgeData.initialDiscussions] : [];
+  }
+
+  async function createDiscussion(payload) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/discussions`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Create discussion API error, falling back to local.", e);
+      }
+    }
+    return null;
+  }
+
+  async function toggleDiscussionUpvote(id) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/discussions/${id}/upvote`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Toggle discussion upvote API error, falling back to local.", e);
+      }
+    }
+    return null;
+  }
+
+  async function addDiscussionReply(id, content) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/discussions/${id}/replies`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ content })
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Add discussion reply API error, falling back to local.", e);
+      }
+    }
+    return null;
+  }
+
+  // ===== Admin & Moderation API =====
+
+  async function getAdminStats() {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/stats`, { headers: getAuthHeaders() });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to fetch admin stats:", e);
+      }
+    }
+    return null;
+  }
+
+  async function getModerationQueue() {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/moderation`, { headers: getAuthHeaders() });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to fetch moderation queue:", e);
+      }
+    }
+    return { pendingProblems: [], pendingDiscussions: [] };
+  }
+
+  async function approveProblem(id) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/problems/${id}/approve`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to approve problem:", e);
+      }
+    }
+    return null;
+  }
+
+  async function rejectProblem(id, reason) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/problems/${id}/reject`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ reason })
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to reject problem:", e);
+      }
+    }
+    return null;
+  }
+
+  async function approveDiscussion(id) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/discussions/${id}/approve`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to approve discussion:", e);
+      }
+    }
+    return null;
+  }
+
+  async function rejectDiscussion(id, reason) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/discussions/${id}/reject`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ reason })
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to reject discussion:", e);
+      }
+    }
+    return null;
+  }
+
+  async function getAdminUsers() {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/users`, { headers: getAuthHeaders() });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to fetch admin users:", e);
+      }
+    }
+    return [];
+  }
+
+  async function updateUserRole(id, role) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/users/${id}/role`, {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ role })
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to update user role:", e);
+      }
+    }
+    return null;
+  }
+
   // Check health on boot
   checkBackend();
 
   return {
     checkBackend,
+    isAuthenticated,
+    isOnline,
     getOverview,
     getProblems,
     runCode,
     submitSolution,
-    createProblem
+    createProblem,
+    toggleBookmark,
+    getProblemSubmissions,
+    getUserSubmissions,
+    getNotes,
+    createNote,
+    updateNote,
+    deleteNote,
+    getDiscussions,
+    createDiscussion,
+    toggleDiscussionUpvote,
+    addDiscussionReply,
+    getAdminStats,
+    getModerationQueue,
+    approveProblem,
+    rejectProblem,
+    approveDiscussion,
+    rejectDiscussion,
+    getAdminUsers,
+    updateUserRole
   };
 })();
