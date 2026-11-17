@@ -9,8 +9,10 @@ import java.util.List;
 /**
  * Spring Data JPA repository for {@link TestCase} entity operations.
  *
- * <p>Supports querying evaluation test cases by associated exercise identifier,
- * distinguishing between public sample test suites and full judging suites.</p>
+ * <p>
+ * Supports querying evaluation test cases by associated exercise identifier,
+ * distinguishing between public sample test suites and full judging suites.
+ * </p>
  */
 @Repository
 public interface TestCaseRepository extends JpaRepository<TestCase, Long> {
@@ -24,9 +26,12 @@ public interface TestCaseRepository extends JpaRepository<TestCase, Long> {
     List<TestCase> findByExerciseId(Long exerciseId);
 
     /**
-     * Retrieves only sample test cases (where {@code isSample = true}) for an exercise.
+     * Retrieves only sample test cases (where {@code isSample = true}) for an
+     * exercise.
      *
-     * <p>Used to populate the IDE test case runner tabs on the frontend.</p>
+     * <p>
+     * Used to populate the IDE test case runner tabs on the frontend.
+     * </p>
      *
      * @param exerciseId The unique identifier of the target exercise.
      * @return List of sample {@link TestCase} records for this exercise.

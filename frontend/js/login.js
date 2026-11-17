@@ -21,6 +21,7 @@
   const ENDPOINTS = {
     login:          `${API_BASE}/auth/login`,            // Live endpoint - POST { usernameOrEmail, password }
     forgotPassword: `${API_BASE}/auth/forgot-password`,  // Backend route - POST { email }
+    resetPassword:  `${API_BASE}/auth/reset-password`,   // Backend route - POST { token, newPassword }
     github:         `${API_BASE}/auth/github`            // OAuth gateway - GET, redirect to GitHub OAuth
   };
 
@@ -28,7 +29,7 @@
    * Flag determining whether endpoints not yet fully implemented on the backend
    * should be gracefully simulated for UI demonstration.
    */
-  const MOCK_PENDING_FEATURES = true;
+  const MOCK_PENDING_FEATURES = false;
 
   /** Target route navigated to upon successful credential verification */
   const REDIRECT_AFTER_LOGIN = 'index.html#dashboard';
@@ -299,14 +300,8 @@
     githubBtn.disabled = true;
     githubBtn.textContent = 'Connecting to GitHub…';
     try {
-      if (MOCK_PENDING_FEATURES) {
-        await sleep(900);
-        showToast('GitHub sign-in is not connected to the backend yet.');
-        return;
-      }
-      // Redirect to backend OAuth gateway when connected
       window.location.href = ENDPOINTS.github;
-    } finally {
+    } catch (_) {
       githubBtn.disabled = false;
       githubBtn.innerHTML = githubBtnHTML;
     }
@@ -380,27 +375,50 @@
   }
 
   /**
-   * Dispatches password reset request to backend or simulates dispatch.
+   * Dispatches password reset request to backend.
    *
    * @async
    * @param {string} email - Destination email address.
-   * @returns {Promise<void>}
+   * @returns {Promise<Object>}
    */
   async function requestPasswordReset(email) {
-    if (MOCK_PENDING_FEATURES) {
-      await sleep(900);
-      return;
-    }
     const res = await fetch(ENDPOINTS.forgotPassword, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({ email })
     });
+    let body = null;
+    try { body = await res.json(); } catch (_) {}
     if (!res.ok) {
-      const err = new Error('Request failed');
+      const err = new Error((body && body.message) || 'Request failed');
       err.status = res.status;
       throw err;
     }
+    return body;
+  }
+
+  /**
+   * Dispatches new password to backend using reset token.
+   *
+   * @async
+   * @param {string} token - Reset token from email.
+   * @param {string} newPassword - Candidate new password.
+   * @returns {Promise<Object>}
+   */
+  async function resetPassword(token, newPassword) {
+    const res = await fetch(ENDPOINTS.resetPassword, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ token, newPassword })
+    });
+    let body = null;
+    try { body = await res.json(); } catch (_) {}
+    if (!res.ok) {
+      const err = new Error((body && body.message) || 'Password reset failed');
+      err.status = res.status;
+      throw err;
+    }
+    return body;
   }
 
   // Attach modal trigger listeners
@@ -417,6 +435,7 @@
   // Close modal on Escape key press
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !modal.hidden) closeForgotModal();
+    if (e.key === 'Escape' && resetModal && !resetModal.hidden) closeResetModal();
   });
 
   // Clear modal errors on typing
@@ -456,10 +475,144 @@
     }
   });
 
-  // ===== Already signed in -> skip the login page =====
-  try {
-    if (localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY)) {
-      window.location.replace(REDIRECT_AFTER_LOGIN);
+  // ===== Reset password modal logic =====
+  const resetModal = document.getElementById('reset-modal');
+  const resetForm = document.getElementById('reset-form');
+  const resetPasswordInput = document.getElementById('reset-password');
+  const resetBtn = document.getElementById('btn-reset-submit');
+  const resetBtnLabel = resetBtn ? resetBtn.querySelector('.btn-label') : null;
+  const resetFormError = document.getElementById('reset-form-error');
+  const resetViewForm = document.getElementById('reset-view-form');
+  const resetViewSuccess = document.getElementById('reset-view-success');
+  const toggleResetBtn = document.getElementById('toggle-reset-password');
+  let currentResetToken = null;
+
+  function openResetModal(token) {
+    currentResetToken = token;
+    setFieldError(resetPasswordInput, '');
+    if (resetFormError) resetFormError.hidden = true;
+    if (resetViewForm) resetViewForm.hidden = false;
+    if (resetViewSuccess) resetViewSuccess.hidden = true;
+    if (resetModal) resetModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => { if (resetPasswordInput) resetPasswordInput.focus(); }, 50);
+  }
+
+  function closeResetModal() {
+    if (resetModal) resetModal.hidden = true;
+    document.body.style.overflow = '';
+    const cleanUrl = window.location.pathname + window.location.hash;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+
+  if (toggleResetBtn && resetPasswordInput) {
+    toggleResetBtn.addEventListener('click', function () {
+      const show = resetPasswordInput.type === 'password';
+      resetPasswordInput.type = show ? 'text' : 'password';
+      toggleResetBtn.setAttribute('aria-pressed', String(show));
+      toggleResetBtn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      resetPasswordInput.focus();
+    });
+  }
+
+  if (resetModal) {
+    resetModal.addEventListener('click', (e) => {
+      if (e.target.closest('[data-close]')) closeResetModal();
+    });
+  }
+
+  if (resetPasswordInput) {
+    resetPasswordInput.addEventListener('input', () => {
+      setFieldError(resetPasswordInput, '');
+      if (resetFormError) resetFormError.hidden = true;
+    });
+  }
+
+  if (resetForm) {
+    resetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newPassword = resetPasswordInput.value;
+      if (!newPassword || newPassword.length < 6) {
+        setFieldError(resetPasswordInput, 'Password must be at least 6 characters.');
+        return;
+      }
+
+      resetBtn.disabled = true;
+      resetBtn.classList.add('is-loading');
+      if (resetBtnLabel) resetBtnLabel.textContent = 'Updating…';
+
+      try {
+        await resetPassword(currentResetToken, newPassword);
+        resetViewForm.hidden = true;
+        resetViewSuccess.hidden = false;
+        showToast('Password reset successfully. Please sign in.', 'success');
+      } catch (err) {
+        resetFormError.textContent = err.status === 400
+          ? 'This reset link is invalid or has expired. Please request a new one.'
+          : (err.message || 'Could not reset password. Please try again.');
+        resetFormError.hidden = false;
+      } finally {
+        resetBtn.disabled = false;
+        resetBtn.classList.remove('is-loading');
+        if (resetBtnLabel) resetBtnLabel.textContent = 'Update password';
+      }
+    });
+  }
+
+  // ===== URL Query Parameters Handling (OAuth & Password Reset) =====
+  const urlParams = new URLSearchParams(window.location.search);
+  const resetTokenParam = urlParams.get('resetToken');
+  const oauthTokenParam = urlParams.get('oauthToken');
+  const oauthUserParam = urlParams.get('user');
+  const oauthErrorParam = urlParams.get('oauthError');
+
+  // Handle GitHub OAuth error
+  if (oauthErrorParam) {
+    if (oauthErrorParam === 'github_not_configured') {
+      showFormError('GitHub sign-in is not configured yet. Please sign in with email or password.');
+      showToast('GitHub sign-in not configured', 'warn');
+    } else if (oauthErrorParam === 'missing_code') {
+      showFormError('GitHub authorization code was missing.');
+    } else {
+      showFormError('GitHub authentication failed. Please try again.');
     }
-  } catch (_) { /* storage blocked by security policy */ }
+    const cleanUrl = window.location.pathname + window.location.hash;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+
+  // Handle GitHub OAuth callback success
+  if (oauthTokenParam) {
+    try {
+      let userData = {};
+      if (oauthUserParam) {
+        userData = JSON.parse(decodeURIComponent(oauthUserParam));
+      }
+      saveSession({
+        token: oauthTokenParam,
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        fullName: userData.fullName,
+        role: userData.role
+      }, true);
+      showToast('Welcome back' + (userData.fullName ? ', ' + userData.fullName : '') + '!', 'success');
+      setTimeout(() => { window.location.href = REDIRECT_AFTER_LOGIN; }, 500);
+      return;
+    } catch (e) {
+      console.error('Failed to parse OAuth user profile', e);
+      showFormError('Failed to complete OAuth sign-in. Please try again.');
+    }
+  }
+
+  // Handle password reset token
+  if (resetTokenParam) {
+    openResetModal(resetTokenParam);
+  } else {
+    // Check if already signed in only when NOT resetting password
+    try {
+      if (localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY)) {
+        window.location.replace(REDIRECT_AFTER_LOGIN);
+      }
+    } catch (_) { /* storage blocked by security policy */ }
+  }
 })();

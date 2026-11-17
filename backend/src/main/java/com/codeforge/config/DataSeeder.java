@@ -1,17 +1,14 @@
 package com.codeforge.config;
 
-import com.codeforge.entity.Exercise;
-import com.codeforge.entity.TestCase;
-import com.codeforge.entity.User;
-import com.codeforge.repository.ExerciseRepository;
-import com.codeforge.repository.TestCaseRepository;
-import com.codeforge.repository.UserRepository;
+import com.codeforge.entity.*;
+import com.codeforge.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -22,19 +19,8 @@ import java.util.List;
  * Database seeding component executed upon Spring Boot application initialization.
  *
  * <p>Implements {@link ApplicationRunner} with an execution {@link Order} of 1 to ensure standard
- * mock data, administrative test accounts, coding challenges, and sample test cases are available
- * immediately after the application context starts up.</p>
- *
- * <p><strong>Key Design Considerations:</strong></p>
- * <ul>
- *   <li><b>Idempotent Seeding:</b> Utilizes "insert-if-absent" checks using primary key and unique constraint
- *       existence queries, making repeated container boots, application restarts, or dev-profile reloads safe
- *       against duplicate key errors.</li>
- *   <li><b>Transactional Integrity:</b> Wrapped in {@link Transactional} to ensure atomicity across relational
- *       entities (Users &rarr; Exercises &rarr; TestCases).</li>
- *   <li><b>Pre-Configured Algorithm Challenges:</b> Seeds standard LeetCode-style algorithm problems across
- *       Easy and Medium difficulties, including starter code templates for Python, JavaScript, C++, and Java.</li>
- * </ul>
+ * mock data, administrative test accounts, coding challenges, sample test cases, learner notes,
+ * and community discussion threads are available immediately after the application context starts up.</p>
  */
 @Component
 @Order(1)
@@ -51,6 +37,16 @@ public class DataSeeder implements ApplicationRunner {
     /** Repository for managing exercise test cases and sample verification data. */
     private final TestCaseRepository testCaseRepository;
 
+    private final NoteRepository noteRepository;
+
+    private final DiscussionRepository discussionRepository;
+
+    private final DiscussionReplyRepository discussionReplyRepository;
+
+    private final DiscussionUpvoteRepository discussionUpvoteRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
     /**
      * Executes the database seeding logic upon application startup.
      *
@@ -62,6 +58,8 @@ public class DataSeeder implements ApplicationRunner {
         seedUsers();
         seedExercises();
         seedTestCases();
+        seedNotes();
+        seedDiscussions();
         log.info("✅ DataSeeder completed — seed data is ready.");
     }
 
@@ -84,7 +82,7 @@ public class DataSeeder implements ApplicationRunner {
         User alex = User.builder()
                 .username("alex_morgan")
                 .email("alex@codeforge.io")
-                .passwordHash("$2a$10$7EqJtq98hPqEX7fNZaFWoOeV2d6m8C6sX1w/2WjH4Uf31hB7uRfa2")
+                .passwordHash(passwordEncoder.encode("password123"))
                 .fullName("Alex Morgan")
                 .role("Admin")
                 .streakDays(7)
@@ -231,5 +229,114 @@ public class DataSeeder implements ApplicationRunner {
                 .build());
 
         log.info("Seeded 2 test cases for exercise 104.");
+    }
+
+    /**
+     * Seeds sample personal notes for user alex@codeforge.io if note repository is empty.
+     */
+    private void seedNotes() {
+        if (noteRepository.count() > 0) {
+            log.info("Notes already present — skipping note seeding.");
+            return;
+        }
+
+        User alex = userRepository.findByEmail("alex@codeforge.io").orElse(null);
+        if (alex == null) {
+            log.warn("User alex@codeforge.io not found — skipping note seeding.");
+            return;
+        }
+
+        Note note1 = Note.builder()
+                .user(alex)
+                .title("Two Pointers Technique & Edge Cases")
+                .problemId(104L)
+                .problemTitle("Pair Sum")
+                .tags("Two Pointers, Arrays, Patterns")
+                .content("Always sort before applying two pointers if order doesn't matter. Watch out for duplicates and 0-indexed boundaries. If sum < target, advance left; if sum > target, decrement right.")
+                .updatedAt(LocalDateTime.now().minusDays(2))
+                .build();
+
+        Note note2 = Note.builder()
+                .user(alex)
+                .title("Dynamic Programming State Transitions")
+                .problemId(null)
+                .problemTitle(null)
+                .tags("DP, Memoization, General")
+                .content("1. Define state `dp[i]`.\n2. Formulate recurrence relation.\n3. Identify base cases.\n4. Optimize space if only previous `k` states are needed.")
+                .updatedAt(LocalDateTime.now().minusDays(5))
+                .build();
+
+        noteRepository.saveAll(List.of(note1, note2));
+        log.info("Seeded 2 sample learner notes for alex@codeforge.io");
+    }
+
+    /**
+     * Seeds sample community discussions and replies if discussion repository is empty.
+     */
+    private void seedDiscussions() {
+        if (discussionRepository.count() > 0) {
+            log.info("Discussions already present — skipping discussion seeding.");
+            return;
+        }
+
+        User alex = userRepository.findByEmail("alex@codeforge.io").orElse(null);
+        if (alex == null) {
+            log.warn("User alex@codeforge.io not found — skipping discussion seeding.");
+            return;
+        }
+
+        Discussion disc1 = Discussion.builder()
+                .author(alex)
+                .title("Optimal O(n) Hash Map approach for Pair Sum / Two Sum")
+                .category("Solutions")
+                .problemId(104L)
+                .problemTitle("Pair Sum")
+                .content("Instead of a brute-force O(n²) nested loop or O(n log n) two-pointer after sorting, you can achieve O(n) time and O(n) space using a single-pass hash map.\n\nStore the complement `target - num` as you iterate!")
+                .upvotes(12)
+                .createdAt(LocalDateTime.now().minusDays(3))
+                .build();
+        disc1 = discussionRepository.save(disc1);
+
+        DiscussionReply reply1 = DiscussionReply.builder()
+                .discussion(disc1)
+                .author(alex)
+                .content("Great tip! Make sure to check if the current element equals complement when dealing with negative values.")
+                .createdAt(LocalDateTime.now().minusDays(2))
+                .build();
+        discussionReplyRepository.save(reply1);
+
+        Discussion disc2 = Discussion.builder()
+                .author(alex)
+                .title("How to prepare for System Design & Algorithmic coding rounds concurrently?")
+                .category("Interview Prep")
+                .problemId(null)
+                .problemTitle(null)
+                .content("Balancing LeetCode algorithm practice and high-level system design can be overwhelming. What schedule or balance works best for full-time engineers?")
+                .upvotes(8)
+                .createdAt(LocalDateTime.now().minusDays(1))
+                .build();
+        disc2 = discussionRepository.save(disc2);
+
+        DiscussionReply reply2 = DiscussionReply.builder()
+                .discussion(disc2)
+                .author(alex)
+                .content("I recommend 1-2 algorithm problems every morning, and reading one system design case study (e.g. Rate Limiter, TinyURL) on weekends.")
+                .createdAt(LocalDateTime.now().minusHours(12))
+                .build();
+        discussionReplyRepository.save(reply2);
+
+        DiscussionUpvote upvote1 = DiscussionUpvote.builder()
+                .discussion(disc1)
+                .user(alex)
+                .createdAt(LocalDateTime.now().minusDays(3))
+                .build();
+        DiscussionUpvote upvote2 = DiscussionUpvote.builder()
+                .discussion(disc2)
+                .user(alex)
+                .createdAt(LocalDateTime.now().minusDays(1))
+                .build();
+        discussionUpvoteRepository.saveAll(List.of(upvote1, upvote2));
+
+        log.info("Seeded 2 sample community discussions with replies");
     }
 }

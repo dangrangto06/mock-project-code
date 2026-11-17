@@ -313,6 +313,10 @@ body.about-page-body {
 }
 
 /* Section 4: Rhythm Steps */
+.rhythm-section {
+  padding-bottom: 2rem;
+}
+
 .rhythm-header {
   padding-top: 4.5rem;
   display: flex;
@@ -370,7 +374,7 @@ body.about-page-body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 2.5rem 0 4rem 0;
+  margin: 3.5rem 0 5.5rem 0;
   border: 1px solid #d1fae5;
   flex-wrap: wrap;
   gap: 1.5rem;
@@ -449,4 +453,78 @@ body.about-page-body {
     gap: 1.75rem;
   }
 }
+
+/* ========================================================
+   Dark Theme Overrides for About Page
+   ======================================================== */
+body.dark-theme {
+  background-color: #1a1a1a !important;
+  color: #eff1f6 !important;
+}
+
+body.dark-theme .about-hero-title,
+body.dark-theme .section-heading,
+body.dark-theme .step-title,
+body.dark-theme .feature-card-title,
+body.dark-theme .rhythm-step-title,
+body.dark-theme .cta-title {
+  color: #eff1f6 !important;
+}
+
+body.dark-theme .about-hero-subtitle,
+body.dark-theme .sub-note,
+body.dark-theme .why-quote,
+body.dark-theme .why-text,
+body.dark-theme .step-desc,
+body.dark-theme .feature-card-desc,
+body.dark-theme .rhythm-subtitle,
+body.dark-theme .rhythm-step-desc,
+body.dark-theme .cta-desc,
+body.dark-theme .footer-copy,
+body.dark-theme .footer-link {
+  color: #9ca3af !important;
+}
+
+body.dark-theme .section-tinted {
+  background-color: #212824 !important;
+  border-bottom: 1px solid #2e3832 !important;
+}
+
+body.dark-theme .section-plain {
+  background-color: #1a1a1a !important;
+}
+
+body.dark-theme .practice-loop-card,
+body.dark-theme .feature-card {
+  background-color: #262626 !important;
+  border-color: #3e3e3e !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-theme .feature-icon-badge {
+  background-color: rgba(44, 187, 93, 0.15) !important;
+  border-color: rgba(44, 187, 93, 0.3) !important;
+  color: #2cbb5d !important;
+}
+
+body.dark-theme .btn-dashboard {
+  background-color: #303030 !important;
+  border-color: #3e3e3e !important;
+  color: #eff1f6 !important;
+}
+
+body.dark-theme .btn-dashboard:hover {
+  background-color: #383838 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .cta-banner {
+  background-color: #212e27 !important;
+  border-color: #2c593f !important;
+}
+
+body.dark-theme .about-footer {
+  border-top-color: #2e3832 !important;
+}
+
 

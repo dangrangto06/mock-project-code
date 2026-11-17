@@ -97,6 +97,7 @@ public class SecurityConfig {
 
             // 4. Define route access policies
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/discussions/**").permitAll()
                 .requestMatchers(
                     "/api/auth/**",      // Login, Registration, Health check
                     "/api/overview/**",  // Dashboard metrics & telemetry (supports anonymous/guest view)
@@ -106,6 +107,7 @@ public class SecurityConfig {
                     "/h2-console/**",    // In-memory database web console for local dev
                     "/error"             // Default Spring Boot error mapping
                 ).permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
 

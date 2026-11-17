@@ -43,8 +43,18 @@ window.CodeForgeNotes = (function () {
     return safe;
   }
 
-  function loadNotes() {
+  async function loadNotes() {
     try {
+      if (window.CodeForgeAPI && CodeForgeAPI.isAuthenticated()) {
+        const fetched = await CodeForgeAPI.getNotes();
+        if (Array.isArray(fetched) && fetched.length > 0) {
+          notes = fetched;
+          saveNotesToStorage();
+          renderNotes();
+          updateSidebarCount();
+          return;
+        }
+      }
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         notes = JSON.parse(stored);
@@ -53,9 +63,11 @@ window.CodeForgeNotes = (function () {
         saveNotesToStorage();
       }
     } catch (err) {
-      console.warn('Failed to load notes from localStorage:', err);
+      console.warn('Failed to load notes from localStorage or API:', err);
       notes = (window.CodeForgeData && window.CodeForgeData.initialNotes) ? [...window.CodeForgeData.initialNotes] : [];
     }
+    renderNotes();
+    updateSidebarCount();
   }
 
   function saveNotesToStorage() {
@@ -226,7 +238,7 @@ window.CodeForgeNotes = (function () {
   }
 
   function openEditModal(noteId) {
-    const note = notes.find(n => n.id === noteId);
+    const note = notes.find(n => String(n.id) === String(noteId));
     if (!note) return;
 
     editingNoteId = noteId;
@@ -258,7 +270,7 @@ window.CodeForgeNotes = (function () {
     editingNoteId = null;
   }
 
-  function handleSaveNote(e) {
+  async function handleSaveNote(e) {
     if (e) e.preventDefault();
 
     const titleInput = document.getElementById('note-title-input');
@@ -285,30 +297,49 @@ window.CodeForgeNotes = (function () {
     const rawTags = tagsInput ? tagsInput.value : '';
     const tags = rawTags.split(',').map(t => t.trim()).filter(Boolean);
 
+    const payload = {
+      title,
+      problemId,
+      problemTitle,
+      tags: tags.length > 0 ? tags : ['Notes'],
+      content
+    };
+
     if (editingNoteId) {
       // Update existing
-      const idx = notes.findIndex(n => n.id === editingNoteId);
+      let updatedFromApi = null;
+      const numericId = !isNaN(editingNoteId) ? Number(editingNoteId) : null;
+      if (window.CodeForgeAPI && CodeForgeAPI.isAuthenticated() && numericId !== null) {
+        try {
+          updatedFromApi = await CodeForgeAPI.updateNote(numericId, payload);
+        } catch (apiErr) {
+          console.warn("API updateNote failed, using local.", apiErr);
+        }
+      }
+
+      const idx = notes.findIndex(n => String(n.id) === String(editingNoteId));
       if (idx !== -1) {
-        notes[idx] = {
+        notes[idx] = updatedFromApi || {
           ...notes[idx],
-          title,
-          problemId,
-          problemTitle,
-          tags: tags.length > 0 ? tags : ['Notes'],
-          content,
+          ...payload,
           updatedAt: new Date().toISOString()
         };
       }
       if (window.CodeForgeApp) CodeForgeApp.showToast('Note updated successfully!', 'success');
     } else {
       // Create new
-      const newNote = {
+      let createdFromApi = null;
+      if (window.CodeForgeAPI && CodeForgeAPI.isAuthenticated()) {
+        try {
+          createdFromApi = await CodeForgeAPI.createNote(payload);
+        } catch (apiErr) {
+          console.warn("API createNote failed, using local.", apiErr);
+        }
+      }
+
+      const newNote = createdFromApi || {
         id: 'note-' + Date.now(),
-        title,
-        problemId,
-        problemTitle,
-        tags: tags.length > 0 ? tags : ['Notes'],
-        content,
+        ...payload,
         updatedAt: new Date().toISOString()
       };
       notes.unshift(newNote);
@@ -320,14 +351,23 @@ window.CodeForgeNotes = (function () {
     renderNotes();
   }
 
-  function deleteNote(noteId) {
-    const note = notes.find(n => n.id === noteId);
+  async function deleteNote(noteId) {
+    const note = notes.find(n => String(n.id) === String(noteId));
     const title = note ? note.title : 'this note';
     if (!confirm(`Are you sure you want to delete "${title}"?`)) {
       return;
     }
 
-    notes = notes.filter(n => n.id !== noteId);
+    const numericId = !isNaN(noteId) ? Number(noteId) : null;
+    if (window.CodeForgeAPI && CodeForgeAPI.isAuthenticated() && numericId !== null) {
+      try {
+        await CodeForgeAPI.deleteNote(numericId);
+      } catch (apiErr) {
+        console.warn("API deleteNote failed, using local.", apiErr);
+      }
+    }
+
+    notes = notes.filter(n => String(n.id) !== String(noteId));
     saveNotesToStorage();
     renderNotes();
     if (window.CodeForgeApp) CodeForgeApp.showToast('Note deleted.', 'info');
