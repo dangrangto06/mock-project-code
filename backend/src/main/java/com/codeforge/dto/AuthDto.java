@@ -147,19 +147,6 @@ public class AuthDto {
     }
 
     /**
-     * Inbound payload for Google OAuth2 token verification ({@code POST /api/auth/google}).
-     */
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class GoogleLoginRequest {
-        @NotBlank(message = "Access token is required")
-        private String accessToken;
-    }
-
-    /**
      * Simple outbound message response payload.
      */
     @Getter

@@ -81,20 +81,6 @@ public class AuthController {
     }
 
     /**
-     * Authenticates or creates an account using a Google OAuth2 access token.
-     *
-     * <p>HTTP Endpoint: {@code POST /api/auth/google}</p>
-     *
-     * @param request Payload containing Google access token.
-     * @return {@link ResponseEntity} with HTTP 200 OK and {@link AuthDto.AuthResponse}.
-     */
-    @PostMapping("/google")
-    public ResponseEntity<AuthDto.AuthResponse> googleLogin(@Valid @RequestBody AuthDto.GoogleLoginRequest request) {
-        AuthDto.AuthResponse response = authService.googleLogin(request);
-        return ResponseEntity.ok(response);
-    }
-
-    /**
      * Initiates GitHub OAuth authentication flow by redirecting to GitHub or frontend error route.
      *
      * <p>HTTP Endpoint: {@code GET /api/auth/github}</p>

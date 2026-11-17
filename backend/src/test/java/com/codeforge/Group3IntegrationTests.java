@@ -70,6 +70,133 @@ class Group3IntegrationTests {
                                 .practiceTimeHours(BigDecimal.valueOf(2.5))
                                 .build();
                 testUser = userRepository.save(testUser);
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private User testUser;
+
+    @BeforeEach
+    void setUp() {
+        testUser = User.builder()
+                .username("group3tester")
+                .email("group3tester@codeforge.io")
+                .fullName("Group 3 Tester")
+                .passwordHash(passwordEncoder.encode("OldPassword123!"))
+                .role("Learner")
+                .streakDays(3)
+                .solvedCount(5)
+                .acceptanceRate(BigDecimal.valueOf(80.00))
+                .practiceTimeHours(BigDecimal.valueOf(2.5))
+                .build();
+        testUser = userRepository.save(testUser);
+    }
+
+    @Test
+    @DisplayName("Task 1: Forgot Password - Existing User generates token and returns 200 generic message")
+    void testForgotPassword_ExistingUser() throws Exception {
+        AuthDto.ForgotPasswordRequest request = new AuthDto.ForgotPasswordRequest("group3tester@codeforge.io");
+
+        mockMvc.perform(post("/api/auth/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("If an account exists, a reset link has been sent."));
+
+        User updatedUser = userRepository.findByEmail("group3tester@codeforge.io").orElseThrow();
+        assertNotNull(updatedUser.getResetToken());
+        assertNotNull(updatedUser.getResetTokenExpiry());
+        assertTrue(updatedUser.getResetTokenExpiry().isAfter(LocalDateTime.now()));
+    }
+
+    @Test
+    @DisplayName("Task 1: Forgot Password - Non-existent email returns 200 identical message without error (no enumeration)")
+    void testForgotPassword_NonExistentEmail() throws Exception {
+        AuthDto.ForgotPasswordRequest request = new AuthDto.ForgotPasswordRequest("nobody@codeforge.io");
+
+        mockMvc.perform(post("/api/auth/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("If an account exists, a reset link has been sent."));
+    }
+
+    @Test
+    @DisplayName("Task 1: Reset Password - Valid token resets password, clears token, and enables login with new password")
+    void testResetPassword_Success() throws Exception {
+        String token = UUID.randomUUID().toString();
+        testUser.setResetToken(token);
+        testUser.setResetTokenExpiry(LocalDateTime.now().plusMinutes(30));
+        userRepository.save(testUser);
+
+        AuthDto.ResetPasswordRequest request = new AuthDto.ResetPasswordRequest(token, "BrandNewPassword456!");
+
+        mockMvc.perform(post("/api/auth/reset-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Password reset successfully."));
+
+        User reloaded = userRepository.findByEmail("group3tester@codeforge.io").orElseThrow();
+        assertNull(reloaded.getResetToken());
+        assertNull(reloaded.getResetTokenExpiry());
+        assertTrue(passwordEncoder.matches("BrandNewPassword456!", reloaded.getPasswordHash()));
+
+        // Verify user can now authenticate with the new password
+        AuthDto.LoginRequest loginReq = new AuthDto.LoginRequest("group3tester", "BrandNewPassword456!");
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginReq)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").isString())
+                .andExpect(jsonPath("$.username").value("group3tester"));
+    }
+
+    @Test
+    @DisplayName("Task 1: Reset Password - Expired or Invalid token throws 400 Bad Request")
+    void testResetPassword_InvalidAndExpiredTokens() throws Exception {
+        // 1. Completely bogus token
+        AuthDto.ResetPasswordRequest bogusRequest = new AuthDto.ResetPasswordRequest("bogus-token-xyz", "NewPass123!");
+        mockMvc.perform(post("/api/auth/reset-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bogusRequest)))
+                .andExpect(status().isBadRequest());
+
+        // 2. Expired token
+        String expiredToken = UUID.randomUUID().toString();
+        testUser.setResetToken(expiredToken);
+        testUser.setResetTokenExpiry(LocalDateTime.now().minusMinutes(5));
+        userRepository.save(testUser);
+
+        AuthDto.ResetPasswordRequest expiredRequest = new AuthDto.ResetPasswordRequest(expiredToken, "NewPass123!");
+        mockMvc.perform(post("/api/auth/reset-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(expiredRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Task 3: GitHub OAuth - Unconfigured client redirects with oauthError=github_not_configured")
+    void testGithubAuth_NotConfigured() throws Exception {
+        Object originalClientId = org.springframework.test.util.ReflectionTestUtils.getField(authService, "githubClientId");
+        try {
+            org.springframework.test.util.ReflectionTestUtils.setField(authService, "githubClientId", "YOUR_GITHUB_CLIENT_ID");
+            mockMvc.perform(get("/api/auth/github"))
+                    .andExpect(status().isFound())
+                    .andExpect(header().string("Location", org.hamcrest.Matchers.containsString("oauthError=github_not_configured")));
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(authService, "githubClientId", originalClientId);
         }
 
         @Test
