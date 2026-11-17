@@ -139,13 +139,29 @@ button, input { font: inherit; }
   background: #fff;
 }
 .panel-top {
-  text-align: right;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
   font-size: 14px; color: var(--muted);
 }
+.panel-top > span { text-align: right; }
 .panel-top a {
   margin-left: 4px; font-weight: 600; color: var(--green-text);
   display: inline-flex; align-items: center; gap: 5px;
 }
+.panel-top .back-home {
+  margin-left: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--green-text);
+  font-size: 13px;
+  white-space: nowrap;
+  justify-content: center;
+  transition: background .15s, border-color .15s;
+}
+.panel-top .back-home:hover { background: #fafcfb; border-color: #c9d2cd; text-decoration: none; }
 .panel-top a:hover { text-decoration: underline; }
 
 .form-wrap {
@@ -345,6 +361,10 @@ button, input { font: inherit; }
   .hero { display: none; }
   .panel { padding: 28px 20px 24px; min-height: 100vh; }
   .form-wrap h2 { font-size: 34px; }
+}
+@media (max-width: 520px) {
+  .panel-top { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .panel-top > span { text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }

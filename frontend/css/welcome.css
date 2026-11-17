@@ -1,0 +1,270 @@
+body.welcome-page {
+  --welcome-page: #f1f5f9;
+  --welcome-surface: #ffffff;
+  --welcome-tint: #f8fafc;
+  --welcome-border: #e2e8e5;
+  --welcome-text: #19211d;
+  --welcome-muted: #64748b;
+  background-color: var(--welcome-page) !important;
+  color: var(--welcome-text);
+}
+
+body.welcome-page > header {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  border-color: var(--welcome-border) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+body.welcome-page > header .text-white {
+  color: #ffffff !important;
+}
+
+body.welcome-page > header .group .font-extrabold {
+  color: #111827 !important;
+}
+
+body.welcome-page .hero-glow {
+  background-color: #fbfdfc;
+  background-image: radial-gradient(circle at 50% 18%, rgba(16, 185, 129, 0.13), transparent 38%);
+}
+
+body.welcome-page .bg-gradient-to-b.from-\[\#0c1220\].to-\[\#090d16\] {
+  background-image: linear-gradient(to bottom, #f0fdf4, #ffffff) !important;
+}
+
+body.welcome-page .grid-pattern {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.07) 1px, transparent 1px);
+}
+
+body.welcome-page .bg-\[\#090d16\],
+body.welcome-page .bg-\[\#060910\],
+body.welcome-page .bg-\[\#0e1626\] {
+  background-color: var(--welcome-surface) !important;
+}
+
+body.welcome-page .bg-\[\#0c1220\],
+body.welcome-page .bg-\[\#131b2e\] {
+  background-color: var(--welcome-tint) !important;
+}
+
+body.welcome-page .bg-slate-900,
+body.welcome-page .bg-slate-900\/90,
+body.welcome-page .bg-slate-900\/80 {
+  background-color: var(--welcome-surface) !important;
+}
+
+body.welcome-page .bg-slate-900\/40,
+body.welcome-page .bg-slate-800\/60,
+body.welcome-page .bg-slate-800 {
+  background-color: var(--welcome-tint) !important;
+}
+
+body.welcome-page .text-white,
+body.welcome-page .text-slate-100,
+body.welcome-page .text-slate-200 {
+  color: #111827 !important;
+}
+
+body.welcome-page .text-slate-300 {
+  color: #374151 !important;
+}
+
+body.welcome-page .text-slate-400,
+body.welcome-page .text-slate-500 {
+  color: var(--welcome-muted) !important;
+}
+
+body.welcome-page .border-slate-800,
+body.welcome-page .border-slate-800\/80,
+body.welcome-page .border-slate-800\/60,
+body.welcome-page .border-slate-700,
+body.welcome-page .border-slate-700\/80 {
+  border-color: var(--welcome-border) !important;
+}
+
+body.welcome-page .hover\:bg-slate-800:hover,
+body.welcome-page .hover\:bg-slate-800\/60:hover {
+  background-color: #f1f5f9 !important;
+}
+
+body.welcome-page .code-editor-shadow {
+  box-shadow: 0 20px 50px -24px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+body.welcome-page #interactive-demo {
+  background-color: var(--welcome-page) !important;
+}
+
+body.welcome-page #interactive-demo .bg-\[\#090d16\] {
+  background-color: #090d16 !important;
+}
+
+body.welcome-page #interactive-demo .bg-\[\#0e1626\] {
+  background-color: #0e1626 !important;
+}
+
+body.welcome-page #interactive-demo .bg-\[\#131b2e\] {
+  background-color: #131b2e !important;
+}
+
+body.welcome-page #interactive-demo .bg-slate-900\/80 {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+body.welcome-page #interactive-demo .text-white,
+body.welcome-page #interactive-demo .text-slate-100 {
+  color: #f8fafc !important;
+}
+
+body.welcome-page #interactive-demo .text-slate-200,
+body.welcome-page #interactive-demo .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+body.welcome-page #interactive-demo .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+body.welcome-page #interactive-demo .text-slate-500 {
+  color: #64748b !important;
+}
+
+body.welcome-page #interactive-demo .border-slate-800,
+body.welcome-page #interactive-demo .border-slate-800\/80 {
+  border-color: #1e293b !important;
+}
+
+body.welcome-page #demo-run-btn,
+body.welcome-page .bg-emerald-500.text-white,
+body.welcome-page .bg-emerald-600.text-white {
+  color: #ffffff !important;
+}
+
+body.welcome-page > footer {
+  background-color: #ffffff !important;
+  border-color: var(--welcome-border) !important;
+}
+
+body.welcome-page.dark-theme {
+  --welcome-page: #1a1a1a;
+  --welcome-surface: #282828;
+  --welcome-tint: #303030;
+  --welcome-border: #333333;
+  --welcome-text: #eff1f6;
+  --welcome-muted: #9ca3af;
+  background-color: var(--welcome-page) !important;
+  color: var(--welcome-text);
+}
+
+body.welcome-page.dark-theme > header {
+  background-color: rgba(40, 40, 40, 0.96) !important;
+  border-color: var(--welcome-border) !important;
+}
+
+body.welcome-page.dark-theme > header .group .font-extrabold {
+  color: #eff1f6 !important;
+}
+
+body.welcome-page.dark-theme .hero-glow {
+  background-color: #1a1a1a;
+  background-image: radial-gradient(circle at 50% 18%, rgba(44, 187, 93, 0.12), transparent 40%);
+}
+
+body.welcome-page.dark-theme .grid-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
+
+body.welcome-page.dark-theme .bg-\[\#090d16\],
+body.welcome-page.dark-theme .bg-\[\#060910\],
+body.welcome-page.dark-theme .bg-\[\#0e1626\],
+body.welcome-page.dark-theme .bg-slate-900,
+body.welcome-page.dark-theme .bg-slate-900\/90,
+body.welcome-page.dark-theme .bg-slate-900\/80 {
+  background-color: var(--welcome-surface) !important;
+}
+
+body.welcome-page.dark-theme .bg-\[\#0c1220\],
+body.welcome-page.dark-theme .bg-\[\#131b2e\],
+body.welcome-page.dark-theme .bg-slate-900\/40,
+body.welcome-page.dark-theme .bg-slate-800\/60,
+body.welcome-page.dark-theme .bg-slate-800 {
+  background-color: var(--welcome-tint) !important;
+}
+
+body.welcome-page.dark-theme .text-white,
+body.welcome-page.dark-theme .text-slate-100,
+body.welcome-page.dark-theme .text-slate-200 {
+  color: #eff1f6 !important;
+}
+
+body.welcome-page.dark-theme .text-slate-300 {
+  color: #d1d5db !important;
+}
+
+body.welcome-page.dark-theme .text-slate-400,
+body.welcome-page.dark-theme .text-slate-500 {
+  color: var(--welcome-muted) !important;
+}
+
+body.welcome-page.dark-theme .border-slate-800,
+body.welcome-page.dark-theme .border-slate-800\/80,
+body.welcome-page.dark-theme .border-slate-800\/60,
+body.welcome-page.dark-theme .border-slate-700,
+body.welcome-page.dark-theme .border-slate-700\/80 {
+  border-color: var(--welcome-border) !important;
+}
+
+body.welcome-page.dark-theme .hover\:bg-slate-800:hover,
+body.welcome-page.dark-theme .hover\:bg-slate-800\/60:hover,
+body.welcome-page.dark-theme .welcome-actions #btn-theme-toggle:hover {
+  background-color: #3a3a3a !important;
+}
+
+body.welcome-page.dark-theme .bg-gradient-to-b.from-\[\#0c1220\].to-\[\#090d16\] {
+  background-image: linear-gradient(to bottom, #212824, #1a1a1a) !important;
+}
+
+body.welcome-page.dark-theme > footer {
+  background-color: #1a1a1a !important;
+  border-color: var(--welcome-border) !important;
+}
+
+body.welcome-page.dark-theme #interactive-demo {
+  background-color: var(--welcome-page) !important;
+}
+
+@media (max-width: 640px) {
+  body.welcome-page > header .max-w-7xl {
+    min-height: 56px;
+    height: auto;
+  }
+
+  body.welcome-page .welcome-actions {
+    gap: 0.25rem;
+  }
+
+  body.welcome-page .welcome-actions #btn-theme-toggle {
+    padding: 0.4rem;
+  }
+
+  body.welcome-page .welcome-actions a[href="login.html"] {
+    padding: 0.35rem 0.45rem;
+  }
+
+  body.welcome-page .welcome-actions a[href="signup.html"] {
+    gap: 0.25rem;
+    padding: 0.45rem 0.6rem;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  body.welcome-page .brand-version {
+    display: none;
+  }
+
+  body.welcome-page > header .max-w-7xl {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
