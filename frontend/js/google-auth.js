@@ -15,6 +15,7 @@ window.CodeForgeGoogle = (function () {
   // TODO: create an OAuth Client ID (type "Web application") in Google Cloud Console and paste it here.
   // Add your frontend origin (e.g. http://localhost:5500) to "Authorized JavaScript origins".
   const GOOGLE_CLIENT_ID = '501667220540-vm6ti043u9li4jkql91t7idl5st58tvb.apps.googleusercontent.com';
+  const GOOGLE_CLIENT_ID = '890450216432-o1d0lpp4e355tld6u8i0dvpredsjekfn.apps.googleusercontent.com';
 
   // TODO backend: POST { accessToken } -> AuthResponse
   const ENDPOINT = 'http://localhost:8080/api/auth/google';
