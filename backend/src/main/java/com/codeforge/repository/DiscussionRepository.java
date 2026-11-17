@@ -30,4 +30,3 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
     @Query("SELECT d FROM Discussion d LEFT JOIN FETCH d.author WHERE d.moderationStatus = :moderationStatus ORDER BY d.createdAt DESC")
     List<Discussion> findByModerationStatusOrderByCreatedAtDesc(String moderationStatus);
 }
-

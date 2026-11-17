@@ -1,6 +1,5 @@
 package com.codeforge.config;
 
-import com.codeforge.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,15 +15,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.codeforge.repository.UserRepository;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * HTTP filter that intercepts each incoming request to authenticate users via JWT Bearer tokens.
+ * HTTP filter that intercepts each incoming request to authenticate users via
+ * JWT Bearer tokens.
  *
- * <p>Extends {@link OncePerRequestFilter} to guarantee a single execution per request dispatch.
- * Populates Spring Security context with assigned {@link SimpleGrantedAuthority} roles.</p>
+ * <p>
+ * Extends {@link OncePerRequestFilter} to guarantee a single execution per
+ * request dispatch.
+ * Populates Spring Security context with assigned
+ * {@link SimpleGrantedAuthority} roles.
+ * </p>
  */
 @Component
 @RequiredArgsConstructor
@@ -41,18 +47,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     /**
-     * Intercepts incoming HTTP requests, processes Bearer tokens, and sets Spring Security context.
+     * Intercepts incoming HTTP requests, processes Bearer tokens, and sets Spring
+     * Security context.
      *
-     * @param request  Incoming HTTP servlet request.
-     * @param response Outgoing HTTP servlet response.
+     * @param request     Incoming HTTP servlet request.
+     * @param response    Outgoing HTTP servlet response.
      * @param filterChain Downstream filter execution chain.
      * @throws ServletException If a general servlet error occurs.
-     * @throws IOException      If an I/O exception occurs during request processing.
+     * @throws IOException      If an I/O exception occurs during request
+     *                          processing.
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
         try {
             // Extract the raw token string from the Authorization header
             String jwt = parseJwt(request);
@@ -76,21 +84,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
-                // Construct UserDetails principal with assigned role authority for the SecurityContext
+                // Construct UserDetails principal with assigned role authority for the
+                // SecurityContext
                 UserDetails userDetails = new User(username, "", authorities);
 
                 // Build authentication token populated with role authorities
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, authorities);
 
                 // Attach request-specific details (remote IP, session details if any)
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // Establish authenticated identity in the security context for the current thread
+                // Establish authenticated identity in the security context for the current
+                // thread
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            // Log error without aborting filter chain; unauthenticated requests fail at authorization gate if needed
+            // Log error without aborting filter chain; unauthenticated requests fail at
+            // authorization gate if needed
             logger.error("Cannot set user authentication: " + e.getMessage());
         }
 
@@ -101,10 +112,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * Extracts the raw JWT token from the HTTP {@code Authorization} header.
      *
-     * <p>Checks that the header has text and strictly begins with the {@code "Bearer "} prefix (case-sensitive).</p>
+     * <p>
+     * Checks that the header has text and strictly begins with the
+     * {@code "Bearer "} prefix (case-sensitive).
+     * </p>
      *
      * @param request Incoming HTTP servlet request.
-     * @return 7-character substring containing the raw token, or {@code null} if missing or malformed.
+     * @return 7-character substring containing the raw token, or {@code null} if
+     *         missing or malformed.
      */
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");

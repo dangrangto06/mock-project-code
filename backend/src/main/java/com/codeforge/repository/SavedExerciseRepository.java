@@ -38,4 +38,3 @@ public interface SavedExerciseRepository extends JpaRepository<SavedExercise, Lo
      */
     long countByUserId(Long userId);
 }
-

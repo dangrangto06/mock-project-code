@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-
 @Service
 @RequiredArgsConstructor
 @PropertySource("classpath:google.properties")
@@ -35,7 +34,10 @@ public class GoogleAuthService {
     private final JwtUtil jwtUtil;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    /** Set with the environment variable GOOGLE_CLIENT_ID (or property google.client-id). */
+    /**
+     * Set with the environment variable GOOGLE_CLIENT_ID (or property
+     * google.client-id).
+     */
     @Value("${google.client-id:}")
     private String googleClientId;
 
@@ -44,7 +46,8 @@ public class GoogleAuthService {
             throw ApiException.badRequest("Google sign-in is not configured on the server");
         }
 
-        // 1. The token must be valid AND issued for OUR app (blocks tokens minted for other apps)
+        // 1. The token must be valid AND issued for OUR app (blocks tokens minted for
+        // other apps)
         Map<String, Object> tokenInfo = fetch(TOKENINFO_URL, new HttpHeaders(), accessToken);
         Object audience = tokenInfo.getOrDefault("aud", tokenInfo.get("azp"));
         if (!googleClientId.equals(audience)) {
@@ -77,10 +80,13 @@ public class GoogleAuthService {
     }
 
     private User createUser(String email, String fullName) {
-        // username: 3-20 chars, letters/digits/underscore (same rule as the signup form)
+        // username: 3-20 chars, letters/digits/underscore (same rule as the signup
+        // form)
         String base = email.substring(0, email.indexOf('@')).replaceAll("[^A-Za-z0-9_]", "_");
-        if (base.length() > 14) base = base.substring(0, 14);
-        if (base.length() < 3) base = base + "user";
+        if (base.length() > 14)
+            base = base.substring(0, 14);
+        if (base.length() < 3)
+            base = base + "user";
 
         String username = base;
         while (userRepository.existsByUsername(username)) {
@@ -108,7 +114,8 @@ public class GoogleAuthService {
             Map<String, Object> body = restTemplate
                     .exchange(url, HttpMethod.GET, new HttpEntity<>(headers), Map.class, uriVariables)
                     .getBody();
-            if (body == null) throw ApiException.unauthorized("Invalid Google token");
+            if (body == null)
+                throw ApiException.unauthorized("Invalid Google token");
             return body;
         } catch (RestClientException e) {
             throw ApiException.unauthorized("Invalid Google token");

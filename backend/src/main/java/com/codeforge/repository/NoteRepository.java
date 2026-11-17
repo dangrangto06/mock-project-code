@@ -14,7 +14,8 @@ import java.util.Optional;
 public interface NoteRepository extends JpaRepository<Note, Long> {
 
     /**
-     * Finds all notes authored by the specified user, ordered by most recently updated.
+     * Finds all notes authored by the specified user, ordered by most recently
+     * updated.
      *
      * @param userId The ID of the owner user.
      * @return List of matching {@link Note} entities.
@@ -22,7 +23,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Note> findByUserIdOrderByUpdatedAtDesc(Long userId);
 
     /**
-     * Finds a single note by its ID and user ID, ensuring access control verification.
+     * Finds a single note by its ID and user ID, ensuring access control
+     * verification.
      *
      * @param id     The note primary key.
      * @param userId The owner user ID.
@@ -30,4 +32,3 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      */
     Optional<Note> findByIdAndUserId(Long id, Long userId);
 }
-

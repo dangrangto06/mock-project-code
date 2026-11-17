@@ -59,7 +59,10 @@ public class AuthService {
     @Value("${frontend.base-url:http://localhost:3000}")
     private String frontendBaseUrl;
 
-    /** RestTemplate for external OAuth provider communication (settable for testing). */
+    /**
+     * RestTemplate for external OAuth provider communication (settable for
+     * testing).
+     */
     @Setter
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -67,7 +70,8 @@ public class AuthService {
      * Authenticates user credentials and issues a signed JWT token.
      *
      * @param request The login credentials payload.
-     * @return {@link AuthDto.AuthResponse} containing the JWT bearer token and user profile details.
+     * @return {@link AuthDto.AuthResponse} containing the JWT bearer token and user
+     *         profile details.
      * @throws ApiException (HTTP 401) If username/email or password is invalid.
      */
     public AuthDto.AuthResponse authenticate(AuthDto.LoginRequest request) {
@@ -95,10 +99,12 @@ public class AuthService {
     }
 
     /**
-     * Registers a new user account, persists it to the database, and returns an access token.
+     * Registers a new user account, persists it to the database, and returns an
+     * access token.
      *
      * @param request Inbound registration details.
-     * @return {@link AuthDto.AuthResponse} containing the new user profile and authentication token.
+     * @return {@link AuthDto.AuthResponse} containing the new user profile and
+     *         authentication token.
      * @throws ApiException (HTTP 409) If the username or email is already taken.
      */
     public AuthDto.AuthResponse register(AuthDto.RegisterRequest request) {
@@ -143,7 +149,8 @@ public class AuthService {
 
     /**
      * Handles forgot password requests by generating a 30-minute UUID reset token.
-     * Always returns an identical success message to prevent user email enumeration.
+     * Always returns an identical success message to prevent user email
+     * enumeration.
      *
      * @param request Inbound payload with target email.
      * @return {@link AuthDto.MessageResponse} confirmation message.
@@ -188,12 +195,84 @@ public class AuthService {
     }
 
     /**
+     * Authenticates or registers a user via Google OAuth2 access token.
+     *
+     * @param request Payload containing the Google access token.
+     * @return {@link AuthDto.AuthResponse} with JWT and user identity profile.
+     */
+    public AuthDto.AuthResponse googleLogin(AuthDto.GoogleLoginRequest request) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(request.getAccessToken());
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Map> response;
+        try {
+            response = restTemplate.exchange(
+                    "https://www.googleapis.com/oauth2/v3/userinfo",
+                    HttpMethod.GET,
+                    entity,
+                    Map.class);
+        } catch (Exception e) {
+            log.error("Google token verification failed: {}", e.getMessage());
+            throw ApiException.unauthorized("Failed to verify Google access token: " + e.getMessage());
+        }
+
+        Map body = response.getBody();
+        if (body == null || body.get("email") == null) {
+            throw ApiException.unauthorized("Google profile did not contain a valid email address");
+        }
+
+        String email = (String) body.get("email");
+        String name = (String) body.get("name");
+        if (name == null || name.isBlank()) {
+            name = email.split("@")[0];
+        }
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            String baseUsername = email.split("@")[0].replaceAll("[^a-zA-Z0-9_]", "");
+            if (baseUsername.isBlank()) {
+                baseUsername = "coder";
+            }
+            String candidateUsername = baseUsername;
+            int suffix = 1;
+            while (userRepository.existsByUsername(candidateUsername)) {
+                candidateUsername = baseUsername + suffix++;
+            }
+
+            user = User.builder()
+                    .username(candidateUsername)
+                    .email(email)
+                    .fullName(name)
+                    .passwordHash(passwordEncoder.encode(UUID.randomUUID().toString()))
+                    .role("Learner")
+                    .streakDays(1)
+                    .solvedCount(0)
+                    .acceptanceRate(BigDecimal.ZERO)
+                    .practiceTimeHours(BigDecimal.ZERO)
+                    .build();
+            user = userRepository.save(user);
+        }
+
+        String token = jwtUtil.generateToken(user.getUsername());
+        return AuthDto.AuthResponse.builder()
+                .token(token)
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .role(user.getRole())
+                .build();
+    }
+
+    /**
      * Determines GitHub authorization URL or redirects with configuration error.
      *
      * @return Redirect destination URI string.
      */
     public String getGithubAuthUrl() {
-        if (githubClientId == null || githubClientId.isBlank() || "YOUR_GITHUB_CLIENT_ID".equalsIgnoreCase(githubClientId)) {
+        if (githubClientId == null || githubClientId.isBlank()
+                || "YOUR_GITHUB_CLIENT_ID".equalsIgnoreCase(githubClientId)) {
             return frontendBaseUrl + "/login.html?oauthError=github_not_configured";
         }
         return "https://github.com/login/oauth/authorize?client_id=" + githubClientId
@@ -202,7 +281,8 @@ public class AuthService {
     }
 
     /**
-     * Exchanges GitHub authorization code for user profile, mints JWT, and prepares redirect URL.
+     * Exchanges GitHub authorization code for user profile, mints JWT, and prepares
+     * redirect URL.
      *
      * @param code Authorization code returned by GitHub OAuth.
      * @return Redirect URI string targeting the frontend login handler.
@@ -222,15 +302,13 @@ public class AuthService {
                     "client_id", githubClientId,
                     "client_secret", githubClientSecret,
                     "code", code,
-                    "redirect_uri", githubRedirectUri
-            );
+                    "redirect_uri", githubRedirectUri);
 
             HttpEntity<Map<String, String>> tokenReq = new HttpEntity<>(tokenPayload, tokenHeaders);
             ResponseEntity<Map> tokenRes = restTemplate.postForEntity(
                     "https://github.com/login/oauth/access_token",
                     tokenReq,
-                    Map.class
-            );
+                    Map.class);
 
             Map tokenBody = tokenRes.getBody();
             if (tokenBody == null || tokenBody.get("access_token") == null) {
@@ -249,8 +327,7 @@ public class AuthService {
                     "https://api.github.com/user",
                     HttpMethod.GET,
                     ghReq,
-                    Map.class
-            );
+                    Map.class);
 
             Map userProfile = userProfileRes.getBody();
             if (userProfile == null) {
@@ -271,8 +348,7 @@ public class AuthService {
                             "https://api.github.com/user/emails",
                             HttpMethod.GET,
                             ghReq,
-                            List.class
-                    );
+                            List.class);
                     List<Map<String, Object>> emailsList = (List<Map<String, Object>>) emailsRes.getBody();
                     if (emailsList != null) {
                         for (Map<String, Object> emailEntry : emailsList) {
@@ -330,10 +406,10 @@ public class AuthService {
                     "username", user.getUsername(),
                     "email", user.getEmail(),
                     "fullName", user.getFullName(),
-                    "role", user.getRole()
-            );
+                    "role", user.getRole());
 
-            String encodedUserJson = URLEncoder.encode(objectMapper.writeValueAsString(userJsonMap), StandardCharsets.UTF_8);
+            String encodedUserJson = URLEncoder.encode(objectMapper.writeValueAsString(userJsonMap),
+                    StandardCharsets.UTF_8);
             return frontendBaseUrl + "/login.html?oauthToken=" + jwt + "&user=" + encodedUserJson;
         } catch (Exception e) {
             log.error("GitHub OAuth callback error: {}", e.getMessage(), e);

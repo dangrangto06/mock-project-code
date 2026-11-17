@@ -23,11 +23,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Service managing algorithmic problems, search queries, problem detail lookups, and creation.
+ * Service managing algorithmic problems, search queries, problem detail
+ * lookups, and creation.
  *
- * <p>Coordinates data retrieval across {@link ExerciseRepository}, {@link SubmissionRepository},
- * and {@link UserRepository}. Enriches problem data with contextual user status (e.g., whether
- * the authenticated user has already solved or attempted a challenge).</p>
+ * <p>
+ * Coordinates data retrieval across {@link ExerciseRepository},
+ * {@link SubmissionRepository},
+ * and {@link UserRepository}. Enriches problem data with contextual user status
+ * (e.g., whether
+ * the authenticated user has already solved or attempted a challenge).
+ * </p>
  */
 @Service
 @RequiredArgsConstructor
@@ -49,26 +54,34 @@ public class ExerciseService {
     // ── Query ─────────────────────────────────────────────────────────────────
 
     /**
-     * Retrieves a filtered list of exercises enriched with caller-specific progress metadata.
+     * Retrieves a filtered list of exercises enriched with caller-specific progress
+     * metadata.
      *
-     * <p>Applies multi-criteria search filtering (by search keyword, difficulty, and topic)
-     * and maps each entity into an {@link ExerciseDto} reflecting the user's solved/in-progress status.</p>
+     * <p>
+     * Applies multi-criteria search filtering (by search keyword, difficulty, and
+     * topic)
+     * and maps each entity into an {@link ExerciseDto} reflecting the user's
+     * solved/in-progress status.
+     * </p>
      *
      * @param search     Optional text keyword matching title or problem ID.
-     * @param difficulty Optional difficulty tier ("Easy", "Medium", "Hard") or "all".
-     * @param topic      Optional category topic (e.g. "Arrays", "Hash map") or "all".
+     * @param difficulty Optional difficulty tier ("Easy", "Medium", "Hard") or
+     *                   "all".
+     * @param topic      Optional category topic (e.g. "Arrays", "Hash map") or
+     *                   "all".
      * @param tab        Optional tab filter ("all", "saved", "my").
-     * @param username   Username of the authenticated user, or {@code null} if anonymous.
+     * @param username   Username of the authenticated user, or {@code null} if
+     *                   anonymous.
      * @return List of matching {@link ExerciseDto} objects.
      */
     public List<ExerciseDto> getAll(String search, String difficulty, String topic,
-                                    String tab, String username) {
+            String tab, String username) {
         // Query exercises using dynamic search criteria
         List<Exercise> exercises = exerciseRepository.searchExercises(
                 (search != null && !search.isBlank()) ? search.trim() : null,
-                (difficulty != null && !difficulty.isBlank() && !"all".equalsIgnoreCase(difficulty)) ? difficulty : null,
-                (topic != null && !topic.isBlank() && !"all".equalsIgnoreCase(topic)) ? topic : null
-        );
+                (difficulty != null && !difficulty.isBlank() && !"all".equalsIgnoreCase(difficulty)) ? difficulty
+                        : null,
+                (topic != null && !topic.isBlank() && !"all".equalsIgnoreCase(topic)) ? topic : null);
 
         // Fetch user entity if authenticated to evaluate problem progress status
         User user = username != null ? userRepository.findByUsername(username).orElse(null) : null;
@@ -89,9 +102,11 @@ public class ExerciseService {
                     .filter(e -> savedExerciseRepository.existsByUserIdAndExerciseId(user.getId(), e.getId()))
                     .collect(Collectors.toList());
         } else {
-            // "all" tab: approved problems, plus any problems authored by the current user so they persist on refresh
+            // "all" tab: approved problems, plus any problems authored by the current user
+            // so they persist on refresh
             exercises = exercises.stream()
-                    .filter(e -> isApproved(e) || (user != null && e.getAuthor() != null && e.getAuthor().getId().equals(user.getId())))
+                    .filter(e -> isApproved(e)
+                            || (user != null && e.getAuthor() != null && e.getAuthor().getId().equals(user.getId())))
                     .collect(Collectors.toList());
         }
 
@@ -108,8 +123,10 @@ public class ExerciseService {
      * Retrieves full problem details for a single exercise by ID.
      *
      * @param id       The unique ID of the problem.
-     * @param username Username of the authenticated caller (for solving status context).
-     * @return An {@link Optional} containing the {@link ExerciseDto}, or empty if not found.
+     * @param username Username of the authenticated caller (for solving status
+     *                 context).
+     * @return An {@link Optional} containing the {@link ExerciseDto}, or empty if
+     *         not found.
      */
     public Optional<ExerciseDto> getById(Long id, String username) {
         User user = username != null ? userRepository.findByUsername(username).orElse(null) : null;
@@ -117,21 +134,24 @@ public class ExerciseService {
     }
 
     /**
-     * Selects and returns a random problem from the catalog for the "Pick Random" feature.
+     * Selects and returns a random problem from the catalog for the "Pick Random"
+     * feature.
      *
      * @param username Username of the authenticated caller.
      * @return Random {@link ExerciseDto}, or {@code null} if the catalog is empty.
      */
     public ExerciseDto getRandom(String username) {
         List<Exercise> all = exerciseRepository.findAll();
-        if (all.isEmpty()) return null;
+        if (all.isEmpty())
+            return null;
         int idx = (int) (Math.random() * all.size());
         User user = username != null ? userRepository.findByUsername(username).orElse(null) : null;
         return toDto(all.get(idx), user);
     }
 
     /**
-     * Creates and persists a new custom coding problem authored by an authenticated user.
+     * Creates and persists a new custom coding problem authored by an authenticated
+     * user.
      *
      * @param req      The problem creation request payload.
      * @param username The username of the author.
@@ -143,7 +163,7 @@ public class ExerciseService {
             throw com.codeforge.exception.ApiException.badRequest("Title is required");
         }
         long nextId = exerciseRepository.findMaxId() + 1;
-    
+
         Exercise exercise = new Exercise();
         exercise.setId(nextId);
         exercise.setTitle(req.getTitle().trim());
@@ -155,7 +175,7 @@ public class ExerciseService {
         exercise.setMemoryLimitMb(256);
         exercise.setIsCustom(true);
         exercise.setCreatedAt(LocalDateTime.now());
-    
+
         User author = userRepository.findByUsername(username)
                 .or(() -> userRepository.findByEmail(username))
                 .orElse(null);
@@ -167,7 +187,7 @@ public class ExerciseService {
         } else {
             exercise.setModerationStatus("PENDING");
         }
-    
+
         Exercise saved = exerciseRepository.save(exercise);
         return toDto(saved, author);
     }
@@ -175,7 +195,8 @@ public class ExerciseService {
     // ── Mappers ───────────────────────────────────────────────────────────────
 
     /**
-     * Maps an {@link Exercise} entity to an {@link ExerciseDto}, calculating user-specific progress.
+     * Maps an {@link Exercise} entity to an {@link ExerciseDto}, calculating
+     * user-specific progress.
      *
      * @param e    The exercise entity.
      * @param user The calling user (may be {@code null} for anonymous requests).
@@ -184,11 +205,12 @@ public class ExerciseService {
     private ExerciseDto toDto(Exercise e, User user) {
         // Format acceptance rate percentage string
         String acceptance = e.getAcceptanceRate() != null
-                ? e.getAcceptanceRate().toPlainString() + "%" : "N/A";
+                ? e.getAcceptanceRate().toPlainString() + "%"
+                : "N/A";
 
         // Map sample test cases for presentation in the IDE
-        List<ExerciseDto.TestCaseDto> testCaseDtos = e.getTestCases() == null ? List.of() :
-                e.getTestCases().stream()
+        List<ExerciseDto.TestCaseDto> testCaseDtos = e.getTestCases() == null ? List.of()
+                : e.getTestCases().stream()
                         .filter(tc -> Boolean.TRUE.equals(tc.getIsSample()))
                         .map(tc -> ExerciseDto.TestCaseDto.builder()
                                 .id(tc.getId())
@@ -202,7 +224,8 @@ public class ExerciseService {
         // Compute personal progress status for the authenticated user
         String status = "unattempted";
         if (user != null) {
-            List<Submission> subs = submissionRepository.findByUserIdAndExerciseIdOrderBySubmittedAtDesc(user.getId(), e.getId());
+            List<Submission> subs = submissionRepository.findByUserIdAndExerciseIdOrderBySubmittedAtDesc(user.getId(),
+                    e.getId());
             if (subs.stream().anyMatch(s -> "Accepted".equals(s.getStatus()))) {
                 status = "solved";
             } else if (!subs.isEmpty()) {
@@ -223,7 +246,8 @@ public class ExerciseService {
                 .title(e.getTitle())
                 .difficulty(e.getDifficulty())
                 .topics(e.getTopics() != null
-                        ? List.of(e.getTopics().split(",\\s*")) : List.of())
+                        ? List.of(e.getTopics().split(",\\s*"))
+                        : List.of())
                 .acceptance(acceptance)
                 .status(status)
                 .saved(saved)
@@ -252,7 +276,8 @@ public class ExerciseService {
         Exercise exercise = exerciseRepository.findById(exerciseId)
                 .orElseThrow(() -> ApiException.notFound("Exercise not found: " + exerciseId));
 
-        Optional<SavedExercise> existing = savedExerciseRepository.findByUserIdAndExerciseId(user.getId(), exercise.getId());
+        Optional<SavedExercise> existing = savedExerciseRepository.findByUserIdAndExerciseId(user.getId(),
+                exercise.getId());
         if (existing.isPresent()) {
             savedExerciseRepository.delete(existing.get());
             return false;
@@ -267,16 +292,20 @@ public class ExerciseService {
     }
 
     /**
-     * Retrieves the submission history for a specific exercise submitted by the user.
+     * Retrieves the submission history for a specific exercise submitted by the
+     * user.
      *
      * @param exerciseId The exercise identifier.
      * @param username   The username of the user.
-     * @return List of {@link SubmissionDto} ordered descending by submission timestamp.
+     * @return List of {@link SubmissionDto} ordered descending by submission
+     *         timestamp.
      */
     public List<SubmissionDto> getSubmissions(Long exerciseId, String username) {
-        if (username == null) return List.of();
+        if (username == null)
+            return List.of();
         User user = userRepository.findByUsername(username).orElse(null);
-        if (user == null) return List.of();
+        if (user == null)
+            return List.of();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm");
         return submissionRepository.findByUserIdAndExerciseIdOrderBySubmittedAtDesc(user.getId(), exerciseId)

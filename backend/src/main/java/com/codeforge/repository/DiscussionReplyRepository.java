@@ -19,4 +19,3 @@ public interface DiscussionReplyRepository extends JpaRepository<DiscussionReply
     @Query("SELECT r FROM DiscussionReply r LEFT JOIN FETCH r.author WHERE r.discussion.id = :discussionId ORDER BY r.createdAt ASC")
     List<DiscussionReply> findByDiscussionIdOrderByCreatedAtAsc(Long discussionId);
 }
-

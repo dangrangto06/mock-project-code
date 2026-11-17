@@ -20,4 +20,3 @@ public interface DiscussionUpvoteRepository extends JpaRepository<DiscussionUpvo
 
     long countByDiscussionId(Long discussionId);
 }
-

@@ -11,42 +11,55 @@ import java.util.List;
 /**
  * Spring Data JPA repository for {@link Exercise} entity management.
  *
- * <p>Enables full lifecycle persistence and multi-criteria dynamic filtering
- * across algorithm challenges by difficulty tier, category tags, and search keywords.</p>
+ * <p>
+ * Enables full lifecycle persistence and multi-criteria dynamic filtering
+ * across algorithm challenges by difficulty tier, category tags, and search
+ * keywords.
+ * </p>
  */
 @Repository
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
-    
-    /**
-     * Finds all exercises matching a given difficulty tier, ignoring case sensitivity.
-     *
-     * @param difficulty The difficulty level (e.g. "Easy", "Medium", "Hard").
-     * @return List of matching {@link Exercise} entities.
-     */
-    List<Exercise> findByDifficultyIgnoreCase(String difficulty);
 
-    /**
-     * Executes a dynamic multi-predicate search across the problem catalog.
-     *
-     * <p>Allows combining title substring matches, problem ID string matching, difficulty filter,
-     * and topic keywords in a single JPQL query with null-safe parameter evaluations.</p>
-     *
-     * @param query      Keyword query matching against exercise title or numerical ID.
-     * @param difficulty Difficulty filter ("Easy", "Medium", "Hard") or null for all.
-     * @param topic      Algorithmic topic tag (e.g. "Arrays", "Hash map") or null for all.
-     * @return Filtered list of {@link Exercise} entities.
-     */
-    @Query("SELECT e FROM Exercise e WHERE " +
-           "(:query IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :query, '%')) OR STR(e.id) LIKE CONCAT('%', :query, '%')) AND " +
-           "(:difficulty IS NULL OR LOWER(e.difficulty) = LOWER(:difficulty)) AND " +
-           "(:topic IS NULL OR LOWER(e.topics) LIKE LOWER(CONCAT('%', :topic, '%')))")
-    List<Exercise> searchExercises(@Param("query") String query,
-                                  @Param("difficulty") String difficulty,
-                                  @Param("topic") String topic);
-     @Query("SELECT COALESCE(MAX(e.id), 100) FROM Exercise e")
-     Long findMaxId();
+       /**
+        * Finds all exercises matching a given difficulty tier, ignoring case
+        * sensitivity.
+        *
+        * @param difficulty The difficulty level (e.g. "Easy", "Medium", "Hard").
+        * @return List of matching {@link Exercise} entities.
+        */
+       List<Exercise> findByDifficultyIgnoreCase(String difficulty);
 
-     long countByModerationStatus(String moderationStatus);
+       /**
+        * Executes a dynamic multi-predicate search across the problem catalog.
+        *
+        * <p>
+        * Allows combining title substring matches, problem ID string matching,
+        * difficulty filter,
+        * and topic keywords in a single JPQL query with null-safe parameter
+        * evaluations.
+        * </p>
+        *
+        * @param query      Keyword query matching against exercise title or numerical
+        *                   ID.
+        * @param difficulty Difficulty filter ("Easy", "Medium", "Hard") or null for
+        *                   all.
+        * @param topic      Algorithmic topic tag (e.g. "Arrays", "Hash map") or null
+        *                   for all.
+        * @return Filtered list of {@link Exercise} entities.
+        */
+       @Query("SELECT e FROM Exercise e WHERE " +
+                     "(:query IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :query, '%')) OR STR(e.id) LIKE CONCAT('%', :query, '%')) AND "
+                     +
+                     "(:difficulty IS NULL OR LOWER(e.difficulty) = LOWER(:difficulty)) AND " +
+                     "(:topic IS NULL OR LOWER(e.topics) LIKE LOWER(CONCAT('%', :topic, '%')))")
+       List<Exercise> searchExercises(@Param("query") String query,
+                     @Param("difficulty") String difficulty,
+                     @Param("topic") String topic);
 
-     List<Exercise> findByModerationStatusOrderByCreatedAtDesc(String moderationStatus);
+       @Query("SELECT COALESCE(MAX(e.id), 100) FROM Exercise e")
+       Long findMaxId();
+
+       long countByModerationStatus(String moderationStatus);
+
+       List<Exercise> findByModerationStatusOrderByCreatedAtDesc(String moderationStatus);
 }

@@ -24,16 +24,23 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Service aggregating dashboard telemetry, personalized user metrics, and practice roadmaps.
+ * Service aggregating dashboard telemetry, personalized user metrics, and
+ * practice roadmaps.
  *
- * <p>Consolidates database records across users, exercises, and submissions to formulate
- * a unified {@link OverviewResponse} that populates the CodeForge main dashboard.</p>
+ * <p>
+ * Consolidates database records across users, exercises, and submissions to
+ * formulate
+ * a unified {@link OverviewResponse} that populates the CodeForge main
+ * dashboard.
+ * </p>
  */
 @Service
 @RequiredArgsConstructor
 public class OverviewService {
 
-    /** Repository for accessing exercise data to populate recommended challenges. */
+    /**
+     * Repository for accessing exercise data to populate recommended challenges.
+     */
     private final ExerciseRepository exerciseRepository;
 
     /** Repository for retrieving user submission history and recent activities. */
@@ -45,17 +52,24 @@ public class OverviewService {
     /**
      * Builds and returns the comprehensive overview response for a given user.
      *
-     * <p>Data Assembly Lifecycle:</p>
+     * <p>
+     * Data Assembly Lifecycle:
+     * </p>
      * <ol>
-     *   <li>Retrieve user profile from database; falls back to guest defaults if unauthenticated.</li>
-     *   <li>Populate user metrics (streak, solved counts, acceptance rates, and practice hours).</li>
-     *   <li>Select the next recommended coding challenge from the catalog.</li>
-     *   <li>Formulate weekly goal progress and day-by-day practice status.</li>
-     *   <li>Populate structured learning paths (Arrays & Hashing, Dynamic Programming, Graphs).</li>
-     *   <li>Retrieve up to 5 most recent submissions to populate the recent activity log.</li>
+     * <li>Retrieve user profile from database; falls back to guest defaults if
+     * unauthenticated.</li>
+     * <li>Populate user metrics (streak, solved counts, acceptance rates, and
+     * practice hours).</li>
+     * <li>Select the next recommended coding challenge from the catalog.</li>
+     * <li>Formulate weekly goal progress and day-by-day practice status.</li>
+     * <li>Populate structured learning paths (Arrays & Hashing, Dynamic
+     * Programming, Graphs).</li>
+     * <li>Retrieve up to 5 most recent submissions to populate the recent activity
+     * log.</li>
      * </ol>
      *
-     * @param username The username of the user requesting the overview (or "anonymous").
+     * @param username The username of the user requesting the overview (or
+     *                 "anonymous").
      * @return Fully populated {@link OverviewResponse} DTO.
      */
     @Transactional(readOnly = true)
@@ -72,7 +86,7 @@ public class OverviewService {
         // ── Weekly goal (Mon–Sun) ─────────────────────────────────────────────
         LocalDate today = LocalDate.now();
         LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        String[] dayLabels = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        String[] dayLabels = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
         List<OverviewResponse.DayStatus> weekDays = new ArrayList<>();
         int weeklyDoneCount = 0;
 
@@ -83,12 +97,14 @@ public class OverviewService {
                 done = userSubs.stream()
                         .anyMatch(s -> s.getSubmittedAt() != null && s.getSubmittedAt().toLocalDate().equals(d));
             }
-            if (done) weeklyDoneCount++;
+            if (done)
+                weeklyDoneCount++;
             weekDays.add(new OverviewResponse.DayStatus(dayLabels[i], done));
         }
 
         int target = 5;
-        int pct = (user != null && target > 0) ? Math.min(100, (int) Math.round((weeklyDoneCount * 100.0) / target)) : 0;
+        int pct = (user != null && target > 0) ? Math.min(100, (int) Math.round((weeklyDoneCount * 100.0) / target))
+                : 0;
 
         OverviewResponse.WeeklyGoal weeklyGoal = OverviewResponse.WeeklyGoal.builder()
                 .done(weeklyDoneCount)
@@ -109,7 +125,8 @@ public class OverviewService {
         OverviewResponse.UserSummary userSummary = new OverviewResponse.UserSummary();
         if (user != null) {
             String firstName = user.getFullName() != null && !user.getFullName().isBlank()
-                    ? user.getFullName().split(" ")[0] : user.getUsername();
+                    ? user.getFullName().split(" ")[0]
+                    : user.getUsername();
             String initials = buildInitials(user.getFullName());
 
             userSummary.setName(user.getFullName() != null ? user.getFullName() : user.getUsername());
@@ -125,38 +142,46 @@ public class OverviewService {
                 userSummary.setPracticeTime("0h");
                 userSummary.setPracticeDelta("+0h");
             } else {
-                userSummary.setAcceptanceRate(user.getAcceptanceRate() != null && user.getAcceptanceRate().compareTo(BigDecimal.ZERO) > 0
-                        ? user.getAcceptanceRate().toPlainString() + "%" : "0%");
+                userSummary.setAcceptanceRate(
+                        user.getAcceptanceRate() != null && user.getAcceptanceRate().compareTo(BigDecimal.ZERO) > 0
+                                ? user.getAcceptanceRate().toPlainString() + "%"
+                                : "0%");
 
                 // Compute real acceptanceDelta
                 long thisWeekSubs = userSubs.stream()
                         .filter(s -> s.getSubmittedAt() != null && !s.getSubmittedAt().toLocalDate().isBefore(monday))
                         .count();
                 long thisWeekAccepted = userSubs.stream()
-                        .filter(s -> s.getSubmittedAt() != null && !s.getSubmittedAt().toLocalDate().isBefore(monday) && "Accepted".equalsIgnoreCase(s.getStatus()))
+                        .filter(s -> s.getSubmittedAt() != null && !s.getSubmittedAt().toLocalDate().isBefore(monday)
+                                && "Accepted".equalsIgnoreCase(s.getStatus()))
                         .count();
                 long priorSubs = userSubs.stream()
                         .filter(s -> s.getSubmittedAt() != null && s.getSubmittedAt().toLocalDate().isBefore(monday))
                         .count();
                 long priorAccepted = userSubs.stream()
-                        .filter(s -> s.getSubmittedAt() != null && s.getSubmittedAt().toLocalDate().isBefore(monday) && "Accepted".equalsIgnoreCase(s.getStatus()))
+                        .filter(s -> s.getSubmittedAt() != null && s.getSubmittedAt().toLocalDate().isBefore(monday)
+                                && "Accepted".equalsIgnoreCase(s.getStatus()))
                         .count();
 
                 if (priorSubs > 0 && thisWeekSubs > 0) {
                     double priorRate = priorAccepted * 100.0 / priorSubs;
-                    double currentRate = userSubs.stream().filter(s -> "Accepted".equalsIgnoreCase(s.getStatus())).count() * 100.0 / userSubs.size();
+                    double currentRate = userSubs.stream().filter(s -> "Accepted".equalsIgnoreCase(s.getStatus()))
+                            .count() * 100.0 / userSubs.size();
                     double delta = currentRate - priorRate;
                     userSummary.setAcceptanceDelta((delta >= 0 ? "+" : "") + String.format(Locale.US, "%.1f%%", delta));
                 } else if (thisWeekSubs > 0) {
-                    double currentRate = userSubs.stream().filter(s -> "Accepted".equalsIgnoreCase(s.getStatus())).count() * 100.0 / userSubs.size();
+                    double currentRate = userSubs.stream().filter(s -> "Accepted".equalsIgnoreCase(s.getStatus()))
+                            .count() * 100.0 / userSubs.size();
                     userSummary.setAcceptanceDelta(String.format(Locale.US, "+%.1f%%", currentRate));
                 } else {
                     userSummary.setAcceptanceDelta("+0%");
                 }
 
                 // Practice time & delta
-                userSummary.setPracticeTime(user.getPracticeTimeHours() != null && user.getPracticeTimeHours().compareTo(BigDecimal.ZERO) > 0
-                        ? user.getPracticeTimeHours().toPlainString() + "h" : "0h");
+                userSummary.setPracticeTime(user.getPracticeTimeHours() != null
+                        && user.getPracticeTimeHours().compareTo(BigDecimal.ZERO) > 0
+                                ? user.getPracticeTimeHours().toPlainString() + "h"
+                                : "0h");
                 double thisWeekHours = Math.round(thisWeekSubs * 0.25 * 10.0) / 10.0;
                 userSummary.setPracticeDelta(thisWeekHours > 0
                         ? String.format(Locale.US, "+%.1fh", thisWeekHours)
@@ -224,7 +249,8 @@ public class OverviewService {
                     .difficulty(nextEx.getDifficulty())
                     .status(challengeStatus)
                     .description(nextEx.getDescription() != null
-                            ? nextEx.getDescription().substring(0, Math.min(120, nextEx.getDescription().length())) + "…"
+                            ? nextEx.getDescription().substring(0, Math.min(120, nextEx.getDescription().length()))
+                                    + "…"
                             : "")
                     .meta(nextEx.getTopics())
                     .stepInfo(nextEx.getTopics() != null ? nextEx.getTopics() : "Algorithm")
@@ -240,9 +266,12 @@ public class OverviewService {
         List<String> track2Keywords = List.of("strings", "sorting", "two pointers");
         List<String> track3Keywords = List.of("stacks", "heap", "trees");
 
-        List<Exercise> track1Exercises = approvedExercises.stream().filter(e -> matchesTrack(e, track1Keywords)).toList();
-        List<Exercise> track2Exercises = approvedExercises.stream().filter(e -> matchesTrack(e, track2Keywords)).toList();
-        List<Exercise> track3Exercises = approvedExercises.stream().filter(e -> matchesTrack(e, track3Keywords)).toList();
+        List<Exercise> track1Exercises = approvedExercises.stream().filter(e -> matchesTrack(e, track1Keywords))
+                .toList();
+        List<Exercise> track2Exercises = approvedExercises.stream().filter(e -> matchesTrack(e, track2Keywords))
+                .toList();
+        List<Exercise> track3Exercises = approvedExercises.stream().filter(e -> matchesTrack(e, track3Keywords))
+                .toList();
 
         int track1Total = track1Exercises.size();
         int track1Completed = (int) track1Exercises.stream().filter(e -> solvedIds.contains(e.getId())).count();
@@ -257,10 +286,12 @@ public class OverviewService {
         int track3Pct = track3Total > 0 ? (int) Math.round((track3Completed * 100.0) / track3Total) : 0;
 
         List<OverviewResponse.LearningPath> learningPaths = List.of(
-                new OverviewResponse.LearningPath("arrays", "Arrays & Hashing", "Foundation", "🧩", track1Completed, track1Total, track1Pct),
-                new OverviewResponse.LearningPath("strings", "Two Pointers & Strings", "Essentials", "↔", track2Completed, track2Total, track2Pct),
-                new OverviewResponse.LearningPath("stacks", "Trees, Stacks & Heaps", "Problem Solving", "🌲", track3Completed, track3Total, track3Pct)
-        );
+                new OverviewResponse.LearningPath("arrays", "Arrays & Hashing", "Foundation", "🧩", track1Completed,
+                        track1Total, track1Pct),
+                new OverviewResponse.LearningPath("strings", "Two Pointers & Strings", "Essentials", "↔",
+                        track2Completed, track2Total, track2Pct),
+                new OverviewResponse.LearningPath("stacks", "Trees, Stacks & Heaps", "Problem Solving", "🌲",
+                        track3Completed, track3Total, track3Pct));
 
         // ── Recent activity ───────────────────────────────────────────────────
         List<OverviewResponse.RecentActivityItem> recentActivity = List.of();
@@ -275,7 +306,8 @@ public class OverviewService {
                             .runtime(s.getRuntimeMs() != null ? s.getRuntimeMs() + " ms" : "—")
                             .memory(s.getMemoryMb() != null ? s.getMemoryMb().toPlainString() + " MB" : "—")
                             .date(s.getSubmittedAt() != null
-                                    ? s.getSubmittedAt().format(DateTimeFormatter.ofPattern("MMM d, yyyy")) : "")
+                                    ? s.getSubmittedAt().format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
+                                    : "")
                             .build())
                     .collect(Collectors.toList());
         }
@@ -292,15 +324,20 @@ public class OverviewService {
     /**
      * Extracts uppercase avatar initials from a user's full name.
      *
-     * <p>Example: {@code "Alex Morgan"} &rarr; {@code "AM"}, {@code "Hieu"} &rarr; {@code "H"}.</p>
+     * <p>
+     * Example: {@code "Alex Morgan"} &rarr; {@code "AM"}, {@code "Hieu"} &rarr;
+     * {@code "H"}.
+     * </p>
      *
      * @param fullName The user's full display name string.
      * @return Uppercase initials string, or "?" if empty.
      */
     private String buildInitials(String fullName) {
-        if (fullName == null || fullName.isBlank()) return "?";
+        if (fullName == null || fullName.isBlank())
+            return "?";
         String[] parts = fullName.trim().split("\\s+");
-        if (parts.length == 1) return parts[0].substring(0, 1).toUpperCase();
+        if (parts.length == 1)
+            return parts[0].substring(0, 1).toUpperCase();
         return (parts[0].substring(0, 1) + parts[parts.length - 1].substring(0, 1)).toUpperCase();
     }
 
@@ -308,7 +345,8 @@ public class OverviewService {
      * Checks if an exercise matches any of the track's topic keywords.
      */
     private boolean matchesTrack(Exercise e, List<String> keywords) {
-        if (e == null || e.getTopics() == null || e.getTopics().isBlank()) return false;
+        if (e == null || e.getTopics() == null || e.getTopics().isBlank())
+            return false;
         String lowerTopics = e.getTopics().toLowerCase();
         for (String kw : keywords) {
             if (lowerTopics.contains(kw.toLowerCase())) {

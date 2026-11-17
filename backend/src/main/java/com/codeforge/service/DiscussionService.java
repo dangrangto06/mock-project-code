@@ -21,7 +21,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Service managing community discussions, threads, upvoting mechanics, and replies.
+ * Service managing community discussions, threads, upvoting mechanics, and
+ * replies.
  */
 @Service
 @RequiredArgsConstructor
@@ -66,12 +67,14 @@ public class DiscussionService {
 
         return discussions.stream()
                 .filter(d -> {
-                    boolean isApproved = d.getModerationStatus() == null || "APPROVED".equalsIgnoreCase(d.getModerationStatus());
+                    boolean isApproved = d.getModerationStatus() == null
+                            || "APPROVED".equalsIgnoreCase(d.getModerationStatus());
                     if (isApproved) {
                         return true;
                     }
                     // Non-approved posts (PENDING / REJECTED) are only visible to the author
-                    return currentUser != null && d.getAuthor() != null && d.getAuthor().getId().equals(currentUser.getId());
+                    return currentUser != null && d.getAuthor() != null
+                            && d.getAuthor().getId().equals(currentUser.getId());
                 })
                 .map(d -> toDto(d, currentUser))
                 .collect(Collectors.toList());
@@ -158,7 +161,8 @@ public class DiscussionService {
      * Submits a reply to an existing discussion thread.
      */
     @Transactional
-    public DiscussionDto.ReplyResponse addReply(Long discussionId, DiscussionDto.CreateReplyRequest request, String username) {
+    public DiscussionDto.ReplyResponse addReply(Long discussionId, DiscussionDto.CreateReplyRequest request,
+            String username) {
         User author = resolveUser(username);
         Discussion discussion = discussionRepository.findById(discussionId)
                 .orElseThrow(() -> ApiException.notFound("Discussion not found: " + discussionId));
@@ -223,4 +227,3 @@ public class DiscussionService {
                 .build();
     }
 }
-

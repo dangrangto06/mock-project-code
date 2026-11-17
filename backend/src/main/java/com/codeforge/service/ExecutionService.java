@@ -24,18 +24,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Service orchestrating the compilation, execution, testing, and submission lifecycle of code.
+ * Service orchestrating the compilation, execution, testing, and submission
+ * lifecycle of code.
  *
- * <p>Serves as the high-level business coordinator between the REST controllers, database repositories,
- * and the low-level code execution engine ({@link Judge0Service}).</p>
+ * <p>
+ * Serves as the high-level business coordinator between the REST controllers,
+ * database repositories,
+ * and the low-level code execution engine ({@link Judge0Service}).
+ * </p>
  *
- * <p><strong>Two Core Workflows:</strong></p>
+ * <p>
+ * <strong>Two Core Workflows:</strong>
+ * </p>
  * <ol>
- *   <li><b>Run (Dry-run):</b> Evaluates user code against custom or sample inputs in real time without
- *       recording a permanent submission in the database. Returns immediate stdout/stderr outputs for developer feedback.</li>
- *   <li><b>Submit (Formal Evaluation):</b> Iterates through all test cases associated with the target exercise,
- *       measures cumulative runtime and peak memory usage, calculates test pass rates, generates comparative percentiles
- *       ("beats X%"), and persists a permanent {@link Submission} entity linked to the submitting {@link User}.</li>
+ * <li><b>Run (Dry-run):</b> Evaluates user code against custom or sample inputs
+ * in real time without
+ * recording a permanent submission in the database. Returns immediate
+ * stdout/stderr outputs for developer feedback.</li>
+ * <li><b>Submit (Formal Evaluation):</b> Iterates through all test cases
+ * associated with the target exercise,
+ * measures cumulative runtime and peak memory usage, calculates test pass
+ * rates, generates comparative percentiles
+ * ("beats X%"), and persists a permanent {@link Submission} entity linked to
+ * the submitting {@link User}.</li>
  * </ol>
  */
 @Slf4j
@@ -58,14 +69,21 @@ public class ExecutionService {
     // ── Run (no submission persisted) ─────────────────────────────────────────
 
     /**
-     * Executes solution code in an ad-hoc sandbox without persisting submission history.
+     * Executes solution code in an ad-hoc sandbox without persisting submission
+     * history.
      *
-     * <p>Used by the IDE "Run Code" button. Executes against the user's custom input or sample test data,
-     * packages the standard output or error stream into a {@link ExerciseDto.TestCaseDto}, and returns
-     * immediate performance statistics.</p>
+     * <p>
+     * Used by the IDE "Run Code" button. Executes against the user's custom input
+     * or sample test data,
+     * packages the standard output or error stream into a
+     * {@link ExerciseDto.TestCaseDto}, and returns
+     * immediate performance statistics.
+     * </p>
      *
-     * @param req The execution request containing language, source code, and custom stdin.
-     * @return {@link ExecutionDto.RunResponse} with output, runtime, and memory utilization.
+     * @param req The execution request containing language, source code, and custom
+     *            stdin.
+     * @return {@link ExecutionDto.RunResponse} with output, runtime, and memory
+     *         utilization.
      */
     @Transactional(readOnly = true)
     public ExecutionDto.RunResponse run(ExecutionDto.RunRequest req) {
@@ -132,7 +150,10 @@ public class ExecutionService {
             String stderr = getString(raw, "stderr");
             String timeStr = getString(raw, "time");
             if (timeStr != null) {
-                try { totalTimeMs += Double.parseDouble(timeStr) * 1000; } catch (Exception ignored) {}
+                try {
+                    totalTimeMs += Double.parseDouble(timeStr) * 1000;
+                } catch (Exception ignored) {
+                }
             }
             Object memObj = raw.get("memory");
             if (memObj instanceof Number n && n.intValue() > maxMemKb) {
@@ -156,8 +177,10 @@ public class ExecutionService {
         boolean allPassed = totalCount > 0 && passedCount == totalCount;
         String overallStatus = allPassed
                 ? "Accepted"
-                : (firstErrorStatus != null && !firstErrorStatus.equals("Accepted") && !firstErrorStatus.equals("Unknown")
-                        ? firstErrorStatus : "Wrong Answer");
+                : (firstErrorStatus != null && !firstErrorStatus.equals("Accepted")
+                        && !firstErrorStatus.equals("Unknown")
+                                ? firstErrorStatus
+                                : "Wrong Answer");
         int avgRuntimeMs = totalCount > 0 ? Math.max(1, (int) Math.round(totalTimeMs / totalCount)) : 32;
         double memMb = maxMemKb > 0 ? (maxMemKb / 1024.0) : 17.0;
 
@@ -175,21 +198,33 @@ public class ExecutionService {
     // ── Submit (persisted to DB) ──────────────────────────────────────────────
 
     /**
-     * Judged submission: evaluates code across all exercise test cases and records a permanent {@link Submission}.
+     * Judged submission: evaluates code across all exercise test cases and records
+     * a permanent {@link Submission}.
      *
-     * <p>Submission Processing Pipeline:</p>
+     * <p>
+     * Submission Processing Pipeline:
+     * </p>
      * <ol>
-     *   <li>Retrieve target {@link Exercise} and its associated {@link com.codeforge.entity.TestCase} suite.</li>
-     *   <li>Sequentially judge the code against each test case input and compare against expected output.</li>
-     *   <li>Track passed test count, accumulate execution times, and record maximum peak memory.</li>
-     *   <li>Determine final status: {@code "Accepted"} if all tests pass; {@code "Wrong Answer"} otherwise.</li>
-     *   <li>Persist a new {@link Submission} entity linked to the authenticated user account.</li>
-     *   <li>Calculate competitive performance percentiles and return {@link ExecutionDto.SubmitResponse}.</li>
+     * <li>Retrieve target {@link Exercise} and its associated
+     * {@link com.codeforge.entity.TestCase} suite.</li>
+     * <li>Sequentially judge the code against each test case input and compare
+     * against expected output.</li>
+     * <li>Track passed test count, accumulate execution times, and record maximum
+     * peak memory.</li>
+     * <li>Determine final status: {@code "Accepted"} if all tests pass;
+     * {@code "Wrong Answer"} otherwise.</li>
+     * <li>Persist a new {@link Submission} entity linked to the authenticated user
+     * account.</li>
+     * <li>Calculate competitive performance percentiles and return
+     * {@link ExecutionDto.SubmitResponse}.</li>
      * </ol>
      *
-     * @param req      Submission request specifying problem ID, language, and complete solution code.
-     * @param username Username of the authenticated submitting user (or "anonymous").
-     * @return {@link ExecutionDto.SubmitResponse} detailing pass counts, execution metrics, and percentiles.
+     * @param req      Submission request specifying problem ID, language, and
+     *                 complete solution code.
+     * @param username Username of the authenticated submitting user (or
+     *                 "anonymous").
+     * @return {@link ExecutionDto.SubmitResponse} detailing pass counts, execution
+     *         metrics, and percentiles.
      * @throws RuntimeException If the target problem ID does not exist.
      */
     @Transactional
@@ -214,24 +249,31 @@ public class ExecutionService {
                 Map<String, Object> raw = judge0Service.executeCode(
                         req.getLanguage(), req.getCode(), tc.getInputData(), tc.getExpectedOutput());
                 rawResults.add(raw);
-                if (isAccepted(raw)) passed++;
+                if (isAccepted(raw))
+                    passed++;
 
                 // Track cumulative execution time
                 String timeStr = getString(raw, "time");
                 if (timeStr != null) {
-                    try { totalTimeMs += Double.parseDouble(timeStr) * 1000; } catch (Exception ignored) {}
+                    try {
+                        totalTimeMs += Double.parseDouble(timeStr) * 1000;
+                    } catch (Exception ignored) {
+                    }
                 }
 
                 // Track peak memory allocation
                 Object memObj = raw.get("memory");
-                if (memObj instanceof Number n && n.intValue() > maxMemKb) maxMemKb = n.intValue();
+                if (memObj instanceof Number n && n.intValue() > maxMemKb)
+                    maxMemKb = n.intValue();
             }
         } else {
-            // Problem has no explicit test cases – compile/execute once for syntax verification
+            // Problem has no explicit test cases – compile/execute once for syntax
+            // verification
             Map<String, Object> raw = judge0Service.executeCode(req.getLanguage(), req.getCode(), "", null);
             rawResults.add(raw);
             total = 1;
-            if (isAccepted(raw)) passed = 1;
+            if (isAccepted(raw))
+                passed = 1;
         }
 
         // Determine overall submission verdict
@@ -264,7 +306,7 @@ public class ExecutionService {
                     .runtimeMs(avgRuntimeMs)
                     .memoryMb(BigDecimal.valueOf(memMb))
                     .runtimeBeatsPct(BigDecimal.valueOf(Math.random() * 40 + 50)) // Simulated percentile (50% - 90%)
-                    .memoryBeatsPct(BigDecimal.valueOf(Math.random() * 40 + 50))  // Simulated percentile (50% - 90%)
+                    .memoryBeatsPct(BigDecimal.valueOf(Math.random() * 40 + 50)) // Simulated percentile (50% - 90%)
                     .testsPassed(passed)
                     .totalTests(total)
                     .submittedAt(LocalDateTime.now())
@@ -301,7 +343,8 @@ public class ExecutionService {
     }
 
     /**
-     * Retrieves all submissions authored by the authenticated user across all problems.
+     * Retrieves all submissions authored by the authenticated user across all
+     * problems.
      */
     @Transactional(readOnly = true)
     public List<SubmissionDto> getUserSubmissions(String username) {
@@ -341,7 +384,8 @@ public class ExecutionService {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     /**
-     * Checks if the raw Judge0 response represents an "Accepted" verdict (status ID = 3).
+     * Checks if the raw Judge0 response represents an "Accepted" verdict (status ID
+     * = 3).
      *
      * @param raw Execution result map from Judge0.
      * @return {@code true} if status ID is 3 (Accepted); {@code false} otherwise.

@@ -114,9 +114,11 @@ class Group2IntegrationTests {
         assertEquals(new BigDecimal("100.00"), updatedUser.getAcceptanceRate());
         assertEquals(1, submissionRepository.countByUserId(testUser.getId()));
         assertEquals(1, submissionRepository.countByUserIdAndStatus(testUser.getId(), "Accepted"));
-        assertTrue(submissionRepository.existsByUserIdAndExerciseIdAndStatus(testUser.getId(), testExercise.getId(), "Accepted"));
+        assertTrue(submissionRepository.existsByUserIdAndExerciseIdAndStatus(testUser.getId(), testExercise.getId(),
+                "Accepted"));
 
-        // 2nd submission for the same exercise -> solvedCount should remain 1, rate remains 100.00
+        // 2nd submission for the same exercise -> solvedCount should remain 1, rate
+        // remains 100.00
         ExecutionDto.SubmitResponse res2 = executionService.submit(req, testUser.getUsername());
         assertTrue(Boolean.TRUE.equals(res2.getSuccess()));
 
@@ -153,7 +155,8 @@ class Group2IntegrationTests {
         assertTrue(overview.getWeeklyGoal().getDone() >= 1);
         assertEquals(7, overview.getWeeklyGoal().getDays().size());
 
-        // Next challenge should prefer an unsolved problem (not 104 which was submitted)
+        // Next challenge should prefer an unsolved problem (not 104 which was
+        // submitted)
         assertNotNull(overview.getNextChallenge());
         assertNotEquals(104L, overview.getNextChallenge().getId(), "Next challenge should prefer an unsolved problem");
 
@@ -244,18 +247,18 @@ class Group2IntegrationTests {
 
         // Test POST /api/problems/{id}/bookmark
         mockMvc.perform(post("/api/problems/" + testExercise.getId() + "/bookmark")
-                        .header("Authorization", "Bearer " + token))
+                .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.saved").value(true));
 
         mockMvc.perform(post("/api/problems/" + testExercise.getId() + "/bookmark")
-                        .header("Authorization", "Bearer " + token))
+                .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.saved").value(false));
 
         // Test GET /api/problems/{id}/submissions
         mockMvc.perform(get("/api/problems/" + testExercise.getId() + "/submissions")
-                        .header("Authorization", "Bearer " + token))
+                .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
 

@@ -34,7 +34,8 @@ public class NoteService {
     }
 
     /**
-     * Retrieves all notes for the authenticated user ordered by updatedAt descending.
+     * Retrieves all notes for the authenticated user ordered by updatedAt
+     * descending.
      */
     @Transactional(readOnly = true)
     public List<NoteDto.Response> getNotes(String username) {
@@ -122,4 +123,3 @@ public class NoteService {
                 .build();
     }
 }
-
