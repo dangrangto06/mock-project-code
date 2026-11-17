@@ -1,11 +1,13 @@
 package com.codeforge.config;
 
+import com.codeforge.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,23 +18,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * HTTP filter that intercepts each incoming request to authenticate users via JWT Bearer tokens.
  *
  * <p>Extends {@link OncePerRequestFilter} to guarantee a single execution per request dispatch.
- * Placed immediately before {@link org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter}
- * in the Spring Security filter chain.</p>
- *
- * <p><strong>Authentication Lifecycle:</strong></p>
- * <ol>
- *   <li>Inspect incoming HTTP {@code Authorization} header for a {@code Bearer <token>} format.</li>
- *   <li>Validate token integrity, signature, and expiration using {@link JwtUtil#validateToken(String)}.</li>
- *   <li>Extract user identity (username) from verified claims.</li>
- *   <li>Construct a {@link UsernamePasswordAuthenticationToken} populated with user details and web request metadata.</li>
- *   <li>Store the authentication object in {@link SecurityContextHolder}, marking the request as authenticated.</li>
- *   <li>Pass request downstream through {@link FilterChain#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse)}.</li>
- * </ol>
+ * Populates Spring Security context with assigned {@link SimpleGrantedAuthority} roles.</p>
  */
 @Component
 @RequiredArgsConstructor
@@ -42,6 +34,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * Injected JWT utility for cryptographic parsing and token validation.
      */
     private final JwtUtil jwtUtil;
+
+    /**
+     * Repository to load user authorization role upon valid token presentation.
+     */
+    private final UserRepository userRepository;
 
     /**
      * Intercepts incoming HTTP requests, processes Bearer tokens, and sets Spring Security context.
@@ -64,12 +61,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwt != null && jwtUtil.validateToken(jwt)) {
                 String username = jwtUtil.getUsernameFromToken(jwt);
 
-                // Construct a lightweight UserDetails principal for the SecurityContext
-                UserDetails userDetails = new User(username, "", Collections.emptyList());
+                // Determine user role and construct GrantedAuthorities
+                String role = "LEARNER";
+                try {
+                    com.codeforge.entity.User userEntity = userRepository.findByUsername(username)
+                            .or(() -> userRepository.findByEmail(username))
+                            .orElse(null);
+                    if (userEntity != null && userEntity.getRole() != null && !userEntity.getRole().isBlank()) {
+                        role = userEntity.getRole().toUpperCase();
+                    }
+                } catch (Exception ex) {
+                    logger.warn("Could not query user role for token: " + ex.getMessage());
+                }
 
-                // Build authentication token with empty credentials (stateless verification already done)
+                List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
+                // Construct UserDetails principal with assigned role authority for the SecurityContext
+                UserDetails userDetails = new User(username, "", authorities);
+
+                // Build authentication token populated with role authorities
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
                 // Attach request-specific details (remote IP, session details if any)
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

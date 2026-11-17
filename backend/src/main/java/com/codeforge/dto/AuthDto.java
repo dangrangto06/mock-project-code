@@ -116,4 +116,58 @@ public class AuthDto {
          */
         private String role;
     }
+
+    /**
+     * Inbound payload for requesting a password reset email ({@code POST /api/auth/forgot-password}).
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ForgotPasswordRequest {
+        @NotBlank(message = "Email is required")
+        private String email;
+    }
+
+    /**
+     * Inbound payload for setting a new password using a reset token ({@code POST /api/auth/reset-password}).
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ResetPasswordRequest {
+        @NotBlank(message = "Token is required")
+        private String token;
+
+        @NotBlank(message = "New password is required")
+        private String newPassword;
+    }
+
+    /**
+     * Inbound payload for Google OAuth2 token verification ({@code POST /api/auth/google}).
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class GoogleLoginRequest {
+        @NotBlank(message = "Access token is required")
+        private String accessToken;
+    }
+
+    /**
+     * Simple outbound message response payload.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MessageResponse {
+        private String message;
+    }
 }

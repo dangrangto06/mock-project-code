@@ -53,8 +53,17 @@ window.CodeForgeCommunity = (function () {
     return '<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">Learner</span>';
   }
 
-  function loadDiscussions() {
+  async function loadDiscussions() {
     try {
+      if (window.CodeForgeAPI) {
+        const fetched = await CodeForgeAPI.getDiscussions(activeCategory);
+        if (Array.isArray(fetched) && fetched.length > 0) {
+          posts = fetched;
+          saveDiscussionsToStorage();
+          renderDiscussions();
+          return;
+        }
+      }
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         posts = JSON.parse(stored);
@@ -63,9 +72,10 @@ window.CodeForgeCommunity = (function () {
         saveDiscussionsToStorage();
       }
     } catch (err) {
-      console.warn('Failed to load discussions from localStorage:', err);
+      console.warn('Failed to load discussions from localStorage or API:', err);
       posts = (window.CodeForgeData && window.CodeForgeData.initialDiscussions) ? [...window.CodeForgeData.initialDiscussions] : [];
     }
+    renderDiscussions();
   }
 
   function saveDiscussionsToStorage() {
@@ -152,6 +162,14 @@ window.CodeForgeCommunity = (function () {
 
       const repliesCount = post.replies ? post.replies.length : (post.repliesCount || 0);
 
+      // Moderation status badge
+      let modBadgeHtml = '';
+      if (post.moderationStatus === 'PENDING') {
+        modBadgeHtml = `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">Pending Review</span>`;
+      } else if (post.moderationStatus === 'REJECTED') {
+        modBadgeHtml = `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-red-50 text-red-700 border border-red-200" title="${escapeHtml(post.rejectionReason || 'Rejected by moderator')}">Rejected</span>`;
+      }
+
       return `
         <article class="bg-white rounded-xl border border-[#e5eae7] p-5 shadow-xs hover:shadow-md transition space-y-3 cursor-pointer group" onclick="CodeForgeCommunity.openViewModal('${post.id}')">
           <div class="flex items-start gap-4">
@@ -168,6 +186,7 @@ window.CodeForgeCommunity = (function () {
               <!-- Meta Row -->
               <div class="flex flex-wrap items-center gap-2 text-xs">
                 <span class="px-2 py-0.5 rounded text-[11px] font-semibold border ${catColor}">${escapeHtml(post.category)}</span>
+                ${modBadgeHtml}
                 ${problemBadgeHtml}
                 <span class="text-gray-300">&middot;</span>
                 
@@ -212,27 +231,45 @@ window.CodeForgeCommunity = (function () {
     }).join('');
   }
 
-  function toggleUpvote(postId, e) {
+  async function toggleUpvote(postId, e) {
     if (e) e.stopPropagation();
 
-    const post = posts.find(p => p.id === postId);
+    const post = posts.find(p => String(p.id) === String(postId));
     if (!post) return;
 
-    if (post.isUpvoted) {
-      post.isUpvoted = false;
-      post.upvotes = Math.max(0, (post.upvotes || 1) - 1);
-      if (window.CodeForgeApp) CodeForgeApp.showToast('Upvote removed', 'info');
+    const numericId = !isNaN(postId) ? Number(postId) : null;
+    let result = null;
+    if (window.CodeForgeAPI && CodeForgeAPI.isAuthenticated() && numericId !== null) {
+      try {
+        result = await CodeForgeAPI.toggleDiscussionUpvote(numericId);
+      } catch (apiErr) {
+        console.warn("API toggleDiscussionUpvote failed, using local.", apiErr);
+      }
+    }
+
+    if (result) {
+      post.isUpvoted = result.isUpvoted;
+      post.upvotes = result.upvotes;
+      if (window.CodeForgeApp) {
+        CodeForgeApp.showToast(result.isUpvoted ? 'Upvoted!' : 'Upvote removed', result.isUpvoted ? 'success' : 'info');
+      }
     } else {
-      post.isUpvoted = true;
-      post.upvotes = (post.upvotes || 0) + 1;
-      if (window.CodeForgeApp) CodeForgeApp.showToast('Upvoted!', 'success');
+      if (post.isUpvoted) {
+        post.isUpvoted = false;
+        post.upvotes = Math.max(0, (post.upvotes || 1) - 1);
+        if (window.CodeForgeApp) CodeForgeApp.showToast('Upvote removed', 'info');
+      } else {
+        post.isUpvoted = true;
+        post.upvotes = (post.upvotes || 0) + 1;
+        if (window.CodeForgeApp) CodeForgeApp.showToast('Upvoted!', 'success');
+      }
     }
 
     saveDiscussionsToStorage();
     renderDiscussions();
 
     // If modal is open for this post, refresh modal upvote button
-    if (currentViewingPostId === postId) {
+    if (String(currentViewingPostId) === String(postId)) {
       updateModalUpvoteUI(post);
     }
   }
@@ -290,7 +327,7 @@ window.CodeForgeCommunity = (function () {
     }
   }
 
-  function handleCreateDiscussion(e) {
+  async function handleCreateDiscussion(e) {
     if (e) e.preventDefault();
 
     const titleInput = document.getElementById('disc-title-input');
@@ -320,7 +357,24 @@ window.CodeForgeCommunity = (function () {
       problemTitle = found ? found.title : `Problem #${problemId}`;
     }
 
-    // Determine current user
+    const payload = {
+      title,
+      category,
+      problemId,
+      problemTitle,
+      content
+    };
+
+    let createdFromApi = null;
+    if (window.CodeForgeAPI && CodeForgeAPI.isAuthenticated()) {
+      try {
+        createdFromApi = await CodeForgeAPI.createDiscussion(payload);
+      } catch (apiErr) {
+        console.warn("API createDiscussion failed, using local.", apiErr);
+      }
+    }
+
+    // Determine current user for fallback
     let authorName = 'Alex Morgan';
     let authorInitials = 'AM';
     let authorRole = 'Learner';
@@ -333,11 +387,12 @@ window.CodeForgeCommunity = (function () {
           const parts = u.fullName.trim().split(/\s+/);
           authorInitials = parts.length > 1 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : parts[0][0].toUpperCase();
         }
-        if (u.roles && u.roles.includes('ADMIN')) authorRole = 'Admin';
+        if (u.role) authorRole = u.role;
+        else if (u.roles && u.roles.includes('ADMIN')) authorRole = 'Admin';
       }
     } catch (_) {}
 
-    const newPost = {
+    const newPost = createdFromApi || {
       id: 'post-' + Date.now(),
       title,
       authorName,
@@ -358,11 +413,18 @@ window.CodeForgeCommunity = (function () {
     saveDiscussionsToStorage();
     closeCreateModal();
     renderDiscussions();
-    if (window.CodeForgeApp) CodeForgeApp.showToast('Discussion published!', 'success');
+    if (window.CodeForgeApp) {
+      const isPostAdmin = (authorRole && authorRole.toLowerCase() === 'admin') || (createdFromApi && createdFromApi.moderationStatus === 'APPROVED');
+      if (isPostAdmin) {
+        CodeForgeApp.showToast('Published immediately!', 'success');
+      } else {
+        CodeForgeApp.showToast("Submitted for admin approval! You'll see it publicly once verified.", 'info');
+      }
+    }
   }
 
   function openViewModal(postId) {
-    const post = posts.find(p => p.id === postId);
+    const post = posts.find(p => String(p.id) === String(postId));
     if (!post) return;
 
     currentViewingPostId = postId;
@@ -458,11 +520,11 @@ window.CodeForgeCommunity = (function () {
     `).join('');
   }
 
-  function handleSubmitReply(e) {
+  async function handleSubmitReply(e) {
     if (e) e.preventDefault();
     if (!currentViewingPostId) return;
 
-    const post = posts.find(p => p.id === currentViewingPostId);
+    const post = posts.find(p => String(p.id) === String(currentViewingPostId));
     if (!post) return;
 
     const input = document.getElementById('disc-reply-input');
@@ -470,6 +532,16 @@ window.CodeForgeCommunity = (function () {
     if (!content) {
       if (window.CodeForgeApp) CodeForgeApp.showToast('Please type a reply before submitting', 'warn');
       return;
+    }
+
+    const numericId = !isNaN(currentViewingPostId) ? Number(currentViewingPostId) : null;
+    let replyFromApi = null;
+    if (window.CodeForgeAPI && CodeForgeAPI.isAuthenticated() && numericId !== null) {
+      try {
+        replyFromApi = await CodeForgeAPI.addDiscussionReply(numericId, content);
+      } catch (apiErr) {
+        console.warn("API addDiscussionReply failed, using local.", apiErr);
+      }
     }
 
     let authorName = 'Alex Morgan';
@@ -489,14 +561,13 @@ window.CodeForgeCommunity = (function () {
     } catch (_) {}
 
     if (!post.replies) post.replies = [];
-    const newReply = {
+    const newReply = replyFromApi || {
       id: 'rep-' + Date.now(),
       authorName,
       authorInitials,
       authorRole,
       content,
-      createdAt: 'Just now',
-      upvotes: 0
+      createdAt: 'Just now'
     };
 
     post.replies.push(newReply);

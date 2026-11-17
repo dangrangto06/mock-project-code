@@ -1,12 +1,14 @@
 package com.codeforge.controller;
 
 import com.codeforge.dto.ExecutionDto;
+import com.codeforge.dto.SubmissionDto;
 import com.codeforge.service.ExecutionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,6 +58,17 @@ public class ExecutionController {
 
         String username = authentication != null ? authentication.getName() : "anonymous";
         return ResponseEntity.ok(executionService.submit(request, username));
+    }
+
+    /**
+     * Retrieves all submissions for the currently authenticated user across all exercises.
+     *
+     * <p>HTTP Endpoint: {@code GET /api/execute/submissions}</p>
+     */
+    @GetMapping("/submissions")
+    public ResponseEntity<List<SubmissionDto>> getUserSubmissions(Authentication authentication) {
+        String username = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(executionService.getUserSubmissions(username));
     }
 
     /**

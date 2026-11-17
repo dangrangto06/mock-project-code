@@ -43,4 +43,10 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     List<Exercise> searchExercises(@Param("query") String query,
                                   @Param("difficulty") String difficulty,
                                   @Param("topic") String topic);
+     @Query("SELECT COALESCE(MAX(e.id), 100) FROM Exercise e")
+     Long findMaxId();
+
+     long countByModerationStatus(String moderationStatus);
+
+     List<Exercise> findByModerationStatusOrderByCreatedAtDesc(String moderationStatus);
 }

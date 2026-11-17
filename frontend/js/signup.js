@@ -27,7 +27,7 @@
    * Flag determining whether endpoints not yet fully implemented on the backend
    * should be gracefully simulated for UI demonstration.
    */
-  const MOCK_PENDING_FEATURES = true;
+  const MOCK_PENDING_FEATURES = false;
 
   /** Target route navigated to upon successful account registration */
   const REDIRECT_AFTER_SIGNUP = 'index.html#dashboard';

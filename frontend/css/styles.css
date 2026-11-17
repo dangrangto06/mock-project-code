@@ -7,19 +7,19 @@
   --primary-light: #ecfdf5;
   --primary-border: #a7f3d0;
   
-  --bg-page: #fbfdfc;
+  --bg-page: #f1f5f9; /* Soft, glare-free cool slate */
   --bg-card: #ffffff;
-  --bg-subtle: #f6f8f7;
-  --border-subtle: #e5eae7;
-  --border-hover: #d1d9d4;
+  --bg-subtle: #f1f5f9;
+  --border-subtle: #cbd5e1;
+  --border-hover: #94a3b8;
   
-  --text-main: #19211d;
-  --text-muted: #5f6e66;
-  --text-light: #94a39b;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-light: #64748b;
   
-  --editor-bg: #0b1411;
-  --editor-gutter: #080f0c;
-  --editor-active-line: rgba(16, 185, 129, 0.08);
+  --editor-bg: #1e1e1e;
+  --editor-gutter: #181818;
+  --editor-active-line: rgba(44, 187, 93, 0.12);
 }
 
 * {
@@ -35,8 +35,105 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+body,
+body:not(.dark-theme),
+body:not(.dark-theme) main {
+  background-color: #f1f5f9 !important;
+}
+
 code, pre, .font-mono {
   font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+}
+
+/* ========================================================
+   Crisp Border & Divider System (Light Mode)
+   ======================================================== */
+
+/* Full 4-sided borders: crisp 2px border for outer cards, panels, tables, modals */
+body:not(.dark-theme) .border:not(.border-t):not(.border-b):not(.border-l):not(.border-r):not(.border-t-2):not(.border-b-2),
+body:not(.dark-theme) .border-2 {
+  border-width: 2px;
+  border-color: #cbd5e1;
+}
+
+/* Light mode border color palette */
+body:not(.dark-theme) .border-\[\#e5eae7\],
+body:not(.dark-theme) .border-\[\#d1d9d4\],
+body:not(.dark-theme) .border-\[\#e2eae5\],
+body:not(.dark-theme) .border-gray-100,
+body:not(.dark-theme) .border-gray-200,
+body:not(.dark-theme) .border-gray-300 {
+  border-color: #cbd5e1;
+}
+
+/* Form inputs & selects in Light Mode: 2px solid #cbd5e1 with hover/focus #94a3b8 */
+body:not(.dark-theme) input:not([type="checkbox"]):not([type="radio"]),
+body:not(.dark-theme) select:not(#ide-language-select),
+body:not(.dark-theme) textarea:not(#editor-real-input) {
+  border: 2px solid #cbd5e1;
+  background-color: #ffffff;
+}
+
+body:not(.dark-theme) input:not([type="checkbox"]):not([type="radio"]):hover,
+body:not(.dark-theme) select:not(#ide-language-select):hover,
+body:not(.dark-theme) textarea:not(#editor-real-input):hover,
+body:not(.dark-theme) input:not([type="checkbox"]):not([type="radio"]):focus,
+body:not(.dark-theme) select:not(#ide-language-select):focus,
+body:not(.dark-theme) textarea:not(#editor-real-input):focus {
+  border-color: #94a3b8;
+  outline: none;
+}
+
+/* Directional borders: strictly single-sided (NEVER 4-sided boxes!) */
+.border-t {
+  border-top-width: 1px !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 0 !important;
+  border-left-width: 0 !important;
+}
+
+.border-b {
+  border-top-width: 0 !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 1px !important;
+  border-left-width: 0 !important;
+}
+
+.border-l {
+  border-top-width: 0 !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 0 !important;
+  border-left-width: 1px !important;
+}
+
+.border-r {
+  border-top-width: 0 !important;
+  border-right-width: 1px !important;
+  border-bottom-width: 0 !important;
+  border-left-width: 0 !important;
+}
+
+.border-t-2 {
+  border-top-width: 2px !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 0 !important;
+  border-left-width: 0 !important;
+}
+
+.border-b-2 {
+  border-top-width: 0 !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 2px !important;
+  border-left-width: 0 !important;
+}
+
+/* Divide utilities: single directional separator only */
+.divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-top-width: 1px !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 0 !important;
+  border-left-width: 0 !important;
+  border-color: #cbd5e1;
 }
 
 /* Custom Scrollbars */
@@ -48,18 +145,18 @@ code, pre, .font-mono {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #94a3b8;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #64748b;
 }
 
 .dark-scroll::-webkit-scrollbar-thumb {
-  background: #1e3a2f;
+  background: #3e3e3e;
 }
 .dark-scroll::-webkit-scrollbar-thumb:hover {
-  background: #2d5545;
+  background: #525252;
 }
 
 /* Transitions */
@@ -67,32 +164,50 @@ code, pre, .font-mono {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Code Editor line numbers and styling */
+/* ========================================================
+   Code Editor Line Numbers, Active Line & Blinking Caret
+   ======================================================== */
 .editor-line-number {
-  color: #3b5a4b;
+  color: #6e7681;
   user-select: none;
   text-align: right;
-  padding-right: 1.25rem;
+  padding-right: 1rem;
   font-size: 0.825rem;
-  line-height: 1.6;
+  line-height: 1.6rem;
+  height: 1.6rem;
 }
 
 .editor-line-active {
   background-color: var(--editor-active-line);
-  border-left: 2px solid #10b981;
+  border-left: 2px solid #2cbb5d;
 }
 
-/* Syntax highlight colors matching dark forest green theme */
-.syn-def { color: #f472b6; font-weight: 500; }
-.syn-func { color: #60a5fa; }
-.syn-param { color: #f97316; }
-.syn-type { color: #34d399; }
-.syn-comment { color: #4b6a5b; font-style: italic; }
-.syn-keyword { color: #ec4899; }
-.syn-string { color: #fde047; }
-.syn-number { color: #a78bfa; }
-.syn-punct { color: #9ca3af; }
-.syn-return { color: #f43f5e; font-weight: 500; }
+#editor-real-input {
+  color: transparent !important;
+  background: transparent !important;
+  caret-color: #2cbb5d !important;
+  outline: none !important;
+  border: none !important;
+  line-height: 1.6rem !important;
+  tab-size: 4;
+}
+
+#editor-real-input::selection {
+  background-color: rgba(44, 187, 93, 0.28);
+  color: transparent;
+}
+
+/* Syntax highlight colors (VS Code / LeetCode Dark+ palette) */
+.syn-def { color: #c586c0; font-weight: 500; }
+.syn-func { color: #dcdcaa; }
+.syn-param { color: #9cdcfe; }
+.syn-type { color: #4ec9b0; }
+.syn-comment { color: #6a9955; font-style: italic; }
+.syn-keyword { color: #c586c0; }
+.syn-string { color: #ce9178; }
+.syn-number { color: #b5cea8; }
+.syn-punct { color: #d4d4d4; }
+.syn-return { color: #c586c0; font-weight: 500; }
 
 /* Pulse animation for running state */
 @keyframes soft-pulse {
@@ -108,19 +223,19 @@ code, pre, .font-mono {
 .badge-easy {
   background-color: #ecfdf5;
   color: #047857;
-  border: 1px solid #a7f3d0;
+  border: 1px solid #6ee7b7;
 }
 
 .badge-medium {
   background-color: #fffbeb;
   color: #b45309;
-  border: 1px solid #fde68a;
+  border: 1px solid #fcd34d;
 }
 
 .badge-hard {
   background-color: #fef2f2;
   color: #b91c1c;
-  border: 1px solid #fecaca;
+  border: 1px solid #fca5a5;
 }
 
 /* Focus mode styles */
@@ -129,7 +244,273 @@ body.focus-mode .sidebar-container {
   display: none !important;
 }
 
-body.focus-mode .ide-container {
+body.focus-mode #page-ide {
   height: 100vh !important;
 }
 
+/* ========================================================
+   True Neutral LeetCode Dark Mode (body.dark-theme)
+   Charcoal & Graphite Palette (#1a1a1a / #282828 / #303030)
+   ======================================================== */
+body.dark-theme,
+body.dark-theme main {
+  background-color: #1a1a1a !important;
+  color: #eff1f6 !important;
+}
+
+body.dark-theme header,
+body.dark-theme aside#main-sidebar,
+body.dark-theme .bg-white,
+body.dark-theme #ide-bottom-console {
+  background-color: #282828 !important;
+  color: #eff1f6 !important;
+}
+
+body.dark-theme .bg-gray-50,
+body.dark-theme .bg-gray-50\/75,
+body.dark-theme .bg-gray-50\/60,
+body.dark-theme .bg-gray-100,
+body.dark-theme .bg-\[\#f6f8f7\],
+body.dark-theme .bg-\[\#f7faf8\],
+body.dark-theme .bg-\[\#fbfdfc\],
+body.dark-theme .bg-\[\#f1f5f9\] {
+  background-color: #303030 !important;
+  color: #eff1f6;
+}
+
+body.dark-theme #page-ide .bg-\[\#0b1411\] {
+  background-color: #1e1e1e !important;
+}
+
+body.dark-theme #page-ide .bg-\[\#080f0c\],
+body.dark-theme #page-ide .bg-\[\#09110e\] {
+  background-color: #181818 !important;
+}
+
+/* Dark mode outer cards & panels: clean 1px solid #333333 */
+body.dark-theme .border:not(.border-t):not(.border-b):not(.border-l):not(.border-r):not(.border-t-2):not(.border-b-2),
+body.dark-theme .border-2,
+body.dark-theme header,
+body.dark-theme aside#main-sidebar,
+body.dark-theme #ide-bottom-console {
+  border-width: 1px !important;
+  border-color: #333333 !important;
+}
+
+/* Subtle 1px solid #303030 dividers in dark mode */
+body.dark-theme .border-t,
+body.dark-theme .border-b,
+body.dark-theme .border-l,
+body.dark-theme .border-r,
+body.dark-theme .border-\[\#e5eae7\],
+body.dark-theme .border-\[\#d1d9d4\],
+body.dark-theme .border-\[\#e2eae5\],
+body.dark-theme .border-\[\#15231c\],
+body.dark-theme .border-gray-100,
+body.dark-theme .border-gray-200,
+body.dark-theme .border-gray-300,
+body.dark-theme .divide-y > :not([hidden]) ~ :not([hidden]),
+body.dark-theme .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #303030 !important;
+}
+
+body.dark-theme .border-t {
+  border-top-width: 1px !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 0 !important;
+  border-left-width: 0 !important;
+}
+
+body.dark-theme .border-b {
+  border-top-width: 0 !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 1px !important;
+  border-left-width: 0 !important;
+}
+
+body.dark-theme .border-l {
+  border-top-width: 0 !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 0 !important;
+  border-left-width: 1px !important;
+}
+
+body.dark-theme .border-r {
+  border-top-width: 0 !important;
+  border-right-width: 1px !important;
+  border-bottom-width: 0 !important;
+  border-left-width: 0 !important;
+}
+
+body.dark-theme .divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-top-width: 1px !important;
+  border-right-width: 0 !important;
+  border-bottom-width: 0 !important;
+  border-left-width: 0 !important;
+}
+
+/* Remove distracting gray borders around inner/nested elements in Dark Mode */
+/* Progress bar track wrappers */
+body.dark-theme .rounded-full.bg-gray-100,
+body.dark-theme .rounded-full.bg-gray-200,
+body.dark-theme [class*="rounded-full"][class*="bg-gray"],
+body.dark-theme .bg-gray-100.overflow-hidden {
+  border: none !important;
+  background-color: #383838 !important;
+}
+
+/* Inner visual & stat boxes in dark mode (e.g. Next Challenge target box & number tiles) */
+body.dark-theme .w-36.bg-\[\#f7faf8\],
+body.dark-theme .w-36[class*="bg-"] {
+  background-color: #202020 !important;
+  border: none !important;
+}
+
+body.dark-theme .w-36 .bg-white,
+body.dark-theme .w-36 span.border {
+  background-color: #303030 !important;
+  border: none !important;
+  color: #eff1f6 !important;
+}
+
+/* Day tracker circles in Weekly Goal card */
+body.dark-theme .w-6.h-6.rounded-full.bg-gray-50 {
+  background-color: #303030 !important;
+  border: none !important;
+  color: #6b7280 !important;
+}
+
+/* Card footers & Continue solving bottom bar: strictly clean single divider line, no outline box */
+body.dark-theme .border-t.border-gray-100,
+body.dark-theme .border-t.border-gray-200 {
+  border-top: 1px solid #303030 !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+}
+
+/* Dark mode typography colors */
+body.dark-theme .text-gray-900,
+body.dark-theme .text-gray-800 {
+  color: #eff1f6 !important;
+}
+
+body.dark-theme .text-gray-700,
+body.dark-theme .text-gray-600 {
+  color: #d1d5db !important;
+}
+
+body.dark-theme .text-gray-500,
+body.dark-theme .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+body.dark-theme input::placeholder,
+body.dark-theme textarea::placeholder {
+  color: #6b7280 !important;
+}
+
+/* Emerald accents */
+body.dark-theme .text-emerald-950,
+body.dark-theme .text-emerald-900,
+body.dark-theme .text-emerald-800,
+body.dark-theme .text-emerald-700,
+body.dark-theme .text-emerald-600 {
+  color: #2cbb5d !important;
+}
+
+body.dark-theme .bg-emerald-600 {
+  background-color: #2cbb5d !important;
+}
+
+body.dark-theme .hover\:bg-emerald-700:hover {
+  background-color: #249d4e !important;
+}
+
+body.dark-theme .bg-emerald-50,
+body.dark-theme .bg-\[\#f0fdf4\] {
+  background-color: rgba(44, 187, 93, 0.14) !important;
+}
+
+body.dark-theme .border-emerald-200,
+body.dark-theme .border-emerald-100,
+body.dark-theme .border-\[\#dcfce7\] {
+  border-color: rgba(44, 187, 93, 0.4) !important;
+}
+
+/* Amber accents */
+body.dark-theme .bg-amber-50 {
+  background-color: rgba(255, 161, 22, 0.14) !important;
+}
+
+body.dark-theme .text-amber-800,
+body.dark-theme .text-amber-700 {
+  color: #ffa116 !important;
+}
+
+body.dark-theme .border-amber-200 {
+  border-color: rgba(255, 161, 22, 0.4) !important;
+}
+
+/* Rose / Red accents */
+body.dark-theme .bg-rose-50,
+body.dark-theme .bg-red-50 {
+  background-color: rgba(239, 71, 67, 0.14) !important;
+}
+
+body.dark-theme .text-rose-700,
+body.dark-theme .text-rose-600,
+body.dark-theme .text-red-700 {
+  color: #ef4743 !important;
+}
+
+body.dark-theme .border-rose-200,
+body.dark-theme .border-red-200 {
+  border-color: rgba(239, 71, 67, 0.4) !important;
+}
+
+/* Difficulty Badges in Dark Mode */
+body.dark-theme .badge-easy {
+  background-color: rgba(44, 187, 93, 0.15) !important;
+  color: #2cbb5d !important;
+  border-color: rgba(44, 187, 93, 0.4) !important;
+}
+
+body.dark-theme .badge-medium {
+  background-color: rgba(255, 161, 22, 0.15) !important;
+  color: #ffa116 !important;
+  border-color: rgba(255, 161, 22, 0.4) !important;
+}
+
+body.dark-theme .badge-hard {
+  background-color: rgba(239, 71, 67, 0.15) !important;
+  color: #ef4743 !important;
+  border-color: rgba(239, 71, 67, 0.4) !important;
+}
+
+/* Form inputs & controls in Dark Mode: 1px solid #3e3e3e */
+body.dark-theme input:not([type="checkbox"]):not([type="radio"]),
+body.dark-theme select:not(#ide-language-select),
+body.dark-theme textarea:not(#editor-real-input) {
+  background-color: #303030 !important;
+  color: #eff1f6 !important;
+  border: 1px solid #3e3e3e !important;
+}
+
+body.dark-theme input:not([type="checkbox"]):not([type="radio"]):focus,
+body.dark-theme select:not(#ide-language-select):focus,
+body.dark-theme textarea:not(#editor-real-input):focus,
+body.dark-theme input:not([type="checkbox"]):not([type="radio"]):hover,
+body.dark-theme select:not(#ide-language-select):hover,
+body.dark-theme textarea:not(#editor-real-input):hover {
+  border-color: #525252 !important;
+  outline: none;
+}
+
+/* Dark mode row & button hovers */
+body.dark-theme .hover\:bg-gray-50:hover,
+body.dark-theme .hover\:bg-gray-100:hover,
+body.dark-theme .hover\:bg-\[\#fcfdfd\]:hover,
+body.dark-theme tr.hover\:bg-gray-50\/75:hover {
+  background-color: #3a3a3a !important;
+}
