@@ -532,8 +532,9 @@
     resetForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const newPassword = resetPasswordInput.value;
-      if (!newPassword || newPassword.length < 6) {
-        setFieldError(resetPasswordInput, 'Password must be at least 6 characters.');
+      // Keep in sync with @Size(min = 8, max = 72) on AuthDto.ResetPasswordRequest
+      if (!newPassword || newPassword.length < 8 || newPassword.length > 72) {
+        setFieldError(resetPasswordInput, 'Password must be between 8 and 72 characters.');
         return;
       }
 
