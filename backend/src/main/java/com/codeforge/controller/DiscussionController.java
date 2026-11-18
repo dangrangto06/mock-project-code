@@ -79,5 +79,16 @@ public class DiscussionController {
         DiscussionDto.ReplyResponse reply = discussionService.addReply(id, request, username);
         return ResponseEntity.status(HttpStatus.CREATED).body(reply);
     }
+
+    /**
+     * Authenticated endpoint to report a discussion or reply.
+     */
+    @PostMapping("/reports")
+    public ResponseEntity<Map<String, Object>> reportContent(
+            @Valid @RequestBody DiscussionDto.CreateReportRequest request,
+            Authentication authentication) {
+        String username = authentication != null ? authentication.getName() : null;
+        return ResponseEntity.ok(discussionService.reportContent(request, username));
+    }
 }
 

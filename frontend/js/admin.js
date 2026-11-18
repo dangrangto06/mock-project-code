@@ -9,6 +9,7 @@
   let stats = null;
   let pendingProblems = [];
   let pendingDiscussions = [];
+  let pendingReports = [];
   let usersList = [];
   let activeTab = 'moderation'; // 'moderation' | 'users'
   let currentRejectTarget = null; // { type: 'problem'|'discussion', id, title }
@@ -122,13 +123,13 @@
       const tabModCount = document.getElementById('tab-admin-mod-count');
       const tabUsersCount = document.getElementById('tab-admin-users-count');
 
-      const totalPending = (stats.pendingProblemsCount || 0) + (stats.pendingDiscussionsCount || 0);
+      const totalPending = (stats.pendingProblemsCount || 0) + (stats.pendingDiscussionsCount || 0) + (stats.pendingReportsCount || 0);
 
       if (kpiUsers) kpiUsers.textContent = (stats.totalUsers || 0).toLocaleString();
       if (kpiProblems) kpiProblems.textContent = (stats.totalProblems || 0).toLocaleString();
       if (kpiPending) kpiPending.textContent = totalPending;
       if (kpiPendingSub) {
-        kpiPendingSub.textContent = `${stats.pendingProblemsCount || 0} problems, ${stats.pendingDiscussionsCount || 0} posts`;
+        kpiPendingSub.textContent = `${stats.pendingProblemsCount || 0} problems, ${stats.pendingDiscussionsCount || 0} posts, ${stats.pendingReportsCount || 0} reports`;
       }
       if (kpiSubmissions) kpiSubmissions.textContent = (stats.totalSubmissions || 0).toLocaleString();
       if (tabModCount) tabModCount.textContent = totalPending;
@@ -158,6 +159,7 @@
       const data = await CodeForgeAPI.getModerationQueue();
       pendingProblems = (data && data.pendingProblems) ? data.pendingProblems : [];
       pendingDiscussions = (data && data.pendingDiscussions) ? data.pendingDiscussions : [];
+      pendingReports = (data && data.pendingReports) ? data.pendingReports : [];
       renderModerationQueue();
     } catch (err) {
       console.warn('Failed to load moderation queue:', err);
@@ -167,11 +169,14 @@
   function renderModerationQueue() {
     const probList = document.getElementById('admin-pending-problems-list');
     const discList = document.getElementById('admin-pending-discussions-list');
+    const reportsList = document.getElementById('admin-reported-items-list');
     const probBadge = document.getElementById('admin-pending-prob-badge');
     const discBadge = document.getElementById('admin-pending-disc-badge');
+    const reportsBadge = document.getElementById('admin-pending-reports-badge');
 
     if (probBadge) probBadge.textContent = `${pendingProblems.length} ${pendingProblems.length === 1 ? 'item' : 'items'}`;
     if (discBadge) discBadge.textContent = `${pendingDiscussions.length} ${pendingDiscussions.length === 1 ? 'item' : 'items'}`;
+    if (reportsBadge) reportsBadge.textContent = `${pendingReports.length} ${pendingReports.length === 1 ? 'report' : 'reports'}`;
 
     // 1. Pending Problems List
     if (probList) {
@@ -279,13 +284,13 @@
 
                 <!-- Action Buttons -->
                 <div class="flex items-center gap-2 shrink-0 pt-1 sm:pt-0">
-                  <button type="button" onclick="CodeForgeAdmin.approveDiscussion(${d.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-xs">
+                  <button type="button" onclick="CodeForgeAdmin.approveDiscussion(${d.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-xs" title="Duyệt và public bài viết lên community">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    <span>Approve</span>
+                    <span>Approve (Duyệt)</span>
                   </button>
-                  <button type="button" onclick="CodeForgeAdmin.openRejectModal('discussion', ${d.id}, '${escapeHtml(d.title)}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold text-xs transition">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    <span>Reject</span>
+                  <button type="button" onclick="CodeForgeAdmin.deleteDiscussion(${d.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold text-xs transition" title="Loại bỏ và xóa bài viết khỏi database">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <span>Reject / Remove (Bỏ)</span>
                   </button>
                 </div>
               </div>
@@ -293,6 +298,69 @@
               <!-- Discussion content preview -->
               <div class="p-3 rounded-lg bg-gray-50 border border-gray-100 text-xs text-gray-700 leading-relaxed font-sans max-h-24 overflow-y-auto">
                 ${escapeHtml(d.content || '')}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // 3. Reported Content List
+    if (reportsList) {
+      if (pendingReports.length === 0) {
+        reportsList.innerHTML = `
+          <div class="text-center py-8 bg-white rounded-xl border border-dashed border-gray-300 p-6 space-y-2">
+            <div class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div class="text-xs font-bold text-gray-800">Không có báo cáo vi phạm nào đang chờ xử lý</div>
+            <p class="text-[11px] text-gray-400">Tất cả các báo cáo về nội dung không liên quan hoặc vi phạm đã được giải quyết.</p>
+          </div>
+        `;
+      } else {
+        reportsList.innerHTML = pendingReports.map(r => {
+          const typeBadge = r.reportType === 'DISCUSSION'
+            ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">Discussion</span>'
+            : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Comment / Reply</span>';
+
+          const reasonBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">' + escapeHtml(r.reason) + '</span>';
+
+          return `
+            <div class="bg-white rounded-xl border border-[#e5eae7] p-5 shadow-xs space-y-3">
+              <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                <div class="space-y-1.5 flex-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    ${typeBadge}
+                    ${reasonBadge}
+                    <h4 class="text-sm sm:text-base font-bold text-gray-900">${escapeHtml(r.targetTitle || 'Reported Item')}</h4>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                    <span class="font-medium text-gray-700">Tác giả: ${escapeHtml(r.targetAuthorName || 'Unknown')}</span>
+                    <span class="text-gray-300">&middot;</span>
+                    <span class="text-gray-500">Báo cáo bởi: <span class="font-semibold text-gray-700">${escapeHtml(r.reporterName || 'Anonymous')}</span> (${escapeHtml(r.reporterEmail || '')})</span>
+                    <span class="text-gray-300">&middot;</span>
+                    <span class="text-gray-400 font-mono text-[11px]">${formatDate(r.createdAt)}</span>
+                  </div>
+                  ${r.details ? `<div class="text-xs text-gray-600 bg-amber-50/70 border border-amber-200/60 p-2 rounded-lg"><span class="font-semibold text-amber-800">Lý do từ người báo cáo:</span> ${escapeHtml(r.details)}</div>` : ''}
+                </div>
+
+                <!-- Action Buttons: Keep or Remove -->
+                <div class="flex items-center gap-2 shrink-0 pt-1 sm:pt-0">
+                  <button type="button" onclick="CodeForgeAdmin.dismissReport(${r.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs transition shadow-xs" title="Bác bỏ báo cáo và giữ lại nội dung">
+                    <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Keep (Giữ lại)</span>
+                  </button>
+                  <button type="button" onclick="CodeForgeAdmin.deleteReportedItem(${r.id}, '${r.reportType}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition shadow-xs" title="Loại bỏ và xóa nội dung này khỏi database">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <span>Remove from DB (Xóa)</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Reported content snippet -->
+              <div class="p-3 rounded-lg bg-gray-50 border border-gray-100 text-xs text-gray-700 leading-relaxed font-sans max-h-24 overflow-y-auto">
+                <span class="font-semibold text-gray-900 block mb-1">Nội dung bị báo cáo:</span>
+                ${escapeHtml(r.targetContent || 'No content')}
               </div>
             </div>
           `;
@@ -359,8 +427,8 @@
         await CodeForgeAPI.rejectProblem(id, reason);
         if (window.CodeForgeApp) CodeForgeApp.showToast('Problem submission rejected.', 'info');
       } else {
-        await CodeForgeAPI.rejectDiscussion(id, reason);
-        if (window.CodeForgeApp) CodeForgeApp.showToast('Discussion post rejected.', 'info');
+        await CodeForgeAPI.deleteDiscussion(id);
+        if (window.CodeForgeApp) CodeForgeApp.showToast('Bài thảo luận đã bị loại bỏ và xóa khỏi database.', 'info');
       }
       closeRejectModal();
       await loadStats();
@@ -368,6 +436,55 @@
     } catch (err) {
       console.error('Failed to reject item:', err);
       if (window.CodeForgeApp) CodeForgeApp.showToast('Rejection failed: ' + err.message, 'warn');
+    }
+  }
+
+  async function deleteDiscussion(id) {
+    if (!confirm('Bạn có chắc chắn muốn LOẠI BỎ và XÓA vĩnh viễn bài thảo luận này khỏi database không?')) {
+      return;
+    }
+    try {
+      if (window.CodeForgeAPI && CodeForgeAPI.deleteDiscussion) {
+        await CodeForgeAPI.deleteDiscussion(id);
+      }
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Bài thảo luận đã được loại bỏ và xóa khỏi database!', 'info');
+      await loadStats();
+      await loadModerationQueue();
+    } catch (err) {
+      console.error('Failed to delete discussion:', err);
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Xóa bài thảo luận thất bại: ' + err.message, 'warn');
+    }
+  }
+
+  async function dismissReport(id) {
+    try {
+      if (window.CodeForgeAPI && CodeForgeAPI.dismissReport) {
+        await CodeForgeAPI.dismissReport(id);
+      }
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Báo cáo đã được bỏ qua. Nội dung được giữ lại.', 'info');
+      await loadStats();
+      await loadModerationQueue();
+    } catch (err) {
+      console.error('Failed to dismiss report:', err);
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Failed to dismiss report: ' + err.message, 'warn');
+    }
+  }
+
+  async function deleteReportedItem(id, reportType) {
+    const label = reportType === 'DISCUSSION' ? 'bài thảo luận' : 'bình luận';
+    if (!confirm(`Bạn có chắc chắn muốn LOẠI BỎ và XÓA ${label} này khỏi database không?`)) {
+      return;
+    }
+    try {
+      if (window.CodeForgeAPI && CodeForgeAPI.deleteReportedItem) {
+        await CodeForgeAPI.deleteReportedItem(id);
+      }
+      if (window.CodeForgeApp) CodeForgeApp.showToast(`Đã loại bỏ và xóa ${label} khỏi database!`, 'success');
+      await loadStats();
+      await loadModerationQueue();
+    } catch (err) {
+      console.error('Failed to delete reported item:', err);
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Xóa nội dung thất bại: ' + err.message, 'warn');
     }
   }
 
@@ -472,6 +589,9 @@
     loadModerationQueue,
     approveProblem,
     approveDiscussion,
+    deleteDiscussion,
+    dismissReport,
+    deleteReportedItem,
     openRejectModal,
     closeRejectModal,
     confirmReject,

@@ -1,11 +1,13 @@
 package com.codeforge.service;
 
 import com.codeforge.dto.DiscussionDto;
+import com.codeforge.entity.CommunityReport;
 import com.codeforge.entity.Discussion;
 import com.codeforge.entity.DiscussionReply;
 import com.codeforge.entity.DiscussionUpvote;
 import com.codeforge.entity.User;
 import com.codeforge.exception.ApiException;
+import com.codeforge.repository.CommunityReportRepository;
 import com.codeforge.repository.DiscussionReplyRepository;
 import com.codeforge.repository.DiscussionRepository;
 import com.codeforge.repository.DiscussionUpvoteRepository;
@@ -31,6 +33,7 @@ public class DiscussionService {
     private final DiscussionRepository discussionRepository;
     private final DiscussionReplyRepository discussionReplyRepository;
     private final DiscussionUpvoteRepository discussionUpvoteRepository;
+    private final CommunityReportRepository communityReportRepository;
     private final UserRepository userRepository;
 
     private User resolveUser(String username) {
@@ -176,6 +179,41 @@ public class DiscussionService {
 
         reply = discussionReplyRepository.save(reply);
         return toReplyDto(reply);
+    }
+
+    /**
+     * Submits a user report against an inappropriate discussion or reply.
+     */
+    @Transactional
+    public Map<String, Object> reportContent(DiscussionDto.CreateReportRequest request, String username) {
+        User reporter = resolveUser(username);
+        String type = request.getReportType() != null ? request.getReportType().trim().toUpperCase() : "";
+        if (!"DISCUSSION".equals(type) && !"REPLY".equals(type)) {
+            throw ApiException.badRequest("Invalid report type. Must be DISCUSSION or REPLY.");
+        }
+
+        if ("DISCUSSION".equals(type)) {
+            if (!discussionRepository.existsById(request.getTargetId())) {
+                throw ApiException.notFound("Discussion not found: " + request.getTargetId());
+            }
+        } else {
+            if (!discussionReplyRepository.existsById(request.getTargetId())) {
+                throw ApiException.notFound("Comment/reply not found: " + request.getTargetId());
+            }
+        }
+
+        CommunityReport report = CommunityReport.builder()
+                .reportType(type)
+                .targetId(request.getTargetId())
+                .reporter(reporter)
+                .reason(request.getReason())
+                .details(request.getDetails())
+                .status("PENDING")
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        communityReportRepository.save(report);
+        return Map.of("success", true, "message", "Report submitted successfully. Thank you for helping keep the community clean.");
     }
 
     private DiscussionDto.Response toDto(Discussion d, User currentUser) {
