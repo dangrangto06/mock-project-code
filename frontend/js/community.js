@@ -227,7 +227,7 @@ window.CodeForgeCommunity = (function () {
                     Join conversation &rarr;
                   </span>
                 </div>
-                <button type="button" onclick="CodeForgeCommunity.openReportModal('DISCUSSION', '${post.id}', '${escapeHtml(post.title).replace(/'/g, "\\'")}', event)" class="inline-flex items-center gap-1 p-1 text-gray-400 hover:text-rose-600 rounded transition" title="Báo cáo bài viết này">
+                <button type="button" onclick="CodeForgeCommunity.openReportModal('DISCUSSION', '${post.id}', '${escapeHtml(post.title).replace(/'/g, "\\'")}', event)" class="inline-flex items-center gap-1 p-1 text-gray-400 hover:text-rose-600 rounded transition" title="Report this discussion">
                   <svg class="w-3.5 h-3.5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
                   <span class="text-[10px]">Report</span>
                 </button>
@@ -432,7 +432,7 @@ window.CodeForgeCommunity = (function () {
     } else {
       closeCreateModal();
       if (window.CodeForgeApp) {
-        CodeForgeApp.showToast("Bài thảo luận đã được gửi tới Admin kiểm duyệt. Bài viết sẽ xuất hiện trên Community sau khi được phê duyệt!", 'info');
+        CodeForgeApp.showToast("Your discussion has been submitted for moderation. It will appear on the Community board once approved by an admin!", 'info');
       }
     }
   }
@@ -535,7 +535,7 @@ window.CodeForgeCommunity = (function () {
               ${getRoleBadge(r.authorRole)}
               <span class="text-[11px] text-gray-400 font-medium">${escapeHtml(r.createdAt || 'Recently')}</span>
             </div>
-            <button type="button" onclick="CodeForgeCommunity.openReportModal('REPLY', '${r.id}', 'bình luận của ${escapeHtml(r.authorName).replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-rose-600 transition inline-flex items-center gap-1 text-[10px]" title="Báo cáo bình luận này">
+            <button type="button" onclick="CodeForgeCommunity.openReportModal('REPLY', '${r.id}', 'comment by ${escapeHtml(r.authorName).replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-rose-600 transition inline-flex items-center gap-1 text-[10px]" title="Report this comment">
               <svg class="w-3 h-3 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
               <span>Report</span>
             </button>
@@ -708,7 +708,7 @@ window.CodeForgeCommunity = (function () {
     if (typeInput) typeInput.value = type;
     if (idInput) idInput.value = targetId;
     if (subtitle) {
-      subtitle.textContent = `Báo cáo ${type === 'DISCUSSION' ? 'bài thảo luận' : 'bình luận'}: "${title || targetId}"`;
+      subtitle.textContent = `Reporting ${type === 'DISCUSSION' ? 'discussion' : 'comment'}: "${title || targetId}"`;
     }
     if (reasonSelect) reasonSelect.value = 'Off-topic';
     if (detailsInput) detailsInput.value = '';
@@ -749,13 +749,13 @@ window.CodeForgeCommunity = (function () {
       }
       closeReportModal();
       if (window.CodeForgeApp) {
-        CodeForgeApp.showToast('Báo cáo của bạn đã được gửi tới Admin. Cảm ơn bạn đã hỗ trợ kiểm duyệt cộng đồng!', 'success');
+        CodeForgeApp.showToast('Your report has been submitted to the admin team. Thank you for helping keep our community safe!', 'success');
       }
     } catch (err) {
       console.error('Failed to submit report:', err);
       closeReportModal();
       if (window.CodeForgeApp) {
-        CodeForgeApp.showToast('Báo cáo đã được ghi nhận.', 'info');
+        CodeForgeApp.showToast('Report submitted successfully.', 'info');
       }
     }
   }

@@ -284,13 +284,13 @@
 
                 <!-- Action Buttons -->
                 <div class="flex items-center gap-2 shrink-0 pt-1 sm:pt-0">
-                  <button type="button" onclick="CodeForgeAdmin.approveDiscussion(${d.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-xs" title="Duyệt và public bài viết lên community">
+                  <button type="button" onclick="CodeForgeAdmin.approveDiscussion(${d.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-xs" title="Approve and publish discussion to community">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    <span>Approve (Duyệt)</span>
+                    <span>Approve</span>
                   </button>
-                  <button type="button" onclick="CodeForgeAdmin.deleteDiscussion(${d.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold text-xs transition" title="Loại bỏ và xóa bài viết khỏi database">
+                  <button type="button" onclick="CodeForgeAdmin.deleteDiscussion(${d.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold text-xs transition" title="Reject and remove discussion from database">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    <span>Reject / Remove (Bỏ)</span>
+                    <span>Reject / Remove</span>
                   </button>
                 </div>
               </div>
@@ -313,8 +313,8 @@
             <div class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
             </div>
-            <div class="text-xs font-bold text-gray-800">Không có báo cáo vi phạm nào đang chờ xử lý</div>
-            <p class="text-[11px] text-gray-400">Tất cả các báo cáo về nội dung không liên quan hoặc vi phạm đã được giải quyết.</p>
+            <div class="text-xs font-bold text-gray-800">No pending reports</div>
+            <p class="text-[11px] text-gray-400">All user-flagged content and reports have been resolved.</p>
           </div>
         `;
       } else {
@@ -335,31 +335,31 @@
                     <h4 class="text-sm sm:text-base font-bold text-gray-900">${escapeHtml(r.targetTitle || 'Reported Item')}</h4>
                   </div>
                   <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                    <span class="font-medium text-gray-700">Tác giả: ${escapeHtml(r.targetAuthorName || 'Unknown')}</span>
+                    <span class="font-medium text-gray-700">Author: ${escapeHtml(r.targetAuthorName || 'Unknown')}</span>
                     <span class="text-gray-300">&middot;</span>
-                    <span class="text-gray-500">Báo cáo bởi: <span class="font-semibold text-gray-700">${escapeHtml(r.reporterName || 'Anonymous')}</span> (${escapeHtml(r.reporterEmail || '')})</span>
+                    <span class="text-gray-500">Reported by: <span class="font-semibold text-gray-700">${escapeHtml(r.reporterName || 'Anonymous')}</span> (${escapeHtml(r.reporterEmail || '')})</span>
                     <span class="text-gray-300">&middot;</span>
                     <span class="text-gray-400 font-mono text-[11px]">${formatDate(r.createdAt)}</span>
                   </div>
-                  ${r.details ? `<div class="text-xs text-gray-600 bg-amber-50/70 border border-amber-200/60 p-2 rounded-lg"><span class="font-semibold text-amber-800">Lý do từ người báo cáo:</span> ${escapeHtml(r.details)}</div>` : ''}
+                  ${r.details ? `<div class="text-xs text-gray-600 bg-amber-50/70 border border-amber-200/60 p-2 rounded-lg"><span class="font-semibold text-amber-800">Reporter's notes:</span> ${escapeHtml(r.details)}</div>` : ''}
                 </div>
 
                 <!-- Action Buttons: Keep or Remove -->
                 <div class="flex items-center gap-2 shrink-0 pt-1 sm:pt-0">
-                  <button type="button" onclick="CodeForgeAdmin.dismissReport(${r.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs transition shadow-xs" title="Bác bỏ báo cáo và giữ lại nội dung">
+                  <button type="button" onclick="CodeForgeAdmin.dismissReport(${r.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs transition shadow-xs" title="Dismiss report and keep content">
                     <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    <span>Keep (Giữ lại)</span>
+                    <span>Keep Content</span>
                   </button>
-                  <button type="button" onclick="CodeForgeAdmin.deleteReportedItem(${r.id}, '${r.reportType}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition shadow-xs" title="Loại bỏ và xóa nội dung này khỏi database">
+                  <button type="button" onclick="CodeForgeAdmin.deleteReportedItem(${r.id}, '${r.reportType}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition shadow-xs" title="Remove content from database">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    <span>Remove from DB (Xóa)</span>
+                    <span>Remove from DB</span>
                   </button>
                 </div>
               </div>
 
               <!-- Reported content snippet -->
               <div class="p-3 rounded-lg bg-gray-50 border border-gray-100 text-xs text-gray-700 leading-relaxed font-sans max-h-24 overflow-y-auto">
-                <span class="font-semibold text-gray-900 block mb-1">Nội dung bị báo cáo:</span>
+                <span class="font-semibold text-gray-900 block mb-1">Reported content:</span>
                 ${escapeHtml(r.targetContent || 'No content')}
               </div>
             </div>
@@ -428,7 +428,7 @@
         if (window.CodeForgeApp) CodeForgeApp.showToast('Problem submission rejected.', 'info');
       } else {
         await CodeForgeAPI.deleteDiscussion(id);
-        if (window.CodeForgeApp) CodeForgeApp.showToast('Bài thảo luận đã bị loại bỏ và xóa khỏi database.', 'info');
+        if (window.CodeForgeApp) CodeForgeApp.showToast('Discussion rejected and deleted from database.', 'info');
       }
       closeRejectModal();
       await loadStats();
@@ -440,19 +440,19 @@
   }
 
   async function deleteDiscussion(id) {
-    if (!confirm('Bạn có chắc chắn muốn LOẠI BỎ và XÓA vĩnh viễn bài thảo luận này khỏi database không?')) {
+    if (!confirm('Are you sure you want to permanently delete this discussion from the database?')) {
       return;
     }
     try {
       if (window.CodeForgeAPI && CodeForgeAPI.deleteDiscussion) {
         await CodeForgeAPI.deleteDiscussion(id);
       }
-      if (window.CodeForgeApp) CodeForgeApp.showToast('Bài thảo luận đã được loại bỏ và xóa khỏi database!', 'info');
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Discussion removed and deleted from database!', 'info');
       await loadStats();
       await loadModerationQueue();
     } catch (err) {
       console.error('Failed to delete discussion:', err);
-      if (window.CodeForgeApp) CodeForgeApp.showToast('Xóa bài thảo luận thất bại: ' + err.message, 'warn');
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Failed to delete discussion: ' + err.message, 'warn');
     }
   }
 
@@ -461,7 +461,7 @@
       if (window.CodeForgeAPI && CodeForgeAPI.dismissReport) {
         await CodeForgeAPI.dismissReport(id);
       }
-      if (window.CodeForgeApp) CodeForgeApp.showToast('Báo cáo đã được bỏ qua. Nội dung được giữ lại.', 'info');
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Report dismissed. Content has been retained.', 'info');
       await loadStats();
       await loadModerationQueue();
     } catch (err) {
@@ -471,20 +471,20 @@
   }
 
   async function deleteReportedItem(id, reportType) {
-    const label = reportType === 'DISCUSSION' ? 'bài thảo luận' : 'bình luận';
-    if (!confirm(`Bạn có chắc chắn muốn LOẠI BỎ và XÓA ${label} này khỏi database không?`)) {
+    const label = reportType === 'DISCUSSION' ? 'discussion' : 'comment';
+    if (!confirm(`Are you sure you want to permanently delete this reported ${label} from the database?`)) {
       return;
     }
     try {
       if (window.CodeForgeAPI && CodeForgeAPI.deleteReportedItem) {
         await CodeForgeAPI.deleteReportedItem(id);
       }
-      if (window.CodeForgeApp) CodeForgeApp.showToast(`Đã loại bỏ và xóa ${label} khỏi database!`, 'success');
+      if (window.CodeForgeApp) CodeForgeApp.showToast(`Reported ${label} deleted from database!`, 'success');
       await loadStats();
       await loadModerationQueue();
     } catch (err) {
       console.error('Failed to delete reported item:', err);
-      if (window.CodeForgeApp) CodeForgeApp.showToast('Xóa nội dung thất bại: ' + err.message, 'warn');
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Failed to delete content: ' + err.message, 'warn');
     }
   }
 
