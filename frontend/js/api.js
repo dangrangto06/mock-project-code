@@ -398,6 +398,25 @@ window.CodeForgeAPI = (function () {
     return null;
   }
 
+  async function reportContent(payload) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/discussions/reports`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Report content API error, falling back to local.", e);
+      }
+    }
+    return { success: true, message: "Report noted locally." };
+  }
+
   // ===== Admin & Moderation API =====
 
   async function getAdminStats() {
@@ -492,6 +511,54 @@ window.CodeForgeAPI = (function () {
     return null;
   }
 
+  async function deleteDiscussion(id) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/discussions/${id}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to delete discussion:", e);
+      }
+    }
+    return null;
+  }
+
+  async function dismissReport(id) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/reports/${id}/dismiss`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to dismiss report:", e);
+      }
+    }
+    return null;
+  }
+
+  async function deleteReportedItem(id) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/reports/${id}/delete`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to delete reported item:", e);
+      }
+    }
+    return null;
+  }
+
   async function getAdminUsers() {
     await checkBackend();
     if (isBackendOnline && isAuthenticated()) {
@@ -545,12 +612,16 @@ window.CodeForgeAPI = (function () {
     createDiscussion,
     toggleDiscussionUpvote,
     addDiscussionReply,
+    reportContent,
     getAdminStats,
     getModerationQueue,
     approveProblem,
     rejectProblem,
     approveDiscussion,
     rejectDiscussion,
+    deleteDiscussion,
+    dismissReport,
+    deleteReportedItem,
     getAdminUsers,
     updateUserRole
   };

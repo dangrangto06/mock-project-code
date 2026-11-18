@@ -79,6 +79,33 @@ public class AdminController {
     }
 
     /**
+     * Permanently deletes a community discussion topic from database.
+     */
+    @DeleteMapping("/discussions/{id}")
+    public ResponseEntity<Map<String, Object>> deleteDiscussion(@PathVariable Long id) {
+        adminService.deleteDiscussion(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Discussion deleted from database."));
+    }
+
+    /**
+     * Dismisses a user report, keeping the content.
+     */
+    @PostMapping("/reports/{id}/dismiss")
+    public ResponseEntity<Map<String, Object>> dismissReport(@PathVariable Long id) {
+        adminService.dismissReport(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Report dismissed."));
+    }
+
+    /**
+     * Removes the reported discussion or comment from database and resolves the report.
+     */
+    @PostMapping("/reports/{id}/delete")
+    public ResponseEntity<Map<String, Object>> deleteReportedItem(@PathVariable Long id) {
+        adminService.deleteReportedItem(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Content removed from database and report resolved."));
+    }
+
+    /**
      * Retrieves directory of all platform users.
      */
     @GetMapping("/users")

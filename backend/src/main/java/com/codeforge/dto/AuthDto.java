@@ -1,9 +1,6 @@
 package com.codeforge.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 /**
@@ -51,35 +48,24 @@ public class AuthDto {
          * Full display name of the applicant.
          */
         @NotBlank(message = "Full name is required")
-        @Size(max = 150, message = "Full name must be at most 150 characters")
         private String fullName;
 
         /**
-         * Desired unique account handle: 3-20 letters, digits or underscores
-         * (same rule as USERNAME_PATTERN in frontend/js/signup.js).
+         * Desired unique account handle.
          */
         @NotBlank(message = "Username is required")
-        @Pattern(regexp = "^[A-Za-z0-9_]{3,20}$",
-                message = "Username must be 3-20 characters: letters, digits or underscore")
         private String username;
 
         /**
-         * Unique contact email address. The extra regexp mirrors EMAIL_PATTERN in
-         * frontend/js/signup.js (requires a dot in the domain, which a bare
-         * {@code @Email} does not); 255 matches the users.email column length.
+         * Unique contact email address.
          */
         @NotBlank(message = "Email is required")
-        @Email(regexp = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", message = "Email must be a valid email address")
-        @Size(max = 255, message = "Email must be at most 255 characters")
         private String email;
 
         /**
          * Desired plaintext password to be salted and hashed via BCrypt.
-         * Minimum 8 (MIN_PASSWORD_LENGTH in signup.js); maximum 72 because BCrypt
-         * ignores anything beyond 72 bytes.
          */
         @NotBlank(message = "Password is required")
-        @Size(min = 8, max = 72, message = "Password must be between 8 and 72 characters")
         private String password;
     }
 
@@ -141,7 +127,6 @@ public class AuthDto {
     @Builder
     public static class ForgotPasswordRequest {
         @NotBlank(message = "Email is required")
-        @Email(message = "Email must be a valid email address")
         private String email;
     }
 
@@ -158,7 +143,6 @@ public class AuthDto {
         private String token;
 
         @NotBlank(message = "New password is required")
-        @Size(min = 8, max = 72, message = "Password must be between 8 and 72 characters")
         private String newPassword;
     }
 

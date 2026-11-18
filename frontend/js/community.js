@@ -107,6 +107,10 @@ window.CodeForgeCommunity = (function () {
 
     const q = searchQuery.trim().toLowerCase();
     const filtered = posts.filter(post => {
+      // Only approved posts should be publicly displayed in community feed
+      if (post.moderationStatus && post.moderationStatus !== 'APPROVED') {
+        return false;
+      }
       // Category filter
       if (activeCategory !== 'all' && post.category !== activeCategory) {
         return false;
@@ -213,14 +217,20 @@ window.CodeForgeCommunity = (function () {
               </p>
 
               <!-- Footer info -->
-              <div class="pt-2 flex items-center gap-4 text-xs text-gray-500">
-                <span class="inline-flex items-center gap-1.5 hover:text-emerald-700 transition font-medium">
-                  <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                  <span>${repliesCount} ${repliesCount === 1 ? 'reply' : 'replies'}</span>
-                </span>
-                <span class="text-emerald-700 font-semibold group-hover:underline inline-flex items-center gap-1 text-[11px]">
-                  Join conversation &rarr;
-                </span>
+              <div class="pt-2 flex items-center justify-between text-xs text-gray-500">
+                <div class="flex items-center gap-4">
+                  <span class="inline-flex items-center gap-1.5 hover:text-emerald-700 transition font-medium">
+                    <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    <span>${repliesCount} ${repliesCount === 1 ? 'reply' : 'replies'}</span>
+                  </span>
+                  <span class="text-emerald-700 font-semibold group-hover:underline inline-flex items-center gap-1 text-[11px]">
+                    Join conversation &rarr;
+                  </span>
+                </div>
+                <button type="button" onclick="CodeForgeCommunity.openReportModal('DISCUSSION', '${post.id}', '${escapeHtml(post.title).replace(/'/g, "\\'")}', event)" class="inline-flex items-center gap-1 p-1 text-gray-400 hover:text-rose-600 rounded transition" title="Báo cáo bài viết này">
+                  <svg class="w-3.5 h-3.5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
+                  <span class="text-[10px]">Report</span>
+                </button>
               </div>
 
             </div>
@@ -409,16 +419,20 @@ window.CodeForgeCommunity = (function () {
       replies: []
     };
 
-    posts.unshift(newPost);
-    saveDiscussionsToStorage();
-    closeCreateModal();
-    renderDiscussions();
-    if (window.CodeForgeApp) {
-      const isPostAdmin = (authorRole && authorRole.toLowerCase() === 'admin') || (createdFromApi && createdFromApi.moderationStatus === 'APPROVED');
-      if (isPostAdmin) {
+    const isPostAdmin = (authorRole && authorRole.toLowerCase() === 'admin') || (createdFromApi && createdFromApi.moderationStatus === 'APPROVED');
+
+    if (isPostAdmin) {
+      posts.unshift(newPost);
+      saveDiscussionsToStorage();
+      closeCreateModal();
+      renderDiscussions();
+      if (window.CodeForgeApp) {
         CodeForgeApp.showToast('Published immediately!', 'success');
-      } else {
-        CodeForgeApp.showToast("Submitted for admin approval! You'll see it publicly once verified.", 'info');
+      }
+    } else {
+      closeCreateModal();
+      if (window.CodeForgeApp) {
+        CodeForgeApp.showToast("Bài thảo luận đã được gửi tới Admin kiểm duyệt. Bài viết sẽ xuất hiện trên Community sau khi được phê duyệt!", 'info');
       }
     }
   }
@@ -469,6 +483,14 @@ window.CodeForgeCommunity = (function () {
     }
 
     updateModalUpvoteUI(post);
+
+    const btnModalReport = document.getElementById('view-post-report-btn');
+    if (btnModalReport) {
+      btnModalReport.onclick = () => {
+        openReportModal('DISCUSSION', post.id, post.title);
+      };
+    }
+
     renderRepliesList(post);
 
     modal.classList.remove('hidden');
@@ -507,10 +529,16 @@ window.CodeForgeCommunity = (function () {
           ${escapeHtml(r.authorInitials || 'U')}
         </div>
         <div class="flex-1 min-w-0 space-y-1">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-gray-900">${escapeHtml(r.authorName)}</span>
-            ${getRoleBadge(r.authorRole)}
-            <span class="text-[11px] text-gray-400 font-medium">${escapeHtml(r.createdAt || 'Recently')}</span>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-gray-900">${escapeHtml(r.authorName)}</span>
+              ${getRoleBadge(r.authorRole)}
+              <span class="text-[11px] text-gray-400 font-medium">${escapeHtml(r.createdAt || 'Recently')}</span>
+            </div>
+            <button type="button" onclick="CodeForgeCommunity.openReportModal('REPLY', '${r.id}', 'bình luận của ${escapeHtml(r.authorName).replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-rose-600 transition inline-flex items-center gap-1 text-[10px]" title="Báo cáo bình luận này">
+              <svg class="w-3 h-3 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
+              <span>Report</span>
+            </button>
           </div>
           <div class="text-xs text-gray-700 leading-relaxed font-sans">
             ${formatContent(r.content)}
@@ -632,6 +660,21 @@ window.CodeForgeCommunity = (function () {
     const replyForm = document.getElementById('disc-reply-form');
     if (replyForm) replyForm.addEventListener('submit', handleSubmitReply);
 
+    // Report Modal events
+    const btnCloseReport = document.getElementById('btn-close-report-modal');
+    const btnCancelReport = document.getElementById('btn-cancel-report-modal');
+    const reportForm = document.getElementById('report-form');
+    const modalReport = document.getElementById('report-modal');
+
+    if (btnCloseReport) btnCloseReport.addEventListener('click', closeReportModal);
+    if (btnCancelReport) btnCancelReport.addEventListener('click', closeReportModal);
+    if (reportForm) reportForm.addEventListener('submit', handleSubmitReport);
+    if (modalReport) {
+      modalReport.addEventListener('click', (e) => {
+        if (e.target === modalReport) closeReportModal();
+      });
+    }
+
     // Close on backdrop clicks
     const modalCreate = document.getElementById('discussion-modal');
     if (modalCreate) {
@@ -645,6 +688,75 @@ window.CodeForgeCommunity = (function () {
       modalView.addEventListener('click', (e) => {
         if (e.target === modalView) closeViewModal();
       });
+    }
+  }
+
+  let currentReportTarget = null;
+
+  function openReportModal(type, targetId, title, e) {
+    if (e) e.stopPropagation();
+    currentReportTarget = { type, targetId, title };
+
+    const modal = document.getElementById('report-modal');
+    const subtitle = document.getElementById('report-modal-subtitle');
+    const typeInput = document.getElementById('report-target-type');
+    const idInput = document.getElementById('report-target-id');
+    const reasonSelect = document.getElementById('report-reason-select');
+    const detailsInput = document.getElementById('report-details-input');
+
+    if (!modal) return;
+    if (typeInput) typeInput.value = type;
+    if (idInput) idInput.value = targetId;
+    if (subtitle) {
+      subtitle.textContent = `Báo cáo ${type === 'DISCUSSION' ? 'bài thảo luận' : 'bình luận'}: "${title || targetId}"`;
+    }
+    if (reasonSelect) reasonSelect.value = 'Off-topic';
+    if (detailsInput) detailsInput.value = '';
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeReportModal() {
+    const modal = document.getElementById('report-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+    currentReportTarget = null;
+  }
+
+  async function handleSubmitReport(e) {
+    if (e) e.preventDefault();
+    if (!currentReportTarget) return;
+
+    const reasonSelect = document.getElementById('report-reason-select');
+    const detailsInput = document.getElementById('report-details-input');
+
+    const reason = reasonSelect ? reasonSelect.value : 'Off-topic';
+    const details = detailsInput ? detailsInput.value.trim() : '';
+
+    const payload = {
+      reportType: currentReportTarget.type,
+      targetId: Number(currentReportTarget.targetId) || currentReportTarget.targetId,
+      reason,
+      details
+    };
+
+    try {
+      if (window.CodeForgeAPI && CodeForgeAPI.reportContent) {
+        await CodeForgeAPI.reportContent(payload);
+      }
+      closeReportModal();
+      if (window.CodeForgeApp) {
+        CodeForgeApp.showToast('Báo cáo của bạn đã được gửi tới Admin. Cảm ơn bạn đã hỗ trợ kiểm duyệt cộng đồng!', 'success');
+      }
+    } catch (err) {
+      console.error('Failed to submit report:', err);
+      closeReportModal();
+      if (window.CodeForgeApp) {
+        CodeForgeApp.showToast('Báo cáo đã được ghi nhận.', 'info');
+      }
     }
   }
 
@@ -663,6 +775,8 @@ window.CodeForgeCommunity = (function () {
     openViewModal,
     closeViewModal,
     toggleUpvote,
-    filterByCategory
+    filterByCategory,
+    openReportModal,
+    closeReportModal
   };
 })();

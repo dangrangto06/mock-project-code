@@ -7,6 +7,8 @@ import com.codeforge.dto.ExerciseDto;
 import com.codeforge.entity.Discussion;
 import com.codeforge.entity.Exercise;
 import com.codeforge.entity.User;
+import com.codeforge.repository.CommunityReportRepository;
+import com.codeforge.repository.DiscussionReplyRepository;
 import com.codeforge.repository.DiscussionRepository;
 import com.codeforge.repository.ExerciseRepository;
 import com.codeforge.repository.UserRepository;
@@ -50,6 +52,12 @@ class Group5IntegrationTests {
 
         @Autowired
         private DiscussionRepository discussionRepository;
+
+        @Autowired
+        private DiscussionReplyRepository discussionReplyRepository;
+
+        @Autowired
+        private CommunityReportRepository communityReportRepository;
 
         @Autowired
         private JwtUtil jwtUtil;
@@ -528,5 +536,94 @@ class Group5IntegrationTests {
                                 .header("Authorization", "Bearer " + learnerToken))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$", isA(List.class)));
+        }
+
+        // ── Task 6: Community Reporting Workflow ─────────────────────────────────
+
+        @Test
+        @DisplayName("Community Report: Learner can report discussion and comment, Admin can dismiss or delete")
+        void testCommunityReport_Workflow() throws Exception {
+                // Create an approved discussion and reply
+                Discussion disc = Discussion.builder()
+                                .title("Inappropriate discussion")
+                                .category("Tips")
+                                .content("This post is off-topic.")
+                                .author(learnerBob)
+                                .moderationStatus("APPROVED")
+                                .upvotes(0)
+                                .createdAt(LocalDateTime.now())
+                                .build();
+                Discussion savedDisc = discussionRepository.save(disc);
+
+                com.codeforge.entity.DiscussionReply reply = com.codeforge.entity.DiscussionReply.builder()
+                                .discussion(savedDisc)
+                                .author(learnerBob)
+                                .content("Spam comment with promo link.")
+                                .createdAt(LocalDateTime.now())
+                                .build();
+                reply = discussionReplyRepository.save(reply);
+
+                // 1. Learner reports the discussion
+                DiscussionDto.CreateReportRequest reportDiscReq = DiscussionDto.CreateReportRequest.builder()
+                                .reportType("DISCUSSION")
+                                .targetId(savedDisc.getId())
+                                .reason("Off-topic")
+                                .details("Discussion does not belong to any algorithmic topic.")
+                                .build();
+
+                mockMvc.perform(post("/api/discussions/reports")
+                                .header("Authorization", "Bearer " + learnerToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(reportDiscReq)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.success", is(true)));
+
+                // 2. Learner reports the comment
+                DiscussionDto.CreateReportRequest reportReplyReq = DiscussionDto.CreateReportRequest.builder()
+                                .reportType("REPLY")
+                                .targetId(reply.getId())
+                                .reason("Spam")
+                                .details("Self-promotional spam.")
+                                .build();
+
+                mockMvc.perform(post("/api/discussions/reports")
+                                .header("Authorization", "Bearer " + learnerToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(reportReplyReq)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.success", is(true)));
+
+                // 3. Admin retrieves moderation queue and sees the reports
+                mockMvc.perform(get("/api/admin/moderation")
+                                .header("Authorization", "Bearer " + adminToken))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.pendingReports", hasSize(greaterThanOrEqualTo(2))));
+
+                List<com.codeforge.entity.CommunityReport> replyReports = communityReportRepository.findByReportTypeAndTargetId("REPLY", reply.getId());
+                org.junit.jupiter.api.Assertions.assertFalse(replyReports.isEmpty());
+                Long replyReportId = replyReports.get(0).getId();
+
+                // 4. Admin deletes the reported reply -> reply removed from DB
+                mockMvc.perform(post("/api/admin/reports/" + replyReportId + "/delete")
+                                .header("Authorization", "Bearer " + adminToken))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.success", is(true)));
+
+                org.junit.jupiter.api.Assertions.assertFalse(discussionReplyRepository.existsById(reply.getId()));
+
+                // 5. Admin dismisses the discussion report -> discussion is kept in DB
+                List<com.codeforge.entity.CommunityReport> discReports = communityReportRepository.findByReportTypeAndTargetId("DISCUSSION", savedDisc.getId());
+                org.junit.jupiter.api.Assertions.assertFalse(discReports.isEmpty(), "Discussion reports should not be empty");
+                Long discReportId = discReports.get(0).getId();
+
+                mockMvc.perform(post("/api/admin/reports/" + discReportId + "/dismiss")
+                                .header("Authorization", "Bearer " + adminToken))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.success", is(true)));
+
+                org.junit.jupiter.api.Assertions.assertTrue(discussionRepository.existsById(savedDisc.getId()));
+                com.codeforge.entity.CommunityReport dismissedReport = communityReportRepository.findById(discReportId).orElse(null);
+                org.junit.jupiter.api.Assertions.assertNotNull(dismissedReport);
+                org.junit.jupiter.api.Assertions.assertEquals("DISMISSED", dismissedReport.getStatus());
         }
 }
