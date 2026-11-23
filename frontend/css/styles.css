@@ -84,6 +84,20 @@ body:not(.dark-theme) textarea:not(#editor-real-input):focus {
   outline: none;
 }
 
+/* Light mode text contrast enhancements (WCAG compliant) */
+body:not(.dark-theme) .text-gray-400 {
+  color: #64748b !important;
+}
+
+body:not(.dark-theme) .text-gray-500 {
+  color: #475569 !important;
+}
+
+body:not(.dark-theme) input::placeholder,
+body:not(.dark-theme) textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
 /* Directional borders: strictly single-sided (NEVER 4-sided boxes!) */
 .border-t {
   border-top-width: 1px !important;
@@ -407,16 +421,19 @@ body.dark-theme .text-gray-400 {
 
 body.dark-theme input::placeholder,
 body.dark-theme textarea::placeholder {
-  color: #6b7280 !important;
+  color: #9ca3af !important;
 }
 
 /* Emerald accents */
 body.dark-theme .text-emerald-950,
-body.dark-theme .text-emerald-900,
+body.dark-theme .text-emerald-900 {
+  color: #a7f3d0 !important;
+}
+
 body.dark-theme .text-emerald-800,
 body.dark-theme .text-emerald-700,
 body.dark-theme .text-emerald-600 {
-  color: #2cbb5d !important;
+  color: #34d399 !important;
 }
 
 body.dark-theme .bg-emerald-600 {
@@ -469,6 +486,37 @@ body.dark-theme .border-red-200 {
   border-color: rgba(239, 71, 67, 0.4) !important;
 }
 
+/* Teal & Blue accents in dark mode */
+body.dark-theme .text-teal-700,
+body.dark-theme .text-teal-600 {
+  color: #2dd4bf !important;
+}
+
+body.dark-theme .bg-teal-50 {
+  background-color: rgba(45, 212, 191, 0.14) !important;
+}
+
+body.dark-theme .text-blue-700,
+body.dark-theme .text-blue-600 {
+  color: #60a5fa !important;
+}
+
+body.dark-theme .bg-blue-50 {
+  background-color: rgba(96, 165, 250, 0.14) !important;
+}
+
+body.dark-theme .border-blue-200 {
+  border-color: rgba(96, 165, 250, 0.35) !important;
+}
+
+body.dark-theme .text-purple-600 {
+  color: #c084fc !important;
+}
+
+body.dark-theme .bg-purple-50 {
+  background-color: rgba(192, 132, 252, 0.14) !important;
+}
+
 /* Difficulty Badges in Dark Mode */
 body.dark-theme .badge-easy {
   background-color: rgba(44, 187, 93, 0.15) !important;
@@ -497,6 +545,18 @@ body.dark-theme textarea:not(#editor-real-input) {
   border: 1px solid #3e3e3e !important;
 }
 
+body.dark-theme input[readonly],
+body.dark-theme textarea[readonly] {
+  background-color: #242424 !important;
+  color: #cbd5e1 !important;
+  border-color: #3e3e3e !important;
+}
+
+body.dark-theme select option {
+  background-color: #282828 !important;
+  color: #eff1f6 !important;
+}
+
 body.dark-theme input:not([type="checkbox"]):not([type="radio"]):focus,
 body.dark-theme select:not(#ide-language-select):focus,
 body.dark-theme textarea:not(#editor-real-input):focus,
@@ -505,6 +565,22 @@ body.dark-theme select:not(#ide-language-select):hover,
 body.dark-theme textarea:not(#editor-real-input):hover {
   border-color: #525252 !important;
   outline: none;
+}
+
+/* Dark mode typography hover states */
+body.dark-theme .hover\:text-gray-900:hover,
+body.dark-theme .hover\:text-gray-800:hover {
+  color: #eff1f6 !important;
+}
+
+body.dark-theme .hover\:text-gray-700:hover {
+  color: #e2e8f0 !important;
+}
+
+body.dark-theme .hover\:text-emerald-700:hover,
+body.dark-theme .hover\:text-emerald-800:hover,
+body.dark-theme .hover\:text-emerald-900:hover {
+  color: #34d399 !important;
 }
 
 /* Dark mode row & button hovers */

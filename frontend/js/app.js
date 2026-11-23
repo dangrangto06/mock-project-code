@@ -89,7 +89,7 @@ window.CodeForgeApp = (function () {
     }
     updateAuthUI();
     updateDashboardForUser();
-    handleRoute(window.location.hash.replace('#', '') || 'dashboard');
+    handleRoute(getCurrentRoute());
 
     // Initialize child modules
     if (window.CodeForgeIDE) CodeForgeIDE.init();
@@ -98,15 +98,23 @@ window.CodeForgeApp = (function () {
     if (window.CodeForgeCommunity) CodeForgeCommunity.init();
   }
 
+  function getCurrentRoute() {
+    return window.location.hash.replace(/^#\/?/, '').trim() || 'dashboard';
+  }
+
   function setupHashRouting() {
     window.addEventListener('hashchange', () => {
-      const route = window.location.hash.replace('#', '') || 'dashboard';
-      handleRoute(route);
+      handleRoute(getCurrentRoute());
     });
   }
 
   function navigate(routeName) {
-    window.location.hash = `#${routeName}`;
+    const clean = String(routeName).replace(/^#\/?/, '').trim();
+    if (window.location.hash === `#${clean}`) {
+      handleRoute(clean);
+    } else {
+      window.location.hash = `#${clean}`;
+    }
   }
 
   function updateAuthUI() {
@@ -460,6 +468,20 @@ window.CodeForgeApp = (function () {
   function handleLoginSubmit() {
     const btn = document.getElementById('btn-login-submit');
     const emailInput = document.getElementById('login-email');
+    const emailVal = (emailInput && emailInput.value.trim()) || 'alex@codeforge.io';
+    const username = emailVal.includes('@') ? emailVal.split('@')[0] : emailVal;
+    const userObj = {
+      id: 1,
+      username: username,
+      email: emailVal.includes('@') ? emailVal : `${emailVal}@codeforge.io`,
+      fullName: username.charAt(0).toUpperCase() + username.slice(1),
+      role: username.toLowerCase().includes('admin') ? 'Admin' : 'Learner'
+    };
+    try {
+      localStorage.setItem(USER_KEY, JSON.stringify(userObj));
+      localStorage.setItem(TOKEN_KEY, 'mock-jwt-token-dev');
+    } catch (_) {}
+
     if (btn) {
       const oldHtml = btn.innerHTML;
       btn.disabled = true;
@@ -479,6 +501,22 @@ window.CodeForgeApp = (function () {
   function handleSignupSubmit() {
     const btn = document.getElementById('btn-signup-submit');
     const nameInput = document.getElementById('signup-name');
+    const emailInput = document.getElementById('signup-email');
+    const emailVal = (emailInput && emailInput.value.trim()) || 'learner@codeforge.io';
+    const fullNameVal = (nameInput && nameInput.value.trim()) || 'New Learner';
+    const username = emailVal.includes('@') ? emailVal.split('@')[0] : 'learner';
+    const userObj = {
+      id: 99,
+      username: username,
+      email: emailVal.includes('@') ? emailVal : `${emailVal}@codeforge.io`,
+      fullName: fullNameVal,
+      role: 'Learner'
+    };
+    try {
+      localStorage.setItem(USER_KEY, JSON.stringify(userObj));
+      localStorage.setItem(TOKEN_KEY, 'mock-jwt-token-dev');
+    } catch (_) {}
+
     if (btn) {
       const oldHtml = btn.innerHTML;
       btn.disabled = true;
@@ -522,6 +560,7 @@ window.CodeForgeApp = (function () {
     const pageSubmissions = document.getElementById('page-submissions');
     const pageNotes = document.getElementById('page-notes');
     const pageCommunity = document.getElementById('page-community');
+    const pageFeedback = document.getElementById('page-feedback');
     const pageAdmin = document.getElementById('page-admin');
     const pageIde = document.getElementById('page-ide');
     const pageCreateProblem = document.getElementById('page-create-problem');
@@ -537,6 +576,7 @@ window.CodeForgeApp = (function () {
     if (pageSubmissions) pageSubmissions.classList.add('hidden');
     if (pageNotes) pageNotes.classList.add('hidden');
     if (pageCommunity) pageCommunity.classList.add('hidden');
+    if (pageFeedback) pageFeedback.classList.add('hidden');
     if (pageAdmin) pageAdmin.classList.add('hidden');
     if (pageIde) pageIde.classList.add('hidden');
     if (pageCreateProblem) pageCreateProblem.classList.add('hidden');
@@ -554,10 +594,11 @@ window.CodeForgeApp = (function () {
     const navPractice = document.getElementById('nav-practice');
     const navNotes = document.getElementById('nav-notes');
     const navCommunity = document.getElementById('nav-community');
+    const navFeedback = document.getElementById('nav-feedback');
     const navAdmin = document.getElementById('nav-admin');
 
     const resetTopNav = () => {
-      [navOverview, navPractice, navNotes, navCommunity, navAdmin].forEach(link => {
+      [navOverview, navPractice, navNotes, navCommunity, navFeedback, navAdmin].forEach(link => {
         if (!link) return;
         link.classList.remove('text-emerald-800', 'font-semibold', 'border-emerald-600');
         link.classList.add('text-gray-600', 'hover:text-gray-900', 'font-normal', 'border-transparent');
@@ -657,6 +698,13 @@ window.CodeForgeApp = (function () {
       activateSidebarLink('sb-community');
       document.body.classList.remove('focus-mode');
       if (window.CodeForgeCommunity) CodeForgeCommunity.renderDiscussions();
+    } else if (route === 'feedback') {
+      if (pageFeedback) pageFeedback.classList.remove('hidden');
+      showStandardSidebarLayout();
+      activateTopNav(navFeedback);
+      activateSidebarLink('sb-feedback');
+      document.body.classList.remove('focus-mode');
+      initFeedbackPage();
     } else if (route === 'create-problem') {
       if (pageCreateProblem) pageCreateProblem.classList.remove('hidden');
       showStandardSidebarLayout();
@@ -1319,6 +1367,134 @@ window.CodeForgeApp = (function () {
     });
   }
 
+  // ===== Feedback Page Handling =====
+  function initFeedbackPage() {
+    let user = getStoredUser();
+    const guestView = document.getElementById('feedback-guest-view');
+    const userView = document.getElementById('feedback-user-view');
+    const successBanner = document.getElementById('feedback-success-banner');
+    const nameInput = document.getElementById('feedback-input-name');
+    const emailInput = document.getElementById('feedback-input-email');
+    const messageInput = document.getElementById('feedback-textarea-message');
+    const charCount = document.getElementById('feedback-char-count');
+
+    // Re-synchronize login state with token / storage
+    const token = getToken();
+    if (token && !isLoggedIn) isLoggedIn = true;
+    if (isLoggedIn && !user) {
+      user = {
+        username: 'user',
+        email: 'user@codeforge.io',
+        fullName: 'CodeForge User'
+      };
+      try { localStorage.setItem(USER_KEY, JSON.stringify(user)); } catch (_) {}
+    }
+
+    // Authentication check: user must be signed in to submit feedback
+    if (!isLoggedIn || !user) {
+      if (guestView) guestView.classList.remove('hidden');
+      if (userView) userView.classList.add('hidden');
+      if (successBanner) successBanner.classList.add('hidden');
+      return;
+    }
+
+    // Authenticated state
+    if (guestView) guestView.classList.add('hidden');
+    if (userView) userView.classList.remove('hidden');
+
+    if (nameInput) {
+      nameInput.value = user.fullName || user.username || 'CodeForge User';
+    }
+    if (emailInput) {
+      let resolvedEmail = user.email || '';
+      if (!resolvedEmail && user.username) {
+        resolvedEmail = user.username.includes('@') ? user.username : `${user.username}@codeforge.io`;
+      }
+      emailInput.value = resolvedEmail;
+
+      // If for any reason email couldn't be detected, make field editable so user isn't blocked
+      if (!resolvedEmail) {
+        emailInput.removeAttribute('readonly');
+        emailInput.classList.remove('bg-gray-50', 'cursor-not-allowed');
+      } else {
+        emailInput.setAttribute('readonly', 'readonly');
+        emailInput.classList.add('bg-gray-50', 'cursor-not-allowed');
+      }
+    }
+
+    if (messageInput && charCount) {
+      messageInput.oninput = () => {
+        charCount.textContent = `${messageInput.value.length} / 4000`;
+      };
+    }
+
+    const btnAnother = document.getElementById('btn-feedback-another');
+    if (btnAnother) {
+      btnAnother.onclick = () => {
+        if (successBanner) successBanner.classList.add('hidden');
+        if (userView) userView.classList.remove('hidden');
+        if (messageInput) {
+          messageInput.value = '';
+          if (charCount) charCount.textContent = '0 / 4000';
+        }
+      };
+    }
+
+    const form = document.getElementById('feedback-form');
+    if (form && !form._boundFeedback) {
+      form._boundFeedback = true;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('btn-submit-feedback');
+        const submitText = document.getElementById('btn-submit-feedback-text');
+        const iconSubmit = document.getElementById('icon-feedback-submit');
+        const iconSpinner = document.getElementById('icon-feedback-spinner');
+
+        const name = (nameInput ? nameInput.value : '').trim();
+        const email = (emailInput ? emailInput.value : '').trim();
+        const topicSelect = document.getElementById('feedback-select-topic');
+        const subject = topicSelect ? topicSelect.value : 'General Platform Experience';
+        const message = (messageInput ? messageInput.value : '').trim();
+
+        if (!name || !email || !message) {
+          showToast('Please fill in your name and feedback message.', 'warn');
+          return;
+        }
+
+        try {
+          if (submitBtn) submitBtn.disabled = true;
+          if (submitText) submitText.textContent = 'Sending...';
+          if (iconSubmit) iconSubmit.classList.add('hidden');
+          if (iconSpinner) iconSpinner.classList.remove('hidden');
+
+          await CodeForgeAPI.submitFeedback({
+            name,
+            email,
+            subject,
+            message
+          });
+
+          // Show high-quality confirmation UI
+          if (userView) userView.classList.add('hidden');
+          if (successBanner) {
+            successBanner.classList.remove('hidden');
+            const emailSpan = document.getElementById('feedback-success-email');
+            if (emailSpan) emailSpan.textContent = email;
+          }
+          showToast('We value your feedback and will get back to you soon!', 'success');
+        } catch (err) {
+          console.error('Feedback submission error:', err);
+          showToast(err.message || 'Failed to submit feedback. Please try again.', 'error');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitText) submitText.textContent = 'Send Feedback';
+          if (iconSubmit) iconSubmit.classList.remove('hidden');
+          if (iconSpinner) iconSpinner.classList.add('hidden');
+        }
+      });
+    }
+  }
+
   function bindGlobalEvents() {
     // Theme toggle button
     const btnTheme = document.getElementById('btn-theme-toggle');
@@ -1378,6 +1554,14 @@ window.CodeForgeApp = (function () {
     const navCommunity = document.getElementById('nav-community');
     if (navCommunity) navCommunity.addEventListener('click', () => navigate('community'));
 
+    const navFeedback = document.getElementById('nav-feedback');
+    if (navFeedback) {
+      navFeedback.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigate('feedback');
+      });
+    }
+
     // Sidebar navigation clicks
     const sbDashboard = document.getElementById('sb-dashboard');
     if (sbDashboard) sbDashboard.addEventListener('click', () => navigate('dashboard'));
@@ -1422,6 +1606,14 @@ window.CodeForgeApp = (function () {
 
     const sbCommunity = document.getElementById('sb-community');
     if (sbCommunity) sbCommunity.addEventListener('click', () => navigate('community'));
+
+    const sbFeedback = document.getElementById('sb-feedback');
+    if (sbFeedback) {
+      sbFeedback.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigate('feedback');
+      });
+    }
 
     const sbAdmin = document.getElementById('sb-admin');
     if (sbAdmin) sbAdmin.addEventListener('click', () => navigate('admin'));
@@ -1608,6 +1800,17 @@ window.CodeForgeApp = (function () {
     // Social Auth buttons
     document.querySelectorAll('.btn-social-auth').forEach(btn => {
       btn.addEventListener('click', () => {
+        const userObj = {
+          id: 1,
+          username: 'alex_morgan',
+          email: 'alex@codeforge.io',
+          fullName: 'Alex Morgan',
+          role: 'Admin'
+        };
+        try {
+          localStorage.setItem(USER_KEY, JSON.stringify(userObj));
+          localStorage.setItem(TOKEN_KEY, 'mock-jwt-token-dev');
+        } catch (_) {}
         showToast("Social login simulated! Redirecting to Dashboard...", "success");
         setTimeout(() => {
           isLoggedIn = true;

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeForge — Redirecting</title>
+  <script>
+    const hash = window.location.hash || '';
+    const search = window.location.search || '';
+    window.location.replace('frontend/index.html' + search + hash);
+  </script>
+</head>
+<body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #090d16; color: #fff;">
+  <p>Loading CodeForge... If you are not redirected automatically, <a href="frontend/index.html" style="color: #10b981;">click here</a>.</p>
+</body>
+</html>
