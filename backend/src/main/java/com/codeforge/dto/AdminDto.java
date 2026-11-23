@@ -24,9 +24,11 @@ public class AdminDto {
         private long totalProblems;
         private long totalDiscussions;
         private long totalSubmissions;
+        private long totalFeedbacks;
         private long pendingProblemsCount;
         private long pendingDiscussionsCount;
         private long pendingReportsCount;
+        private long pendingFeedbacksCount;
     }
 
     /**

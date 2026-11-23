@@ -67,6 +67,8 @@ public class DataSeeder implements ApplicationRunner {
 
         private final DiscussionUpvoteRepository discussionUpvoteRepository;
 
+        private final FeedbackRepository feedbackRepository;
+
         private final PasswordEncoder passwordEncoder;
 
         /**
@@ -84,6 +86,7 @@ public class DataSeeder implements ApplicationRunner {
                 seedNotes();
                 seedDiscussions();
                 seedCommunityDiscussions();
+                seedFeedbacks();
                 log.info("✅ DataSeeder completed — seed data is ready.");
         }
 
@@ -2178,5 +2181,48 @@ public class DataSeeder implements ApplicationRunner {
                         }
                 }
                 log.info("Seeded 20 community discussions with 120 replies.");
+        }
+
+        private void seedFeedbacks() {
+                if (feedbackRepository.count() > 0) {
+                        return;
+                }
+
+                User david = userRepository.findByEmail("david_kim@codeforge.io").orElse(null);
+                User sarah = userRepository.findByEmail("sarah_jenkins@codeforge.io").orElse(null);
+                User marcus = userRepository.findByEmail("marcus_vance@codeforge.io").orElse(null);
+
+                Feedback f1 = Feedback.builder()
+                                .user(david)
+                                .name("David Kim")
+                                .email("david_kim@codeforge.io")
+                                .subject("Platform experience")
+                                .message("The interactive terminal is incredibly fast! Would love to see more dynamic programming problems added to the library.")
+                                .status("REVIEWED")
+                                .createdAt(LocalDateTime.now().minusHours(28))
+                                .build();
+
+                Feedback f2 = Feedback.builder()
+                                .user(sarah)
+                                .name("Sarah Jenkins")
+                                .email("sarah_jenkins@codeforge.io")
+                                .subject("UI suggestion")
+                                .message("Dark mode looks great on OLED displays. It would be awesome if we could customize font sizes in the code editor.")
+                                .status("NEW")
+                                .createdAt(LocalDateTime.now().minusHours(14))
+                                .build();
+
+                Feedback f3 = Feedback.builder()
+                                .user(marcus)
+                                .name("Marcus Vance")
+                                .email("marcus_vance@codeforge.io")
+                                .subject("Feature Request")
+                                .message("Could we get weekly algorithmic contests or timed sprint sessions? That would elevate practice excitement!")
+                                .status("NEW")
+                                .createdAt(LocalDateTime.now().minusHours(2))
+                                .build();
+
+                feedbackRepository.saveAll(List.of(f1, f2, f3));
+                log.info("Seeded initial user feedbacks.");
         }
 }

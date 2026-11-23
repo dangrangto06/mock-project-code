@@ -37,6 +37,7 @@ public class AdminService {
         private final DiscussionReplyRepository discussionReplyRepository;
         private final CommunityReportRepository communityReportRepository;
         private final SubmissionRepository submissionRepository;
+        private final com.codeforge.repository.FeedbackRepository feedbackRepository;
 
         /**
          * Aggregates platform telemetry and pending counts.
@@ -50,15 +51,19 @@ public class AdminService {
                 long pendingProblemsCount = exerciseRepository.countByModerationStatus("PENDING");
                 long pendingDiscussionsCount = discussionRepository.countByModerationStatus("PENDING");
                 long pendingReportsCount = communityReportRepository.countByStatus("PENDING");
+                long totalFeedbacks = feedbackRepository.count();
+                long pendingFeedbacksCount = feedbackRepository.countByStatus("NEW");
 
                 return AdminDto.StatsResponse.builder()
                                 .totalUsers(totalUsers)
                                 .totalProblems(totalProblems)
                                 .totalDiscussions(totalDiscussions)
                                 .totalSubmissions(totalSubmissions)
+                                .totalFeedbacks(totalFeedbacks)
                                 .pendingProblemsCount(pendingProblemsCount)
                                 .pendingDiscussionsCount(pendingDiscussionsCount)
                                 .pendingReportsCount(pendingReportsCount)
+                                .pendingFeedbacksCount(pendingFeedbacksCount)
                                 .build();
         }
 

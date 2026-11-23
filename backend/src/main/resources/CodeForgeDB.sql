@@ -25,6 +25,15 @@ GO
 -- ------------------------------------------------------------------------------
 -- 0. Drop existing tables (children first, to satisfy foreign keys)
 -- ------------------------------------------------------------------------------
+-- Safely drop all foreign key constraints first to avoid any dependency conflicts
+DECLARE @sql NVARCHAR(MAX) = N'';
+SELECT @sql += N'ALTER TABLE ' + QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id)) + N'.' + QUOTENAME(OBJECT_NAME(parent_object_id)) + 
+               N' DROP CONSTRAINT ' + QUOTENAME(name) + N';' + CHAR(13)
+FROM sys.foreign_keys;
+IF @sql <> N'' EXEC sp_executesql @sql;
+GO
+
+IF OBJECT_ID('dbo.feedbacks', 'U') IS NOT NULL DROP TABLE dbo.feedbacks;
 IF OBJECT_ID('dbo.community_reports', 'U') IS NOT NULL DROP TABLE dbo.community_reports;
 IF OBJECT_ID('dbo.discussion_upvotes', 'U') IS NOT NULL DROP TABLE dbo.discussion_upvotes;
 IF OBJECT_ID('dbo.discussion_replies', 'U') IS NOT NULL DROP TABLE dbo.discussion_replies;
@@ -209,6 +218,22 @@ CREATE TABLE dbo.community_reports (
     status           VARCHAR(20) DEFAULT 'PENDING' NOT NULL, -- 'PENDING', 'DISMISSED', 'RESOLVED'
     created_at       DATETIME2 NULL,
     CONSTRAINT fk_community_reports_user FOREIGN KEY (reporter_id) REFERENCES dbo.users(id)
+);
+GO
+
+-- ------------------------------------------------------------------------------
+-- 11. Table: dbo.feedbacks
+-- ------------------------------------------------------------------------------
+CREATE TABLE dbo.feedbacks (
+    id               BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    user_id          BIGINT NULL,
+    name             NVARCHAR(100) NOT NULL,
+    email            NVARCHAR(150) NOT NULL,
+    subject          NVARCHAR(200) NULL,
+    message          NVARCHAR(MAX) NOT NULL,
+    status           VARCHAR(20) DEFAULT 'NEW' NOT NULL, -- 'NEW', 'REVIEWED', 'RESOLVED'
+    created_at       DATETIME2 DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT fk_feedbacks_user FOREIGN KEY (user_id) REFERENCES dbo.users(id) ON DELETE SET NULL
 );
 GO
 
@@ -1358,4 +1383,21 @@ INSERT INTO dbo.discussion_replies (id, discussion_id, author_id, content, creat
 VALUES (120, 20, 18, 'Great discussion Zoe! Starting with top-down to discover the recurrence and then converting to bottom-up is the textbook workflow.', DATEADD(hour, -5, CURRENT_TIMESTAMP));
 
 SET IDENTITY_INSERT dbo.discussion_replies OFF;
+GO
+
+-- ------------------------------------------------------------------------------
+-- K. Feedbacks: User suggestions & platform feedback
+-- ------------------------------------------------------------------------------
+SET IDENTITY_INSERT dbo.feedbacks ON;
+
+INSERT INTO dbo.feedbacks (id, user_id, name, email, subject, message, status, created_at)
+VALUES (1, 2, 'David Kim', 'david_kim@codeforge.io', 'Platform experience', 'The interactive terminal is incredibly fast! Would love to see more dynamic programming problems added to the library.', 'REVIEWED', DATEADD(hour, -28, CURRENT_TIMESTAMP));
+
+INSERT INTO dbo.feedbacks (id, user_id, name, email, subject, message, status, created_at)
+VALUES (2, 3, 'Sarah Jenkins', 'sarah_jenkins@codeforge.io', 'UI suggestion', 'Dark mode looks great on OLED displays. It would be awesome if we could customize font sizes in the code editor.', 'NEW', DATEADD(hour, -14, CURRENT_TIMESTAMP));
+
+INSERT INTO dbo.feedbacks (id, user_id, name, email, subject, message, status, created_at)
+VALUES (3, 4, 'Marcus Vance', 'marcus_vance@codeforge.io', 'Feature Request', 'Could we get weekly algorithmic contests or timed sprint sessions? That would elevate practice excitement!', 'NEW', DATEADD(hour, -2, CURRENT_TIMESTAMP));
+
+SET IDENTITY_INSERT dbo.feedbacks OFF;
 GO
