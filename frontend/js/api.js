@@ -589,6 +589,57 @@ window.CodeForgeAPI = (function () {
     return null;
   }
 
+  // Chatbot operations
+  async function askChatbot(payload) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/chatbot/ask`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to query chatbot API, using local fallback:", e);
+      }
+    }
+    return null;
+  }
+
+  async function getChatHistory(conversationId) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const query = conversationId ? `?conversationId=${encodeURIComponent(conversationId)}` : '';
+        const res = await fetch(`${API_BASE}/chatbot/history${query}`, {
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to fetch chat history:", e);
+      }
+    }
+    return null;
+  }
+
+  async function clearChatHistory(conversationId) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const query = conversationId ? `?conversationId=${encodeURIComponent(conversationId)}` : '';
+        const res = await fetch(`${API_BASE}/chatbot/history${query}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to clear chat history:", e);
+      }
+    }
+    return null;
+  }
+
   // Check health on boot
   checkBackend();
 
@@ -623,6 +674,9 @@ window.CodeForgeAPI = (function () {
     dismissReport,
     deleteReportedItem,
     getAdminUsers,
-    updateUserRole
+    updateUserRole,
+    askChatbot,
+    getChatHistory,
+    clearChatHistory
   };
 })();
