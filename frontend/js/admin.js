@@ -9,10 +9,14 @@
   let stats = null;
   let pendingProblems = [];
   let pendingDiscussions = [];
+  let pendingReports = [];
   let usersList = [];
-  let activeTab = 'moderation'; // 'moderation' | 'users'
+  let feedbacksList = [];
+  let activeTab = 'moderation'; // 'moderation' | 'feedbacks' | 'users'
   let currentRejectTarget = null; // { type: 'problem'|'discussion', id, title }
   let userSearchQuery = '';
+  let feedbackSearchQuery = '';
+  let feedbackStatusFilter = 'ALL';
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -53,8 +57,10 @@
 
   function bindEvents() {
     const tabMod = document.getElementById('tab-admin-mod');
+    const tabFeedbacks = document.getElementById('tab-admin-feedbacks');
     const tabUsers = document.getElementById('tab-admin-users');
     if (tabMod) tabMod.addEventListener('click', () => switchTab('moderation'));
+    if (tabFeedbacks) tabFeedbacks.addEventListener('click', () => switchTab('feedbacks'));
     if (tabUsers) tabUsers.addEventListener('click', () => switchTab('users'));
 
     const btnRefresh = document.getElementById('btn-admin-refresh');
@@ -63,6 +69,7 @@
         btnRefresh.classList.add('opacity-50');
         await loadStats();
         if (activeTab === 'moderation') await loadModerationQueue();
+        else if (activeTab === 'feedbacks') await loadFeedbacks();
         else await loadUsers();
         btnRefresh.classList.remove('opacity-50');
         if (window.CodeForgeApp) CodeForgeApp.showToast('Administration queue refreshed.', 'info');
@@ -74,6 +81,22 @@
       searchInput.addEventListener('input', (e) => {
         userSearchQuery = e.target.value.trim().toLowerCase();
         renderUsersTable();
+      });
+    }
+
+    const feedbackSearch = document.getElementById('admin-feedback-search-input');
+    if (feedbackSearch) {
+      feedbackSearch.addEventListener('input', (e) => {
+        feedbackSearchQuery = e.target.value.trim().toLowerCase();
+        renderFeedbacksTable();
+      });
+    }
+
+    const feedbackFilter = document.getElementById('admin-feedback-filter-status');
+    if (feedbackFilter) {
+      feedbackFilter.addEventListener('change', (e) => {
+        feedbackStatusFilter = e.target.value;
+        renderFeedbacksTable();
       });
     }
 
@@ -89,21 +112,28 @@
   function switchTab(tab) {
     activeTab = tab;
     const tabMod = document.getElementById('tab-admin-mod');
+    const tabFeedbacks = document.getElementById('tab-admin-feedbacks');
     const tabUsers = document.getElementById('tab-admin-users');
     const viewMod = document.getElementById('admin-view-moderation');
+    const viewFeedbacks = document.getElementById('admin-view-feedbacks');
     const viewUsers = document.getElementById('admin-view-users');
 
+    const activeClass = 'pb-3 text-sm font-semibold text-emerald-800 border-b-2 border-emerald-600 transition flex items-center gap-2';
+    const inactiveClass = 'pb-3 text-sm text-gray-500 hover:text-gray-800 border-b-2 border-transparent transition flex items-center gap-2 font-medium';
+
+    if (tabMod) tabMod.className = tab === 'moderation' ? activeClass : inactiveClass;
+    if (tabFeedbacks) tabFeedbacks.className = tab === 'feedbacks' ? activeClass : inactiveClass;
+    if (tabUsers) tabUsers.className = tab === 'users' ? activeClass : inactiveClass;
+
+    if (viewMod) viewMod.classList.toggle('hidden', tab !== 'moderation');
+    if (viewFeedbacks) viewFeedbacks.classList.toggle('hidden', tab !== 'feedbacks');
+    if (viewUsers) viewUsers.classList.toggle('hidden', tab !== 'users');
+
     if (tab === 'moderation') {
-      if (tabMod) tabMod.className = 'pb-3 text-sm font-semibold text-emerald-800 border-b-2 border-emerald-600 transition flex items-center gap-2';
-      if (tabUsers) tabUsers.className = 'pb-3 text-sm text-gray-500 hover:text-gray-800 border-b-2 border-transparent transition flex items-center gap-2 font-medium';
-      if (viewMod) viewMod.classList.remove('hidden');
-      if (viewUsers) viewUsers.classList.add('hidden');
       loadModerationQueue();
+    } else if (tab === 'feedbacks') {
+      loadFeedbacks();
     } else {
-      if (tabUsers) tabUsers.className = 'pb-3 text-sm font-semibold text-emerald-800 border-b-2 border-emerald-600 transition flex items-center gap-2';
-      if (tabMod) tabMod.className = 'pb-3 text-sm text-gray-500 hover:text-gray-800 border-b-2 border-transparent transition flex items-center gap-2 font-medium';
-      if (viewUsers) viewUsers.classList.remove('hidden');
-      if (viewMod) viewMod.classList.add('hidden');
       loadUsers();
     }
   }
@@ -119,19 +149,23 @@
       const kpiPending = document.getElementById('admin-kpi-pending');
       const kpiPendingSub = document.getElementById('admin-kpi-pending-sub');
       const kpiSubmissions = document.getElementById('admin-kpi-submissions');
+      const kpiFeedbacks = document.getElementById('admin-kpi-feedbacks');
       const tabModCount = document.getElementById('tab-admin-mod-count');
+      const tabFeedbacksCount = document.getElementById('tab-admin-feedbacks-count');
       const tabUsersCount = document.getElementById('tab-admin-users-count');
 
-      const totalPending = (stats.pendingProblemsCount || 0) + (stats.pendingDiscussionsCount || 0);
+      const totalPending = (stats.pendingProblemsCount || 0) + (stats.pendingDiscussionsCount || 0) + (stats.pendingReportsCount || 0);
 
       if (kpiUsers) kpiUsers.textContent = (stats.totalUsers || 0).toLocaleString();
       if (kpiProblems) kpiProblems.textContent = (stats.totalProblems || 0).toLocaleString();
       if (kpiPending) kpiPending.textContent = totalPending;
       if (kpiPendingSub) {
-        kpiPendingSub.textContent = `${stats.pendingProblemsCount || 0} problems, ${stats.pendingDiscussionsCount || 0} posts`;
+        kpiPendingSub.textContent = `${stats.pendingProblemsCount || 0} problems, ${stats.pendingDiscussionsCount || 0} posts, ${stats.pendingReportsCount || 0} reports`;
       }
       if (kpiSubmissions) kpiSubmissions.textContent = (stats.totalSubmissions || 0).toLocaleString();
+      if (kpiFeedbacks) kpiFeedbacks.textContent = (stats.totalFeedbacks || 0).toLocaleString();
       if (tabModCount) tabModCount.textContent = totalPending;
+      if (tabFeedbacksCount) tabFeedbacksCount.textContent = (stats.totalFeedbacks || 0).toLocaleString();
       if (tabUsersCount) tabUsersCount.textContent = (stats.totalUsers || 0).toLocaleString();
 
       // Update Nav badges
@@ -158,6 +192,7 @@
       const data = await CodeForgeAPI.getModerationQueue();
       pendingProblems = (data && data.pendingProblems) ? data.pendingProblems : [];
       pendingDiscussions = (data && data.pendingDiscussions) ? data.pendingDiscussions : [];
+      pendingReports = (data && data.pendingReports) ? data.pendingReports : [];
       renderModerationQueue();
     } catch (err) {
       console.warn('Failed to load moderation queue:', err);
@@ -167,11 +202,14 @@
   function renderModerationQueue() {
     const probList = document.getElementById('admin-pending-problems-list');
     const discList = document.getElementById('admin-pending-discussions-list');
+    const reportsList = document.getElementById('admin-reported-items-list');
     const probBadge = document.getElementById('admin-pending-prob-badge');
     const discBadge = document.getElementById('admin-pending-disc-badge');
+    const reportsBadge = document.getElementById('admin-pending-reports-badge');
 
     if (probBadge) probBadge.textContent = `${pendingProblems.length} ${pendingProblems.length === 1 ? 'item' : 'items'}`;
     if (discBadge) discBadge.textContent = `${pendingDiscussions.length} ${pendingDiscussions.length === 1 ? 'item' : 'items'}`;
+    if (reportsBadge) reportsBadge.textContent = `${pendingReports.length} ${pendingReports.length === 1 ? 'report' : 'reports'}`;
 
     // 1. Pending Problems List
     if (probList) {
@@ -279,13 +317,13 @@
 
                 <!-- Action Buttons -->
                 <div class="flex items-center gap-2 shrink-0 pt-1 sm:pt-0">
-                  <button type="button" onclick="CodeForgeAdmin.approveDiscussion(${d.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-xs">
+                  <button type="button" onclick="CodeForgeAdmin.approveDiscussion(${d.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-xs" title="Approve and publish discussion to community">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                     <span>Approve</span>
                   </button>
-                  <button type="button" onclick="CodeForgeAdmin.openRejectModal('discussion', ${d.id}, '${escapeHtml(d.title)}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold text-xs transition">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    <span>Reject</span>
+                  <button type="button" onclick="CodeForgeAdmin.deleteDiscussion(${d.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold text-xs transition" title="Reject and remove discussion from database">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <span>Reject / Remove</span>
                   </button>
                 </div>
               </div>
@@ -293,6 +331,69 @@
               <!-- Discussion content preview -->
               <div class="p-3 rounded-lg bg-gray-50 border border-gray-100 text-xs text-gray-700 leading-relaxed font-sans max-h-24 overflow-y-auto">
                 ${escapeHtml(d.content || '')}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // 3. Reported Content List
+    if (reportsList) {
+      if (pendingReports.length === 0) {
+        reportsList.innerHTML = `
+          <div class="text-center py-8 bg-white rounded-xl border border-dashed border-gray-300 p-6 space-y-2">
+            <div class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div class="text-xs font-bold text-gray-800">No pending reports</div>
+            <p class="text-[11px] text-gray-400">All user-flagged content and reports have been resolved.</p>
+          </div>
+        `;
+      } else {
+        reportsList.innerHTML = pendingReports.map(r => {
+          const typeBadge = r.reportType === 'DISCUSSION'
+            ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">Discussion</span>'
+            : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Comment / Reply</span>';
+
+          const reasonBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">' + escapeHtml(r.reason) + '</span>';
+
+          return `
+            <div class="bg-white rounded-xl border border-[#e5eae7] p-5 shadow-xs space-y-3">
+              <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                <div class="space-y-1.5 flex-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    ${typeBadge}
+                    ${reasonBadge}
+                    <h4 class="text-sm sm:text-base font-bold text-gray-900">${escapeHtml(r.targetTitle || 'Reported Item')}</h4>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                    <span class="font-medium text-gray-700">Author: ${escapeHtml(r.targetAuthorName || 'Unknown')}</span>
+                    <span class="text-gray-300">&middot;</span>
+                    <span class="text-gray-500">Reported by: <span class="font-semibold text-gray-700">${escapeHtml(r.reporterName || 'Anonymous')}</span> (${escapeHtml(r.reporterEmail || '')})</span>
+                    <span class="text-gray-300">&middot;</span>
+                    <span class="text-gray-400 font-mono text-[11px]">${formatDate(r.createdAt)}</span>
+                  </div>
+                  ${r.details ? `<div class="text-xs text-gray-600 bg-amber-50/70 border border-amber-200/60 p-2 rounded-lg"><span class="font-semibold text-amber-800">Reporter's notes:</span> ${escapeHtml(r.details)}</div>` : ''}
+                </div>
+
+                <!-- Action Buttons: Keep or Remove -->
+                <div class="flex items-center gap-2 shrink-0 pt-1 sm:pt-0">
+                  <button type="button" onclick="CodeForgeAdmin.dismissReport(${r.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs transition shadow-xs" title="Dismiss report and keep content">
+                    <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Keep Content</span>
+                  </button>
+                  <button type="button" onclick="CodeForgeAdmin.deleteReportedItem(${r.id}, '${r.reportType}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition shadow-xs" title="Remove content from database">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <span>Remove from DB</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Reported content snippet -->
+              <div class="p-3 rounded-lg bg-gray-50 border border-gray-100 text-xs text-gray-700 leading-relaxed font-sans max-h-24 overflow-y-auto">
+                <span class="font-semibold text-gray-900 block mb-1">Reported content:</span>
+                ${escapeHtml(r.targetContent || 'No content')}
               </div>
             </div>
           `;
@@ -359,8 +460,8 @@
         await CodeForgeAPI.rejectProblem(id, reason);
         if (window.CodeForgeApp) CodeForgeApp.showToast('Problem submission rejected.', 'info');
       } else {
-        await CodeForgeAPI.rejectDiscussion(id, reason);
-        if (window.CodeForgeApp) CodeForgeApp.showToast('Discussion post rejected.', 'info');
+        await CodeForgeAPI.deleteDiscussion(id);
+        if (window.CodeForgeApp) CodeForgeApp.showToast('Discussion rejected and deleted from database.', 'info');
       }
       closeRejectModal();
       await loadStats();
@@ -368,6 +469,202 @@
     } catch (err) {
       console.error('Failed to reject item:', err);
       if (window.CodeForgeApp) CodeForgeApp.showToast('Rejection failed: ' + err.message, 'warn');
+    }
+  }
+
+  async function deleteDiscussion(id) {
+    if (!confirm('Are you sure you want to permanently delete this discussion from the database?')) {
+      return;
+    }
+    try {
+      if (window.CodeForgeAPI && CodeForgeAPI.deleteDiscussion) {
+        await CodeForgeAPI.deleteDiscussion(id);
+      }
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Discussion removed and deleted from database!', 'info');
+      await loadStats();
+      await loadModerationQueue();
+    } catch (err) {
+      console.error('Failed to delete discussion:', err);
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Failed to delete discussion: ' + err.message, 'warn');
+    }
+  }
+
+  async function dismissReport(id) {
+    try {
+      if (window.CodeForgeAPI && CodeForgeAPI.dismissReport) {
+        await CodeForgeAPI.dismissReport(id);
+      }
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Report dismissed. Content has been retained.', 'info');
+      await loadStats();
+      await loadModerationQueue();
+    } catch (err) {
+      console.error('Failed to dismiss report:', err);
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Failed to dismiss report: ' + err.message, 'warn');
+    }
+  }
+
+  async function deleteReportedItem(id, reportType) {
+    const label = reportType === 'DISCUSSION' ? 'discussion' : 'comment';
+    if (!confirm(`Are you sure you want to permanently delete this reported ${label} from the database?`)) {
+      return;
+    }
+    try {
+      if (window.CodeForgeAPI && CodeForgeAPI.deleteReportedItem) {
+        await CodeForgeAPI.deleteReportedItem(id);
+      }
+      if (window.CodeForgeApp) CodeForgeApp.showToast(`Reported ${label} deleted from database!`, 'success');
+      await loadStats();
+      await loadModerationQueue();
+    } catch (err) {
+      console.error('Failed to delete reported item:', err);
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Failed to delete content: ' + err.message, 'warn');
+    }
+  }
+
+  // ===== User Feedbacks Management =====
+  async function loadFeedbacks() {
+    if (!window.CodeForgeAPI || !CodeForgeAPI.getAdminFeedbacks) return;
+    try {
+      feedbacksList = await CodeForgeAPI.getAdminFeedbacks();
+      renderFeedbacksTable();
+    } catch (err) {
+      console.warn('Failed to load feedbacks:', err);
+    }
+  }
+
+  function renderFeedbacksTable() {
+    const tableBody = document.getElementById('admin-feedbacks-table-body');
+    if (!tableBody) return;
+
+    let filtered = feedbacksList || [];
+
+    // Apply status filter
+    if (feedbackStatusFilter && feedbackStatusFilter !== 'ALL') {
+      filtered = filtered.filter(f => (f.status || 'NEW').toUpperCase() === feedbackStatusFilter);
+    }
+
+    // Apply search filter
+    if (feedbackSearchQuery) {
+      filtered = filtered.filter(f =>
+        (f.name && f.name.toLowerCase().includes(feedbackSearchQuery)) ||
+        (f.email && f.email.toLowerCase().includes(feedbackSearchQuery)) ||
+        (f.subject && f.subject.toLowerCase().includes(feedbackSearchQuery)) ||
+        (f.message && f.message.toLowerCase().includes(feedbackSearchQuery))
+      );
+    }
+
+    if (filtered.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="py-8 text-center text-gray-400">
+            <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+            </svg>
+            No user feedback entries matching your criteria.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = filtered.map(f => {
+      const status = (f.status || 'NEW').toUpperCase();
+      let statusBadge = '';
+      if (status === 'NEW') {
+        statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">NEW</span>';
+      } else if (status === 'REVIEWED') {
+        statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">REVIEWED</span>';
+      } else {
+        statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700 border border-gray-200">RESOLVED</span>';
+      }
+
+      const initials = getInitials(f.name || 'User');
+
+      return `
+        <tr class="hover:bg-gray-50/75 transition">
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-semibold flex items-center justify-center text-[11px] flex-shrink-0">
+                ${escapeHtml(initials)}
+              </div>
+              <div class="min-w-0">
+                <div class="font-semibold text-gray-900 truncate">${escapeHtml(f.name || 'Anonymous')}</div>
+                <div class="text-[11px] text-gray-500 font-mono truncate">${escapeHtml(f.email || '')}</div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3 px-4">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-gray-100 text-gray-700 border border-gray-200">
+              ${escapeHtml(f.subject || 'General')}
+            </span>
+          </td>
+          <td class="py-3 px-4 max-w-xs sm:max-w-md">
+            <div class="text-xs text-gray-800 leading-snug line-clamp-2" title="${escapeHtml(f.message)}">
+              ${escapeHtml(f.message)}
+            </div>
+          </td>
+          <td class="py-3 px-4 text-gray-400 font-mono text-[11px] whitespace-nowrap">
+            ${formatDate(f.createdAt)}
+          </td>
+          <td class="py-3 px-4 whitespace-nowrap">
+            ${statusBadge}
+          </td>
+          <td class="py-3 px-4 text-right whitespace-nowrap">
+            <div class="flex items-center justify-end gap-1.5">
+              ${status === 'NEW' ? `
+                <button onclick="CodeForgeAdmin.updateFeedbackStatus(${f.id}, 'REVIEWED')" type="button"
+                  title="Mark as Reviewed" class="px-2 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 text-[11px] font-semibold border border-blue-200 transition">
+                  Review
+                </button>
+              ` : ''}
+              ${status !== 'RESOLVED' ? `
+                <button onclick="CodeForgeAdmin.updateFeedbackStatus(${f.id}, 'RESOLVED')" type="button"
+                  title="Mark as Resolved" class="px-2 py-1 rounded bg-emerald-50 text-emerald-800 hover:bg-emerald-100 text-[11px] font-semibold border border-emerald-200 transition">
+                  Resolve
+                </button>
+              ` : `
+                <button onclick="CodeForgeAdmin.updateFeedbackStatus(${f.id}, 'NEW')" type="button"
+                  title="Reopen as New" class="px-2 py-1 rounded bg-gray-50 text-gray-600 hover:bg-gray-100 text-[11px] font-medium border border-gray-200 transition">
+                  Reopen
+                </button>
+              `}
+              <button onclick="CodeForgeAdmin.deleteFeedback(${f.id})" type="button"
+                title="Delete Feedback" class="p-1 rounded text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function updateFeedbackStatus(id, newStatus) {
+    if (!window.CodeForgeAPI || !CodeForgeAPI.updateAdminFeedbackStatus) return;
+    try {
+      await CodeForgeAPI.updateAdminFeedbackStatus(id, newStatus);
+      if (window.CodeForgeApp) CodeForgeApp.showToast(`Feedback status updated to ${newStatus}`, 'success');
+      await loadFeedbacks();
+      await loadStats();
+    } catch (err) {
+      console.error('Failed to update feedback status:', err);
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Failed to update feedback status', 'warn');
+    }
+  }
+
+  async function deleteFeedback(id) {
+    if (!confirm('Are you sure you want to delete this user feedback?')) return;
+    if (!window.CodeForgeAPI || !CodeForgeAPI.deleteAdminFeedback) return;
+    try {
+      await CodeForgeAPI.deleteAdminFeedback(id);
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Feedback deleted from database.', 'info');
+      await loadFeedbacks();
+      await loadStats();
+    } catch (err) {
+      console.error('Failed to delete feedback:', err);
+      if (window.CodeForgeApp) CodeForgeApp.showToast('Failed to delete feedback', 'warn');
     }
   }
 
@@ -472,10 +769,16 @@
     loadModerationQueue,
     approveProblem,
     approveDiscussion,
+    deleteDiscussion,
+    dismissReport,
+    deleteReportedItem,
     openRejectModal,
     closeRejectModal,
     confirmReject,
     loadUsers,
+    loadFeedbacks,
+    updateFeedbackStatus,
+    deleteFeedback,
     changeRole,
     switchTab
   };

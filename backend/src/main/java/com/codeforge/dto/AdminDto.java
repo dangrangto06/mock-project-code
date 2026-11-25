@@ -24,12 +24,16 @@ public class AdminDto {
         private long totalProblems;
         private long totalDiscussions;
         private long totalSubmissions;
+        private long totalFeedbacks;
         private long pendingProblemsCount;
         private long pendingDiscussionsCount;
+        private long pendingReportsCount;
+        private long pendingFeedbacksCount;
     }
 
     /**
-     * Unified moderation queue holding unreviewed problem challenges and community discussion threads.
+     * Unified moderation queue holding unreviewed problem challenges, community discussion threads,
+     * and user-reported discussions/replies.
      */
     @Getter
     @Setter
@@ -39,6 +43,7 @@ public class AdminDto {
     public static class ModerationQueueResponse {
         private List<PendingProblemDto> pendingProblems;
         private List<PendingDiscussionDto> pendingDiscussions;
+        private List<PendingReportDto> pendingReports;
     }
 
     @Getter
@@ -54,6 +59,25 @@ public class AdminDto {
         private String description;
         private String authorName;
         private String authorEmail;
+        private LocalDateTime createdAt;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class PendingReportDto {
+        private Long id;
+        private String reportType;
+        private Long targetId;
+        private String targetTitle;
+        private String targetContent;
+        private String targetAuthorName;
+        private String reporterName;
+        private String reporterEmail;
+        private String reason;
+        private String details;
         private LocalDateTime createdAt;
     }
 

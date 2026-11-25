@@ -1,6 +1,7 @@
 package com.codeforge.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -82,8 +83,26 @@ public class DiscussionDto {
     }
 
     /**
-     * Inbound payload for submitting a reply to an existing discussion.
+     * Inbound payload for submitting a report on a discussion or a reply.
      */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CreateReportRequest {
+        @NotBlank(message = "Report type is required (DISCUSSION or REPLY)")
+        private String reportType;
+
+        @NotNull(message = "Target ID is required")
+        private Long targetId;
+
+        @NotBlank(message = "Reason is required")
+        private String reason;
+
+        private String details;
+    }
+
     @Getter
     @Setter
     @NoArgsConstructor

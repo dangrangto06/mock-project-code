@@ -1,7 +1,9 @@
 package com.codeforge.controller;
 
 import com.codeforge.dto.AdminDto;
+import com.codeforge.dto.FeedbackDto;
 import com.codeforge.service.AdminService;
+import com.codeforge.service.FeedbackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import java.util.Map;
 public class AdminController {
 
     private final AdminService adminService;
+    private final FeedbackService feedbackService;
 
     /**
      * Retrieves aggregated administrative statistics.
@@ -79,6 +82,33 @@ public class AdminController {
     }
 
     /**
+     * Permanently deletes a community discussion topic from database.
+     */
+    @DeleteMapping("/discussions/{id}")
+    public ResponseEntity<Map<String, Object>> deleteDiscussion(@PathVariable Long id) {
+        adminService.deleteDiscussion(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Discussion deleted from database."));
+    }
+
+    /**
+     * Dismisses a user report, keeping the content.
+     */
+    @PostMapping("/reports/{id}/dismiss")
+    public ResponseEntity<Map<String, Object>> dismissReport(@PathVariable Long id) {
+        adminService.dismissReport(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Report dismissed."));
+    }
+
+    /**
+     * Removes the reported discussion or comment from database and resolves the report.
+     */
+    @PostMapping("/reports/{id}/delete")
+    public ResponseEntity<Map<String, Object>> deleteReportedItem(@PathVariable Long id) {
+        adminService.deleteReportedItem(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Content removed from database and report resolved."));
+    }
+
+    /**
      * Retrieves directory of all platform users.
      */
     @GetMapping("/users")
@@ -98,6 +128,36 @@ public class AdminController {
                 "success", true,
                 "message", "User role updated successfully.",
                 "role", request.getRole()
+        ));
+    }
+
+    /**
+     * Retrieves all user feedback submissions.
+     */
+    @GetMapping("/feedbacks")
+    public ResponseEntity<List<FeedbackDto.Response>> getFeedbacks() {
+        return ResponseEntity.ok(feedbackService.getAllFeedbacks());
+    }
+
+    /**
+     * Updates moderation status of a feedback item (e.g. NEW, REVIEWED, RESOLVED).
+     */
+    @PutMapping("/feedbacks/{id}/status")
+    public ResponseEntity<FeedbackDto.Response> updateFeedbackStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody FeedbackDto.UpdateStatusRequest request) {
+        return ResponseEntity.ok(feedbackService.updateFeedbackStatus(id, request.getStatus()));
+    }
+
+    /**
+     * Deletes a feedback item permanently.
+     */
+    @DeleteMapping("/feedbacks/{id}")
+    public ResponseEntity<Map<String, Object>> deleteFeedback(@PathVariable Long id) {
+        feedbackService.deleteFeedback(id);
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Feedback deleted successfully."
         ));
     }
 }

@@ -95,42 +95,63 @@ body.welcome-page #interactive-demo {
   background-color: var(--welcome-page) !important;
 }
 
-body.welcome-page #interactive-demo .bg-\[\#090d16\] {
-  background-color: #090d16 !important;
+/* Light mode heading & description outside the dark editor box */
+body.welcome-page:not(.dark-theme) #interactive-demo h2,
+body.welcome-page:not(.dark-theme) #interactive-demo .text-white:not(.code-editor-shadow *) {
+  color: #0f172a !important;
 }
 
-body.welcome-page #interactive-demo .bg-\[\#0e1626\] {
-  background-color: #0e1626 !important;
+body.welcome-page:not(.dark-theme) #interactive-demo p.text-slate-400,
+body.welcome-page:not(.dark-theme) #interactive-demo .text-slate-400:not(.code-editor-shadow *) {
+  color: #475569 !important;
 }
 
-body.welcome-page #interactive-demo .bg-\[\#131b2e\] {
-  background-color: #131b2e !important;
+/* Dark mode heading & description */
+body.welcome-page.dark-theme #interactive-demo h2 {
+  color: #eff1f6 !important;
 }
 
-body.welcome-page #interactive-demo .bg-slate-900\/80 {
-  background-color: rgba(15, 23, 42, 0.8) !important;
-}
-
-body.welcome-page #interactive-demo .text-white,
-body.welcome-page #interactive-demo .text-slate-100 {
-  color: #f8fafc !important;
-}
-
-body.welcome-page #interactive-demo .text-slate-200,
-body.welcome-page #interactive-demo .text-slate-300 {
-  color: #cbd5e1 !important;
-}
-
-body.welcome-page #interactive-demo .text-slate-400 {
+body.welcome-page.dark-theme #interactive-demo p.text-slate-400 {
   color: #94a3b8 !important;
 }
 
-body.welcome-page #interactive-demo .text-slate-500 {
+/* Inside the dark code editor window (IDE simulation) */
+body.welcome-page #interactive-demo .code-editor-shadow .bg-\[\#090d16\] {
+  background-color: #090d16 !important;
+}
+
+body.welcome-page #interactive-demo .code-editor-shadow .bg-\[\#0e1626\] {
+  background-color: #0e1626 !important;
+}
+
+body.welcome-page #interactive-demo .code-editor-shadow .bg-\[\#131b2e\] {
+  background-color: #131b2e !important;
+}
+
+body.welcome-page #interactive-demo .code-editor-shadow .bg-slate-900\/80 {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+body.welcome-page #interactive-demo .code-editor-shadow .text-white,
+body.welcome-page #interactive-demo .code-editor-shadow .text-slate-100 {
+  color: #f8fafc !important;
+}
+
+body.welcome-page #interactive-demo .code-editor-shadow .text-slate-200,
+body.welcome-page #interactive-demo .code-editor-shadow .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+body.welcome-page #interactive-demo .code-editor-shadow .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+body.welcome-page #interactive-demo .code-editor-shadow .text-slate-500 {
   color: #64748b !important;
 }
 
-body.welcome-page #interactive-demo .border-slate-800,
-body.welcome-page #interactive-demo .border-slate-800\/80 {
+body.welcome-page #interactive-demo .code-editor-shadow .border-slate-800,
+body.welcome-page #interactive-demo .code-editor-shadow .border-slate-800\/80 {
   border-color: #1e293b !important;
 }
 

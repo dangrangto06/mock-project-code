@@ -398,6 +398,25 @@ window.CodeForgeAPI = (function () {
     return null;
   }
 
+  async function reportContent(payload) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/discussions/reports`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Report content API error, falling back to local.", e);
+      }
+    }
+    return { success: true, message: "Report noted locally." };
+  }
+
   // ===== Admin & Moderation API =====
 
   async function getAdminStats() {
@@ -492,6 +511,54 @@ window.CodeForgeAPI = (function () {
     return null;
   }
 
+  async function deleteDiscussion(id) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/discussions/${id}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to delete discussion:", e);
+      }
+    }
+    return null;
+  }
+
+  async function dismissReport(id) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/reports/${id}/dismiss`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to dismiss report:", e);
+      }
+    }
+    return null;
+  }
+
+  async function deleteReportedItem(id) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/reports/${id}/delete`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to delete reported item:", e);
+      }
+    }
+    return null;
+  }
+
   async function getAdminUsers() {
     await checkBackend();
     if (isBackendOnline && isAuthenticated()) {
@@ -522,6 +589,152 @@ window.CodeForgeAPI = (function () {
     return null;
   }
 
+  // Chatbot operations
+  async function askChatbot(payload) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/chatbot/ask`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to query chatbot API, using local fallback:", e);
+      }
+    }
+    return null;
+  }
+
+  async function getChatHistory(conversationId) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const query = conversationId ? `?conversationId=${encodeURIComponent(conversationId)}` : '';
+        const res = await fetch(`${API_BASE}/chatbot/history${query}`, {
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to fetch chat history:", e);
+      }
+    }
+    return null;
+  }
+
+  async function clearChatHistory(conversationId) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const query = conversationId ? `?conversationId=${encodeURIComponent(conversationId)}` : '';
+        const res = await fetch(`${API_BASE}/chatbot/history${query}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to clear chat history:", e);
+      }
+    }
+    return null;
+  }
+
+  // Submit feedback
+  async function submitFeedback(payload) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/feedback`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+        const errJson = await res.json().catch(() => null);
+        throw new Error((errJson && (errJson.message || errJson.error)) || 'Failed to submit feedback');
+      } catch (e) {
+        if (e.message && e.message !== 'Failed to submit feedback') throw e;
+        console.warn("Backend feedback submission failed, using local fallback.", e);
+      }
+    }
+    // Local fallback for offline mode
+    const localFeedbacks = JSON.parse(localStorage.getItem('codeforge_feedbacks') || '[]');
+    const newEntry = {
+      id: Date.now(),
+      name: payload.name,
+      email: payload.email,
+      subject: payload.subject || 'General Feedback',
+      message: payload.message,
+      status: 'NEW',
+      createdAt: new Date().toISOString()
+    };
+    localFeedbacks.unshift(newEntry);
+    localStorage.setItem('codeforge_feedbacks', JSON.stringify(localFeedbacks));
+    return newEntry;
+  }
+
+  // Admin: Get all feedback submissions
+  async function getAdminFeedbacks() {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/feedbacks`, { headers: getAuthHeaders() });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to fetch feedbacks from admin API, using fallback.", e);
+      }
+    }
+    return JSON.parse(localStorage.getItem('codeforge_feedbacks') || '[]');
+  }
+
+  // Admin: Update feedback status
+  async function updateAdminFeedbackStatus(id, status) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/feedbacks/${id}/status`, {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ status })
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to update feedback status via API:", e);
+      }
+    }
+    const list = JSON.parse(localStorage.getItem('codeforge_feedbacks') || '[]');
+    const item = list.find(f => f.id === id);
+    if (item) {
+      item.status = status;
+      localStorage.setItem('codeforge_feedbacks', JSON.stringify(list));
+      return item;
+    }
+    return null;
+  }
+
+  // Admin: Delete feedback
+  async function deleteAdminFeedback(id) {
+    await checkBackend();
+    if (isBackendOnline) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/feedbacks/${id}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to delete feedback via API:", e);
+      }
+    }
+    let list = JSON.parse(localStorage.getItem('codeforge_feedbacks') || '[]');
+    list = list.filter(f => f.id !== id);
+    localStorage.setItem('codeforge_feedbacks', JSON.stringify(list));
+    return { success: true };
+  }
+
   // Check health on boot
   checkBackend();
 
@@ -545,13 +758,24 @@ window.CodeForgeAPI = (function () {
     createDiscussion,
     toggleDiscussionUpvote,
     addDiscussionReply,
+    reportContent,
     getAdminStats,
     getModerationQueue,
     approveProblem,
     rejectProblem,
     approveDiscussion,
     rejectDiscussion,
+    deleteDiscussion,
+    dismissReport,
+    deleteReportedItem,
     getAdminUsers,
-    updateUserRole
+    updateUserRole,
+    submitFeedback,
+    getAdminFeedbacks,
+    updateAdminFeedbackStatus,
+    deleteAdminFeedback,
+    askChatbot,
+    getChatHistory,
+    clearChatHistory
   };
 })();

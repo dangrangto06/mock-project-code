@@ -97,6 +97,22 @@ public class SecurityConfig {
 
             // 4. Define route access policies
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/",
+                    "/welcome.html",
+                    "/index.html",
+                    "/login.html",
+                    "/signup.html",
+                    "/*.html",
+                    "/css/**",
+                    "/js/**",
+                    "/*.png",
+                    "/*.jpg",
+                    "/*.jpeg",
+                    "/*.svg",
+                    "/*.ico",
+                    "/favicon.ico"
+                ).permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/discussions/**").permitAll()
                 .requestMatchers(
                     "/api/auth/**",      // Login, Registration, Health check
@@ -104,6 +120,7 @@ public class SecurityConfig {
                     "/api/problems/**",  // Problem library retrieval & detail views
                     "/api/execute/**",   // Code execution runner & test case judge endpoints
                     "/api/health",       // Application health monitoring
+                    "/api/chatbot/**",   // CodeForge AI Chatbot (ForgeBot)
                     "/h2-console/**",    // In-memory database web console for local dev
                     "/error"             // Default Spring Boot error mapping
                 ).permitAll()
