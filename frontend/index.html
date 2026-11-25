@@ -63,6 +63,8 @@
               class="text-sm font-semibold text-emerald-800 pb-4 border-b-2 border-emerald-600 transition">Overview</a>
             <a id="nav-practice" href="#library"
               class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Practice</a>
+            <a id="nav-compiler" href="#compiler"
+              class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Compiler</a>
             <a id="nav-notes" href="#notes"
               class="text-sm text-gray-600 hover:text-gray-900 pb-4 border-b-2 border-transparent transition">Notes</a>
             <a id="nav-community" href="#community"
@@ -267,6 +269,17 @@
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
               <span>My submissions</span>
+            </button>
+            <button id="sb-compiler"
+              class="sidebar-nav-item w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition text-left">
+              <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span>Judge0 Compiler</span>
+              </div>
+              <span class="px-1.5 py-0.5 text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-700 rounded">API</span>
             </button>
           </nav>
         </div>
@@ -1251,6 +1264,7 @@
                   <option value="python" class="bg-gray-900">Python 3</option>
                   <option value="javascript" class="bg-gray-900">JavaScript</option>
                   <option value="java" class="bg-gray-900">Java</option>
+                  <option value="cpp" class="bg-gray-900">C++ (GCC 14)</option>
                 </select>
               </div>
 
@@ -1486,6 +1500,207 @@
 
       </section>
 
+
+      <!-- ======================================================== -->
+      <!-- PAGE: JUDGE0 COMPILER PLAYGROUND                         -->
+      <!-- ======================================================== -->
+      <section id="page-compiler" class="p-6 lg:p-8 space-y-5 hidden">
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Workspace / Compiler</div>
+            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight mt-0.5">
+              Judge0 Compiler Playground
+            </h1>
+            <p class="text-xs sm:text-sm text-gray-500 mt-0.5">
+              Write, compile, and run standalone code across 70+ languages using the Judge0 CE API.
+            </p>
+          </div>
+          <!-- Engine status pill -->
+          <div class="flex items-center gap-2.5">
+            <span id="compiler-engine-pill"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+              <span class="w-2 h-2 rounded-full bg-gray-400 inline-block"></span>
+              <span>Checking Judge0 CE...</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Main layout: editor + controls -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+          <!-- Left: code editor (7/12) -->
+          <div class="lg:col-span-7 flex flex-col gap-3">
+
+            <!-- Toolbar row -->
+            <div class="flex flex-wrap items-center justify-between gap-2.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <!-- Language selector -->
+                <div class="flex items-center gap-2 bg-[#080f0c] border border-[#15231c] rounded-lg px-3 py-1.5">
+                  <svg class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
+                  <select id="compiler-language-select"
+                    class="bg-transparent text-gray-200 text-xs font-medium focus:outline-none cursor-pointer min-w-[160px]">
+                    <option value="105" data-key="cpp">C++ (GCC 14.1.0)</option>
+                    <option value="100" data-key="python">Python (3.12.5)</option>
+                    <option value="91" data-key="java">Java (JDK 17.0.6)</option>
+                    <option value="97" data-key="javascript">JavaScript (Node.js 20.17.0)</option>
+                  </select>
+                  <span id="compiler-lang-id-badge"
+                    class="text-[10px] font-mono bg-[#15231c] text-emerald-400 px-1.5 py-0.5 rounded whitespace-nowrap">language_id: 105</span>
+                </div>
+                <!-- Utility actions -->
+                <button id="btn-compiler-reset" type="button"
+                  class="px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-xs font-medium rounded-lg transition-colors">
+                  Reset Sample
+                </button>
+                <button id="btn-compiler-format" type="button"
+                  class="px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-xs font-medium rounded-lg transition-colors">
+                  Format
+                </button>
+                <button id="btn-compiler-error-demo" type="button"
+                  class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-medium rounded-lg transition-colors"
+                  title="Load an intentional C++ syntax error to inspect Judge0 compile_output">
+                  Error Demo
+                </button>
+              </div>
+
+              <!-- Primary Compile & Run CTA -->
+              <button id="btn-compiler-run" type="button"
+                class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm whitespace-nowrap">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <polygon points="5 3 19 12 5 21 5 3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polygon>
+                </svg>
+                <span>Compile &amp; Run</span>
+              </button>
+            </div>
+
+            <!-- Code editor pane (pixel-aligned with IDE editor) -->
+            <div class="flex flex-col bg-[#0b1411] text-gray-200 rounded-xl border border-[#15231c] overflow-hidden shadow-sm">
+              <!-- Tab bar -->
+              <div class="h-8 bg-[#09110e] border-b border-[#15231c] px-4 flex items-center justify-between text-xs font-mono text-emerald-400 flex-shrink-0">
+                <span class="flex items-center gap-1.5">
+                  <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span id="compiler-filename">main.cpp</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                </span>
+                <span class="text-[11px] text-gray-500 font-sans hidden sm:inline">Ctrl + Enter to run</span>
+              </div>
+
+              <!-- Visual Code Area with line numbers & aligned transparent textarea overlay -->
+              <div class="flex overflow-hidden relative font-mono text-xs md:text-sm h-[420px] lg:h-[460px]">
+                <div id="compiler-line-numbers"
+                  class="w-12 bg-[#080f0c] py-3 select-none flex flex-col border-r border-[#15231c] overflow-hidden">
+                </div>
+                <div id="compiler-code-content"
+                  class="flex-1 py-3 overflow-auto dark-scroll select-none pointer-events-none">
+                </div>
+                <textarea id="compiler-code-input"
+                  class="absolute left-12 right-0 top-0 bottom-0 py-3 px-3 leading-[1.6rem] font-mono text-xs md:text-sm whitespace-pre overflow-auto dark-scroll cursor-text pointer-events-auto resize-none"
+                  spellcheck="false" autocapitalize="off" autocomplete="off"
+                  placeholder="// Write your standalone program here..."></textarea>
+              </div>
+
+              <!-- Status bar -->
+              <div class="h-6 bg-[#080f0c] border-t border-[#15231c] px-4 flex items-center justify-between text-[11px] text-gray-500 font-mono flex-shrink-0">
+                <span id="compiler-ln-col">Ln 1, Col 1</span>
+                <span id="compiler-cursor-stats">UTF-8 &middot; C++ (GCC 14.1.0)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: controls + output (5/12) -->
+          <div class="lg:col-span-5 flex flex-col gap-3.5">
+
+            <!-- Stdin -->
+            <div class="bg-white border border-gray-200 rounded-xl p-3.5">
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="compiler-stdin-input" class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Standard Input (stdin)</label>
+                <button id="btn-compiler-clear-stdin" type="button" class="text-xs font-medium text-gray-400 hover:text-rose-600 transition-colors">Clear</button>
+              </div>
+              <textarea id="compiler-stdin-input" rows="3" spellcheck="false"
+                placeholder="Optional program input (stdin)..."
+                class="w-full text-xs font-mono bg-gray-50 border border-gray-200 rounded-lg p-2.5 resize-y text-gray-800 focus:outline-none"></textarea>
+            </div>
+
+            <!-- Expected output & Resource Limits -->
+            <div class="bg-white border border-gray-200 rounded-xl p-3.5 space-y-3">
+              <div>
+                <label for="compiler-expected-input" class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Expected Output (Optional)</label>
+                <input id="compiler-expected-input" type="text" placeholder="Leave blank to skip automatic verdict diff"
+                  class="mt-1.5 w-full text-xs font-mono bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-800 focus:outline-none" />
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 pt-1 border-t border-gray-100">
+                <div>
+                  <label for="compiler-cpu-limit" class="text-[11px] font-medium text-gray-500">CPU Limit (sec)</label>
+                  <input id="compiler-cpu-limit" type="number" value="5" min="0.1" max="15" step="0.5"
+                    class="mt-1 w-full text-xs font-mono bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-800 focus:outline-none" />
+                </div>
+                <div>
+                  <label for="compiler-memory-limit" class="text-[11px] font-medium text-gray-500">Memory Limit (MB)</label>
+                  <input id="compiler-memory-limit" type="number" value="256" min="16" max="512" step="16"
+                    class="mt-1 w-full text-xs font-mono bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-800 focus:outline-none" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Output panel -->
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col shadow-xs" style="min-height:270px;">
+              <!-- Output header -->
+              <div class="h-10 bg-gray-50/60 border-b border-gray-200 px-4 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-4">
+                  <button id="btn-compiler-tab-output" type="button"
+                    class="pb-2 pt-2 border-b-2 border-emerald-600 text-emerald-800 font-semibold text-xs cursor-pointer">Output</button>
+                  <button id="btn-compiler-tab-json" type="button"
+                    class="pb-2 pt-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-xs cursor-pointer">Raw JSON</button>
+                </div>
+                <div class="flex items-center gap-2.5">
+                  <span id="compiler-status-badge" class="hidden"></span>
+                  <button id="btn-compiler-clear-output" type="button" class="text-xs font-medium text-gray-400 hover:text-rose-600 transition-colors">Clear</button>
+                </div>
+              </div>
+
+              <!-- Telemetry bar -->
+              <div id="compiler-telemetry-bar" class="hidden flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-gray-50/75 border-b border-gray-200 text-xs text-gray-600 font-mono">
+                <span id="compiler-metrics-text"></span>
+                <span id="compiler-token-text" class="text-[11px] text-gray-400 truncate max-w-[200px]"></span>
+              </div>
+
+              <!-- Output body -->
+              <div class="flex-1 relative overflow-auto p-3.5 text-xs">
+                <!-- Empty state -->
+                <div id="compiler-output-empty" class="h-full min-h-[180px] flex flex-col items-center justify-center gap-2 text-gray-400">
+                  <svg class="w-8 h-8 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span class="text-xs">Click <strong>Compile &amp; Run</strong> to execute on Judge0</span>
+                </div>
+                <!-- Loading state -->
+                <div id="compiler-output-loading" class="hidden h-full min-h-[180px] flex flex-col items-center justify-center gap-3 text-gray-500">
+                  <svg class="w-5 h-5 animate-spin text-emerald-600" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                  </svg>
+                  <span class="text-xs font-medium">Dispatching to Judge0 CE sandbox...</span>
+                </div>
+                <!-- Output tabs content (container divs so nested pre blocks are valid HTML) -->
+                <div id="compiler-output-body" class="hidden space-y-3"></div>
+                <div id="compiler-output-json" class="hidden"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
 
       <!-- ======================================================== -->
       <!-- PAGE 4: MAKE A GREAT CHALLENGE (Challenge Creator - Image 3) -->
@@ -3042,6 +3257,7 @@ Return the answer in any order.
   <script src="js/ide.js"></script>
   <script src="js/editor.js"></script>
   <script src="js/chatbot.js"></script>
+  <script src="js/compiler.js"></script>
   <script src="js/app.js"></script>
 
 </body>

@@ -12,27 +12,50 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * REST controller managing remote code execution and solution judging.
- *
- * <p>Exposes endpoints under {@code /api/execute} for sandbox dry-runs (evaluating custom test inputs)
- * and formal solution submissions (evaluating against all test cases and tracking database records).</p>
+ * REST controller managing remote Judge0 compilation, code execution, language catalog, and solution judging.
  */
 @RestController
 @RequestMapping("/api/execute")
 @RequiredArgsConstructor
 public class ExecutionController {
 
-    /** Service coordinating code compilation, testing, and submission logging. */
     private final ExecutionService executionService;
 
     /**
-     * Executes arbitrary solution code against custom standard input in an isolated sandbox.
+     * Compiles and executes standalone source code directly using the Judge0 API.
+     *
+     * <p>HTTP Endpoint: {@code POST /api/execute/compile}</p>
+     */
+    @PostMapping("/compile")
+    public ResponseEntity<ExecutionDto.CompileResponse> compile(
+            @RequestBody ExecutionDto.CompileRequest request) {
+        return ResponseEntity.ok(executionService.compile(request));
+    }
+
+    /**
+     * Retrieves all active programming languages supported by the configured Judge0 engine.
+     *
+     * <p>HTTP Endpoint: {@code GET /api/execute/languages}</p>
+     */
+    @GetMapping("/languages")
+    public ResponseEntity<List<ExecutionDto.Judge0LanguageDto>> getLanguages() {
+        return ResponseEntity.ok(executionService.getLanguages());
+    }
+
+    /**
+     * Retrieves Judge0 API connectivity and version diagnostics.
+     *
+     * <p>HTTP Endpoint: {@code GET /api/execute/judge0/status}</p>
+     */
+    @GetMapping("/judge0/status")
+    public ResponseEntity<Map<String, Object>> getJudge0Status() {
+        return ResponseEntity.ok(executionService.getJudge0Status());
+    }
+
+    /**
+     * Executes solution code against sample or custom test cases in the IDE sandbox.
      *
      * <p>HTTP Endpoint: {@code POST /api/execute/run}</p>
-     * <p>Does not record a submission in the database; designed for interactive IDE testing.</p>
-     *
-     * @param request The execution request containing language, code, and optional stdin.
-     * @return {@link ResponseEntity} with HTTP 200 OK and {@link ExecutionDto.RunResponse} execution results.
      */
     @PostMapping("/run")
     public ResponseEntity<ExecutionDto.RunResponse> run(
@@ -44,12 +67,6 @@ public class ExecutionController {
      * Submits solution code for full judging against all exercise test cases and records a submission.
      *
      * <p>HTTP Endpoint: {@code POST /api/execute/submit}</p>
-     * <p>Extracts the user identity from Spring Security's {@link Authentication} object.
-     * Persists a {@link com.codeforge.entity.Submission} entity and updates user progress.</p>
-     *
-     * @param request        The submission request specifying problem ID, language, and source code.
-     * @param authentication Security context representing the authenticated user (or null if anonymous).
-     * @return {@link ResponseEntity} with HTTP 200 OK and {@link ExecutionDto.SubmitResponse} evaluation verdict.
      */
     @PostMapping("/submit")
     public ResponseEntity<ExecutionDto.SubmitResponse> submit(
@@ -75,8 +92,6 @@ public class ExecutionController {
      * Diagnostic health check for the code execution engine.
      *
      * <p>HTTP Endpoint: {@code GET /api/execute/health}</p>
-     *
-     * @return {@link ResponseEntity} with HTTP 200 OK and execution service operational status.
      */
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> health() {

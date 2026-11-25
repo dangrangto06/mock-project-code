@@ -31,8 +31,8 @@ window.CodeForgeIDE = (function () {
   /** Stores custom test case inputs per problemId */
   const customCasesStore = {};
 
-  const LANGUAGE_LABELS = { python: 'Python 3.12', javascript: 'Node.js 20', java: 'Java 13' };
-  const FILE_NAMES = { python: 'solution.py', javascript: 'solution.js', java: 'Solution.java' };
+  const LANGUAGE_LABELS = { python: 'Python 3.12', javascript: 'Node.js 20', java: 'Java 17', cpp: 'C++ (GCC 14)' };
+  const FILE_NAMES = { python: 'solution.py', javascript: 'solution.js', java: 'Solution.java', cpp: 'solution.cpp' };
 
   function escapeHtml(val) {
     if (val === null || val === undefined) return '';
@@ -78,6 +78,9 @@ window.CodeForgeIDE = (function () {
       if (lang === 'java') {
         return `class Solution {\n    public int[] pairSum(int[] nums, int target) {\n        Map<Integer, Integer> seen = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            if (seen.containsKey(complement)) {\n                return new int[] { seen.get(complement), i };\n            }\n            seen.put(nums[i], i);\n        }\n        return new int[0];\n    }\n}\n`;
       }
+      if (lang === 'cpp') {
+        return `class Solution {\npublic:\n    vector<int> pairSum(vector<int>& nums, int target) {\n        unordered_map<int, int> seen;\n        for (int i = 0; i < nums.size(); ++i) {\n            int complement = target - nums[i];\n            if (seen.find(complement) != seen.end()) {\n                return {seen[complement], i};\n            }\n            seen[nums[i]] = i;\n        }\n        return {};\n    }\n};\n`;
+      }
     }
 
     if (problem && problem.starterCode) {
@@ -96,6 +99,7 @@ window.CodeForgeIDE = (function () {
     if (lang === 'python') return `def ${fnName}(nums, target):\n    # Write your solution here\n    pass\n`;
     if (lang === 'javascript') return `function ${fnName}(nums, target) {\n    // Write your solution here\n}\n`;
     if (lang === 'java') return `class Solution {\n    public int[] ${fnName}(int[] nums, int target) {\n        // Write your solution here\n        return new int[]{};\n    }\n}\n`;
+    if (lang === 'cpp') return `class Solution {\npublic:\n    vector<int> ${fnName}(vector<int>& nums, int target) {\n        // Write your solution here\n        return {};\n    }\n};\n`;
     return `// Write your solution here\n`;
   }
 
@@ -268,28 +272,30 @@ window.CodeForgeIDE = (function () {
 
   function highlightLine(line) {
     if (!line) return '';
-    const isJava = currentLanguage === 'java';
-    const isJs = currentLanguage === 'javascript';
+    const isCStyle = currentLanguage === 'java' || currentLanguage === 'javascript' || currentLanguage === 'cpp';
     let escaped = line
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
-    const commentStart = (isJava || isJs) ? '//' : '#';
+    const commentStart = isCStyle ? '//' : '#';
     if (escaped.trim().startsWith(commentStart)) {
       return `<span class="syn-comment">${escaped}</span>`;
     }
+    if (currentLanguage === 'cpp' && escaped.trim().startsWith('#')) {
+      return `<span class="syn-def">${escaped}</span>`;
+    }
 
-    const keywords = (isJava || isJs)
-      ? /\b(import|class|public|private|static|new|return|if|else|for|while|break|continue|try|catch|final|function|const|let|var)\b/g
+    const keywords = isCStyle
+      ? /\b(import|class|struct|public|private|static|new|return|if|else|for|while|break|continue|try|catch|final|function|const|let|var|using|namespace|auto|true|false)\b/g
       : /\b(def|class|return|if|in|for|while|import|from|as|else|elif|try|except|pass)\b/g;
     escaped = escaped.replace(keywords, '<span class="syn-keyword">$1</span>');
 
-    const types = (isJava || isJs)
-      ? /\b(int|boolean|void|String|Integer|Map|HashMap|List|ArrayList|Set|HashSet)\b/g
+    const types = isCStyle
+      ? /\b(int|long|double|bool|boolean|void|String|Integer|Map|HashMap|List|ArrayList|Set|HashSet|vector|string|unordered_map|unordered_set|cout|cin|endl)\b/g
       : /\b(enumerate|len|range|print|int|str|list|dict|set)\b/g;
     escaped = escaped.replace(types, '<span class="syn-type">$1</span>');
-    escaped = escaped.replace((isJava || isJs) ? /(\/\/[^<]*)/g : /(#[^<]*)/g, '<span class="syn-comment">$1</span>');
+    escaped = escaped.replace(isCStyle ? /(\/\/[^<]*)/g : /(#[^<]*)/g, '<span class="syn-comment">$1</span>');
     escaped = escaped.replace(/(\b\d+\b)/g, '<span class="syn-number">$1</span>');
 
     return escaped;
@@ -432,10 +438,11 @@ window.CodeForgeIDE = (function () {
     // 2. Metrics Row
     const metricsEl = document.getElementById('test-result-metrics');
     if (metricsEl) {
+      const engineText = lastRunResult.engine ? ` &middot; Engine: <span class="font-semibold text-emerald-700">${escapeHtml(lastRunResult.engine)}</span>` : '';
       metricsEl.innerHTML = `
         <span class="${isSuccess ? 'text-emerald-700' : 'text-rose-600'} font-bold">${passedCount} / ${totalCount}</span> testcases passed
         &middot; Runtime: <span class="font-semibold text-gray-800">${escapeHtml(lastRunResult.runtime || '32 ms')}</span>
-        &middot; Memory: <span class="font-semibold text-gray-800">${escapeHtml(lastRunResult.memory || '17.0 MB')}</span>
+        &middot; Memory: <span class="font-semibold text-gray-800">${escapeHtml(lastRunResult.memory || '17.0 MB')}</span>${engineText}
       `;
     }
 
@@ -479,12 +486,13 @@ window.CodeForgeIDE = (function () {
     if (selectedCase) {
       if (inputValEl) inputValEl.textContent = selectedCase.input || '—';
       if (outputValEl) {
-        outputValEl.textContent = selectedCase.yourOutput !== undefined && selectedCase.yourOutput !== null
-          ? selectedCase.yourOutput
-          : 'null';
+        const displayOut = (lastRunResult.compileOutput && !selectedCase.yourOutput)
+          ? lastRunResult.compileOutput
+          : (selectedCase.yourOutput !== undefined && selectedCase.yourOutput !== null ? selectedCase.yourOutput : 'null');
+        outputValEl.textContent = displayOut;
         outputValEl.className = selectedCase.passed
           ? "text-emerald-800 font-bold break-all"
-          : "text-rose-700 font-bold break-all";
+          : "text-rose-700 font-bold break-all whitespace-pre-wrap";
       }
       if (outputBoxEl) {
         outputBoxEl.className = selectedCase.passed
@@ -978,11 +986,17 @@ window.CodeForgeIDE = (function () {
     renderTestResultView(true);
 
     try {
+      const sampleCases = getSampleTestCases(getCurrentProblem()).map(c => ({
+        name: c.name,
+        input: c.input,
+        expected: c.expected
+      }));
       const res = await CodeForgeAPI.runCode({
         problemId,
         language: currentLanguage,
         code,
-        customInput: ''
+        customInput: '',
+        customCases: sampleCases
       });
       lastRunResult = res;
       renderTestResultView(false);
@@ -1033,7 +1047,9 @@ window.CodeForgeIDE = (function () {
         passedCount: res.testsPassed,
         totalCount: res.totalTests,
         runtime: res.runtime || '32 ms',
-        memory: res.memory || '17.0 MB'
+        memory: res.memory || '17.0 MB',
+        engine: res.engine,
+        compileOutput: res.compileOutput
       };
       renderTestResultView(false);
 

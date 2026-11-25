@@ -37,6 +37,7 @@ window.CodeForgeChatbot = (function () {
   const IN_SCOPE_KEYWORDS = [
     "codeforge", "forge", "platform", "challenge", "challenges", "problem", "problems",
     "ide", "code", "coding", "editor", "run", "running", "execute", "execution", "judge0",
+    "compiler", "compile", "playground", "stdin",
     "sandbox", "testcase", "test cases", "test case", "sample", "expected", "output", "input",
     "runtime", "memory", "solution", "solutions", "submit", "submission", "submissions", "accepted",
     "streak", "streaks", "daily", "goal", "goals", "weekly goal", "progress", "solved", "acceptance rate",
@@ -48,7 +49,7 @@ window.CodeForgeChatbot = (function () {
     "two pointers", "sliding window", "binary search", "linked list", "tree", "trees", "graph", "graphs",
     "dynamic programming", "dp", "backtracking", "greedy", "heap", "stack", "stacks", "queue", "queues",
     "big-o", "complexity", "time complexity", "space complexity", "time limit", "memory limit",
-    "python", "javascript", "java", "c++", "spring boot", "h2", "sql server", "architecture",
+    "python", "javascript", "java", "c++", "typescript", "rust", "golang", "spring boot", "h2", "sql server", "architecture",
     "focus mode", "theme", "dark mode", "light mode", "shortcut", "cmd+k", "ctrl+k", "random",
     "creator", "create problem", "author", "constraints", "help", "who are you", "what can you do"
   ];
@@ -145,6 +146,13 @@ window.CodeForgeChatbot = (function () {
         "• **Progress Engine**: Keep your daily streak alive and complete weekly practice targets.";
       relevantRoute = "library";
       suggestions = ["How do I practice problems?", "Tell me about the IDE", "How do streaks work?"];
+    } else if (lower.includes("compiler") || lower.includes("playground") || lower.includes("stdin")) {
+      reply = "The **CodeForge Judge0 Compiler Playground** lets you run standalone code directly on Judge0 CE:\n\n" +
+        "• **Multi-Language Runtime**: Supports **Python 3, C++ (GCC 14), Java 17, JavaScript (Node 20), C, TypeScript, Go, Rust**, and 70+ Judge0 languages.\n" +
+        "• **Custom Stdin & Expected Output**: Test interactive inputs, CPU time limits, and automatic output comparison.\n" +
+        "• **Full Telemetry**: Inspect `stdout`, `stderr`, `compile_output`, runtime, memory usage, and raw JSON payloads.";
+      relevantRoute = "compiler";
+      suggestions = ["Go to Compiler Playground", "How does the online IDE work?", "Explain Pair Sum #104"];
     } else if (lower.includes("ide") || lower.includes("run code") || lower.includes("execution") || lower.includes("judge0") || lower.includes("language")) {
       reply = "The **CodeForge Web IDE** provides a distraction-free, professional coding workspace:\n\n" +
         "• **Supported Languages**: Python 3.12, JavaScript (Node.js 20), Java 13/21, and C++.\n" +

@@ -68,18 +68,18 @@ body:not(.dark-theme) .border-gray-300 {
 
 /* Form inputs & selects in Light Mode: 2px solid #cbd5e1 with hover/focus #94a3b8 */
 body:not(.dark-theme) input:not([type="checkbox"]):not([type="radio"]),
-body:not(.dark-theme) select:not(#ide-language-select),
-body:not(.dark-theme) textarea:not(#editor-real-input) {
+body:not(.dark-theme) select:not(#ide-language-select):not(#compiler-language-select),
+body:not(.dark-theme) textarea:not(#editor-real-input):not(#compiler-code-input) {
   border: 2px solid #cbd5e1;
   background-color: #ffffff;
 }
 
 body:not(.dark-theme) input:not([type="checkbox"]):not([type="radio"]):hover,
-body:not(.dark-theme) select:not(#ide-language-select):hover,
-body:not(.dark-theme) textarea:not(#editor-real-input):hover,
+body:not(.dark-theme) select:not(#ide-language-select):not(#compiler-language-select):hover,
+body:not(.dark-theme) textarea:not(#editor-real-input):not(#compiler-code-input):hover,
 body:not(.dark-theme) input:not([type="checkbox"]):not([type="radio"]):focus,
-body:not(.dark-theme) select:not(#ide-language-select):focus,
-body:not(.dark-theme) textarea:not(#editor-real-input):focus {
+body:not(.dark-theme) select:not(#ide-language-select):not(#compiler-language-select):focus,
+body:not(.dark-theme) textarea:not(#editor-real-input):not(#compiler-code-input):focus {
   border-color: #94a3b8;
   outline: none;
 }
@@ -196,7 +196,8 @@ body:not(.dark-theme) textarea::placeholder {
   border-left: 2px solid #2cbb5d;
 }
 
-#editor-real-input {
+#editor-real-input,
+#compiler-code-input {
   color: transparent !important;
   background: transparent !important;
   caret-color: #2cbb5d !important;
@@ -206,7 +207,8 @@ body:not(.dark-theme) textarea::placeholder {
   tab-size: 4;
 }
 
-#editor-real-input::selection {
+#editor-real-input::selection,
+#compiler-code-input::selection {
   background-color: rgba(44, 187, 93, 0.28);
   color: transparent;
 }
@@ -292,12 +294,15 @@ body.dark-theme .bg-\[\#f1f5f9\] {
   color: #eff1f6;
 }
 
-body.dark-theme #page-ide .bg-\[\#0b1411\] {
+body.dark-theme #page-ide .bg-\[\#0b1411\],
+body.dark-theme #page-compiler .bg-\[\#0b1411\] {
   background-color: #1e1e1e !important;
 }
 
 body.dark-theme #page-ide .bg-\[\#080f0c\],
-body.dark-theme #page-ide .bg-\[\#09110e\] {
+body.dark-theme #page-ide .bg-\[\#09110e\],
+body.dark-theme #page-compiler .bg-\[\#080f0c\],
+body.dark-theme #page-compiler .bg-\[\#09110e\] {
   background-color: #181818 !important;
 }
 
@@ -538,8 +543,8 @@ body.dark-theme .badge-hard {
 
 /* Form inputs & controls in Dark Mode: 1px solid #3e3e3e */
 body.dark-theme input:not([type="checkbox"]):not([type="radio"]),
-body.dark-theme select:not(#ide-language-select),
-body.dark-theme textarea:not(#editor-real-input) {
+body.dark-theme select:not(#ide-language-select):not(#compiler-language-select),
+body.dark-theme textarea:not(#editor-real-input):not(#compiler-code-input) {
   background-color: #303030 !important;
   color: #eff1f6 !important;
   border: 1px solid #3e3e3e !important;
@@ -557,12 +562,18 @@ body.dark-theme select option {
   color: #eff1f6 !important;
 }
 
+#compiler-language-select option,
+#compiler-language-select optgroup {
+  background-color: #111827 !important;
+  color: #f3f4f6 !important;
+}
+
 body.dark-theme input:not([type="checkbox"]):not([type="radio"]):focus,
-body.dark-theme select:not(#ide-language-select):focus,
-body.dark-theme textarea:not(#editor-real-input):focus,
+body.dark-theme select:not(#ide-language-select):not(#compiler-language-select):focus,
+body.dark-theme textarea:not(#editor-real-input):not(#compiler-code-input):focus,
 body.dark-theme input:not([type="checkbox"]):not([type="radio"]):hover,
-body.dark-theme select:not(#ide-language-select):hover,
-body.dark-theme textarea:not(#editor-real-input):hover {
+body.dark-theme select:not(#ide-language-select):not(#compiler-language-select):hover,
+body.dark-theme textarea:not(#editor-real-input):not(#compiler-code-input):hover {
   border-color: #525252 !important;
   outline: none;
 }
