@@ -77,10 +77,8 @@
         <a href="#features" class="hover:text-emerald-400 transition">Features</a>
         <a href="#curriculum" class="hover:text-emerald-400 transition">100 Challenges</a>
         <a href="#interactive-demo" class="hover:text-emerald-400 transition">Live Demo</a>
-        <a href="index.html#compiler" class="hover:text-emerald-400 transition">Compiler</a>
-        <a href="index.html#notes" class="hover:text-emerald-400 transition">Notes</a>
-        <a href="index.html#community" class="hover:text-emerald-400 transition">Community</a>
-        <a href="index.html#feedback" class="hover:text-emerald-400 transition">Feedback</a>
+        <a href="#notes" class="hover:text-emerald-400 transition">Notes</a>
+        <a href="#community" class="hover:text-emerald-400 transition">Community</a>
         <a href="#faq" class="hover:text-emerald-400 transition">FAQ</a>
       </nav>
 
@@ -210,15 +208,16 @@
           
           <!-- Code Area (7 cols) -->
           <div class="lg:col-span-7 p-5 font-mono text-xs sm:text-[13px] leading-relaxed text-slate-300 border-b lg:border-b-0 lg:border-r border-slate-800 overflow-x-auto bg-[#090d16]">
-            <pre id="demo-code-view" class="focus:outline-none"><code><span class="text-slate-500"># Given nums = [2, 7, 11, 15] and target = 9</span>
-<span class="text-purple-400">def</span> <span class="text-blue-400 font-bold">pair_sum</span>(nums: list[int], target: int) -&gt; list[int]:
+            <textarea id="demo-code-view" spellcheck="false" autocomplete="off" autocapitalize="off" wrap="off" aria-label="Demo code editor"
+              class="block w-full min-h-[260px] h-full bg-transparent resize-none outline-none border-0 p-0 font-mono text-xs sm:text-[13px] leading-relaxed text-slate-300 caret-emerald-400 whitespace-pre overflow-auto"># Given nums = [2, 7, 11, 15] and target = 9
+def pair_sum(nums: list[int], target: int) -> list[int]:
     seen = {}
-    <span class="text-purple-400">for</span> i, num <span class="text-purple-400">in</span> enumerate(nums):
+    for i, num in enumerate(nums):
         complement = target - num
-        <span class="text-purple-400">if</span> complement <span class="text-purple-400">in</span> seen:
-            <span class="text-purple-400">return</span> [seen[complement], i]
+        if complement in seen:
+            return [seen[complement], i]
         seen[num] = i
-    <span class="text-purple-400">return</span> []</code></pre>
+    return []</textarea>
           </div>
 
           <!-- Output & Test Cases Area (5 cols) -->
@@ -362,7 +361,7 @@
           <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Structured algorithm roadmaps</h2>
           <p class="text-sm text-slate-400 max-w-xl">Master fundamental patterns step by step, from foundational array manipulation to complex dynamic programming.</p>
         </div>
-        <a href="index.html#library" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 font-semibold text-xs border border-emerald-500/30 transition">
+        <a href="index.html#library" class="explore-library-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 font-semibold text-xs border border-emerald-500/30 transition">
           <span>Explore All 100 Problems in Library</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
         </a>
@@ -474,7 +473,7 @@
         
         <!-- Step 1 -->
         <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 space-y-4 relative">
-          <span class="text-5xl font-extrabold font-mono text-emerald-500/20">01</span>
+          <span class="step-number text-5xl font-extrabold font-mono text-emerald-500/20">01</span>
           <h3 class="text-lg font-bold text-white">Select Your Challenge</h3>
           <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
             Browse the catalog by difficulty (Easy, Medium, Hard) or algorithm topics. Pick targeted problems to strengthen your weak areas.
@@ -483,7 +482,7 @@
 
         <!-- Step 2 -->
         <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 space-y-4 relative">
-          <span class="text-5xl font-extrabold font-mono text-emerald-500/20">02</span>
+          <span class="step-number text-5xl font-extrabold font-mono text-emerald-500/20">02</span>
           <h3 class="text-lg font-bold text-white">Code & Test Instantly</h3>
           <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
             Write clean solutions with starter templates in Python, JS, C++, or Java. Run against sample test cases and custom inputs in seconds.
@@ -492,7 +491,7 @@
 
         <!-- Step 3 -->
         <div class="p-8 rounded-2xl bg-[#0e1626] border border-slate-800 space-y-4 relative">
-          <span class="text-5xl font-extrabold font-mono text-emerald-500/20">03</span>
+          <span class="step-number text-5xl font-extrabold font-mono text-emerald-500/20">03</span>
           <h3 class="text-lg font-bold text-white">Submit & Benchmark</h3>
           <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
             Submit your solution against rigorous hidden test suites. Check your runtime percentile, memory efficiency, and keep your daily streak alive.
@@ -504,8 +503,104 @@
     </div>
   </section>
 
+  <!-- ================= NOTES ================= -->
+  <section id="notes" class="py-24 bg-[#0c1220] border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+      <div class="space-y-6">
+        <div class="space-y-3">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Personal Notebook</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Capture what you learn, right where you learn it</h2>
+          <p class="text-sm text-slate-400 leading-relaxed max-w-xl">Jot down the key insight behind every solution, your complexity analysis, and the mistakes you want to avoid next time. Notes live alongside your practice, so revision before an interview takes minutes, not hours.</p>
+        </div>
+        <ul class="space-y-3 text-sm text-slate-300">
+          <li class="flex items-start gap-3"><span class="mt-0.5 text-emerald-400">&#10003;</span><span>Attach notes to any challenge while you solve it</span></li>
+          <li class="flex items-start gap-3"><span class="mt-0.5 text-emerald-400">&#10003;</span><span>Write in plain text with code snippets and complexity summaries</span></li>
+          <li class="flex items-start gap-3"><span class="mt-0.5 text-emerald-400">&#10003;</span><span>Review everything in one place before interview day</span></li>
+        </ul>
+      </div>
+
+      <!-- Note preview cards -->
+      <div class="space-y-4">
+        <div class="p-5 rounded-2xl bg-[#090d16] border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="font-bold text-white text-sm">Two Sum &mdash; hash map trick</h3>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Easy</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">Store each value's index while scanning. For every number, check if <code class="font-mono text-emerald-300">target - num</code> was already seen. One pass instead of nested loops.</p>
+          <div class="flex flex-wrap gap-2 text-[10px] font-mono text-slate-400">
+            <span class="px-2 py-0.5 rounded bg-slate-800/70">Time O(n)</span>
+            <span class="px-2 py-0.5 rounded bg-slate-800/70">Space O(n)</span>
+          </div>
+        </div>
+        <div class="p-5 rounded-2xl bg-[#090d16] border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="font-bold text-white text-sm">Binary Search &mdash; off-by-one</h3>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">Medium</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">Use <code class="font-mono text-emerald-300">lo &lt;= hi</code> with <code class="font-mono text-emerald-300">mid &plusmn; 1</code> updates. Mixing half-open and closed intervals caused my infinite loop last time.</p>
+          <div class="flex flex-wrap gap-2 text-[10px] font-mono text-slate-400">
+            <span class="px-2 py-0.5 rounded bg-slate-800/70">Time O(log n)</span>
+            <span class="px-2 py-0.5 rounded bg-slate-800/70">Space O(1)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= COMMUNITY ================= -->
+  <section id="community" class="py-24 bg-[#090d16] border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Learn Together</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">A community that solves problems with you</h2>
+        <p class="text-sm text-slate-400">Ask questions, compare approaches, and learn from how other engineers think about the same challenge.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div class="p-6 rounded-2xl bg-[#0e1626] border border-slate-800 space-y-4">
+          <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">Discussion</span>
+          <h3 class="font-bold text-white text-base leading-snug">Is a heap really needed for Top-K problems?</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Comparing sorting, heaps and quickselect &mdash; when does each one win in an interview setting?</p>
+          <div class="flex items-center gap-4 text-[11px] text-slate-500 font-mono">
+            <span>&#128172; 12 replies</span>
+            <span>&#9650; 24 votes</span>
+          </div>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-[#0e1626] border border-slate-800 space-y-4">
+          <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">Discussion</span>
+          <h3 class="font-bold text-white text-base leading-snug">How do you spot a dynamic programming problem?</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Overlapping subproblems, optimal substructure &mdash; share the signals you look for before writing any code.</p>
+          <div class="flex items-center gap-4 text-[11px] text-slate-500 font-mono">
+            <span>&#128172; 18 replies</span>
+            <span>&#9650; 41 votes</span>
+          </div>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-[#0e1626] border border-slate-800 space-y-4">
+          <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">Discussion</span>
+          <h3 class="font-bold text-white text-base leading-snug">Recursive vs iterative tree traversal</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Stack depth, readability and follow-up questions interviewers love to ask about both versions.</p>
+          <div class="flex items-center gap-4 text-[11px] text-slate-500 font-mono">
+            <span>&#128172; 9 replies</span>
+            <span>&#9650; 17 votes</span>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="text-center text-xs text-slate-500">Sample topics shown for preview. Live discussions appear inside the platform.</p>
+
+    </div>
+  </section>
+
+
   <!-- ================= FREQUENTLY ASKED QUESTIONS ================= -->
-  <section id="faq" class="py-24 bg-[#0c1220] border-b border-slate-800/80">
+  <section id="faq" class="py-24 bg-[#090d16] border-b border-slate-800/80">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
       
       <div class="text-center space-y-3">
@@ -604,7 +699,7 @@
 
       <div class="flex items-center gap-6">
         <a href="index.html#library" class="hover:text-emerald-400 transition">Practice Library</a>
-        <a href="index.html#feedback" class="hover:text-emerald-400 transition">Feedback</a>
+        <a href="#feedback" class="hover:text-emerald-400 transition">Feedback</a>
         <a href="login.html" class="hover:text-emerald-400 transition">Login</a>
         <a href="signup.html" class="hover:text-emerald-400 transition">Sign Up</a>
         <a href="https://github.com/dangrangto06/mock-project-code" target="_blank" rel="noopener" class="hover:text-emerald-400 transition flex items-center gap-1">
@@ -665,49 +760,166 @@ class Solution {
       }
     };
 
+    // ---- Editable demo: drafts per language, real execution through the backend ----
+    const DEMO_API_BASE = (location.port === '8080') ? '/api' : 'http://localhost:8080/api';
+    const DEMO_CASES = [
+      { id: 1, nums: '[2,7,11,15]', target: '9', expected: '[0,1]' },
+      { id: 2, nums: '[3,2,4]',     target: '6', expected: '[1,2]' }
+    ];
+    // Driver code appended to the user's snippet so the backend (stdout based) can judge the result.
+    const DEMO_HARNESS = {
+      python: (c) => `\n\nprint(pair_sum(${c.nums}, ${c.target}))\n`,
+      javascript: (c) => `\n\nconsole.log(JSON.stringify(pairSum(${c.nums}, ${c.target})));\n`,
+      java: (c) => `\n\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(Arrays.toString(new Solution().pairSum(new int[]${c.nums.replace('[', '{').replace(']', '}')}, ${c.target})));\n    }\n}\n`
+    };
+    const DEMO_PREAMBLE = { python: '', javascript: '', java: 'import java.util.*;\n' };
+
+    const demoDrafts = {};
+    let demoLang = 'python';
+    let demoRunning = false;
+
+    const demoEditor = () => document.getElementById('demo-code-view');
+    const DEMO_TAB_ACTIVE = "px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30";
+    const DEMO_TAB_IDLE = "px-2.5 py-1 rounded text-slate-400 hover:text-white";
+    const DEMO_BADGE_BASE = "px-2 py-0.5 rounded text-[10px] font-bold border ";
+    const DEMO_BADGE = {
+      ready: DEMO_BADGE_BASE + "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+      running: DEMO_BADGE_BASE + "bg-amber-500/20 text-amber-300 border-amber-500/30",
+      fail: DEMO_BADGE_BASE + "bg-red-500/20 text-red-300 border-red-500/30"
+    };
+    const DEMO_RUN_LABEL = `<svg class="w-3.5 h-3.5 fill-current text-white" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>Run Code</span>`;
+
     function switchDemoLang(lang) {
-      ['demo-tab-py', 'demo-tab-js', 'demo-tab-java'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.className = "px-2.5 py-1 rounded text-slate-400 hover:text-white";
-        }
+      const editor = demoEditor();
+      demoDrafts[demoLang] = editor.value;           // keep what the visitor typed
+      demoLang = lang;
+      Object.keys(DEMO_SNIPPETS).forEach(key => {
+        const el = document.getElementById(DEMO_SNIPPETS[key].tab);
+        if (el) el.className = key === lang ? DEMO_TAB_ACTIVE : DEMO_TAB_IDLE;
       });
-      const activeEl = document.getElementById(DEMO_SNIPPETS[lang].tab);
-      if (activeEl) {
-        activeEl.className = "px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30";
-      }
-      document.getElementById('demo-code-view').textContent = DEMO_SNIPPETS[lang].code;
+      editor.value = demoDrafts[lang] !== undefined ? demoDrafts[lang] : DEMO_SNIPPETS[lang].code;
+      resetDemoResults();
     }
 
-    function runDemoCode() {
+    function resetDemoResults() {
+      DEMO_CASES.forEach(c => setDemoCase(c.id, 'Pending', 'text-slate-500 font-bold'));
+      const badge = document.getElementById('demo-status-badge');
+      badge.textContent = "Ready to execute";
+      badge.className = DEMO_BADGE.ready;
+      document.getElementById('demo-perf-stats').textContent = 'Click "Run Code" above';
+    }
+
+    function setDemoCase(id, text, cls) {
+      const el = document.getElementById(`demo-case-${id}-result`);
+      if (el) { el.textContent = text; el.className = cls; }
+    }
+
+    const demoNorm = (str) => String(str || '').replace(/\s+/g, '');
+    const demoShort = (str, n) => { const t = String(str || '').trim(); return t.length > n ? t.slice(0, n) + '…' : t; };
+
+    async function demoExecute(testCase) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 25000);
+      try {
+        const res = await fetch(`${DEMO_API_BASE}/execute/run`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+          body: JSON.stringify({
+            language: demoLang,
+            code: DEMO_PREAMBLE[demoLang] + demoEditor().value + DEMO_HARNESS[demoLang](testCase),
+            customInput: `demo-case-${testCase.id}`
+          })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    async function runDemoCode() {
+      if (demoRunning) return;
+      demoRunning = true;
+
       const btn = document.getElementById('demo-run-btn');
-      const statusBadge = document.getElementById('demo-status-badge');
-      const case1 = document.getElementById('demo-case-1-result');
-      const case2 = document.getElementById('demo-case-2-result');
+      const badge = document.getElementById('demo-status-badge');
       const stats = document.getElementById('demo-perf-stats');
 
       btn.disabled = true;
       btn.innerHTML = `<svg class="animate-spin w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Executing...`;
-      statusBadge.textContent = "Running sandbox...";
-      statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30";
+      badge.textContent = "Running sandbox...";
+      badge.className = DEMO_BADGE.running;
+      stats.textContent = "Waiting for the judge...";
+      DEMO_CASES.forEach(c => setDemoCase(c.id, 'Running...', 'text-amber-400 font-bold'));
 
-      setTimeout(() => {
-        case1.textContent = "Passed [0, 1] ✓";
-        case1.className = "text-emerald-400 font-bold";
-      }, 400);
+      try {
+        const responses = await Promise.all(DEMO_CASES.map(demoExecute));
 
-      setTimeout(() => {
-        case2.textContent = "Passed [1, 2] ✓";
-        case2.className = "text-emerald-400 font-bold";
+        let passed = 0, maxRuntime = 0, maxMemory = 0, errorStatus = null, errorText = '';
+        responses.forEach((r, i) => {
+          const c = DEMO_CASES[i];
+          const out = ((r.results && r.results[0] && r.results[0].yourOutput) || '').trim();
+          const isError = r.status && r.status !== 'Accepted' && r.status !== 'Wrong Answer';
+          maxRuntime = Math.max(maxRuntime, parseFloat(r.runtime) || 0);
+          maxMemory = Math.max(maxMemory, parseFloat(r.memory) || 0);
 
-        statusBadge.textContent = "Accepted (2/2 Passed)";
-        statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-        stats.textContent = "Runtime: 28 ms • Memory: 16.8 MB (Beats 96.4%)";
+          if (!isError && demoNorm(out) === c.expected) {
+            passed++;
+            setDemoCase(c.id, `Passed ${demoShort(out, 24)} ✓`, 'text-emerald-400 font-bold');
+          } else if (isError) {
+            errorStatus = errorStatus || r.status;
+            errorText = errorText || out;
+            setDemoCase(c.id, 'Error', 'text-red-400 font-bold');
+          } else {
+            setDemoCase(c.id, `Got ${demoShort(out, 18) || 'no output'} ✗`, 'text-red-400 font-bold');
+          }
+        });
 
+        const total = DEMO_CASES.length;
+        if (passed === total) {
+          badge.textContent = `Accepted (${passed}/${total} Passed)`;
+          badge.className = DEMO_BADGE.ready;
+        } else {
+          badge.textContent = errorStatus ? errorStatus : `Wrong Answer (${passed}/${total} Passed)`;
+          badge.className = DEMO_BADGE.fail;
+        }
+
+        if (errorStatus && errorText) {
+          stats.textContent = demoShort(errorText.split('\n')[0], 90);
+        } else {
+          stats.textContent = `Runtime: ${Math.round(maxRuntime)} ms • Memory: ${maxMemory.toFixed(1)} MB`;
+        }
+      } catch (err) {
+        DEMO_CASES.forEach(c => setDemoCase(c.id, 'Pending', 'text-slate-500 font-bold'));
+        badge.textContent = err.name === 'AbortError' ? "Timed out" : "Backend offline";
+        badge.className = DEMO_BADGE.fail;
+        stats.textContent = err.name === 'AbortError'
+          ? "The judge took too long. Check for infinite loops."
+          : "Cannot reach the API. Start the Spring Boot server (port 8080).";
+      } finally {
+        demoRunning = false;
         btn.disabled = false;
-        btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-current text-white" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>Run Again</span>`;
-      }, 750);
+        btn.innerHTML = DEMO_RUN_LABEL;
+      }
     }
+
+    (function initDemoEditor() {
+      const editor = demoEditor();
+      if (!editor) return;
+      editor.value = DEMO_SNIPPETS.python.code;
+      editor.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = editor.selectionStart, end = editor.selectionEnd;
+          editor.value = editor.value.slice(0, start) + '    ' + editor.value.slice(end);
+          editor.selectionStart = editor.selectionEnd = start + 4;
+        } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          runDemoCode();
+        }
+      });
+    })();
 
     (function initWelcomeTheme() {
       const themeKey = 'codeforge_theme';
