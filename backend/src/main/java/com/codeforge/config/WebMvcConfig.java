@@ -42,5 +42,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         // Redirect root "/" to "/welcome.html"
         registry.addViewController("/").setViewName("redirect:/welcome.html");
+        // Serve the unified SVG logo for default browser /favicon.ico requests
+        registry.addViewController("/favicon.ico").setViewName("forward:/logo.svg");
     }
 }

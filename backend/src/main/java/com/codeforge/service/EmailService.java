@@ -118,12 +118,23 @@ public class EmailService {
                     <table role="presentation" width="100%%" border="0" cellpadding="0" cellspacing="0">
                       <tr>
                         <td>
-                          <div style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #ffffff;">
-                            Code<span style="color: #6ee7b7;">Forge</span>
-                          </div>
-                          <div style="font-size: 12px; color: #a7f3d0; margin-top: 4px; font-weight: 500; letter-spacing: 0.02em;">
-                            DEVELOPER FEEDBACK CONFIRMATION
-                          </div>
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td valign="middle" style="padding-right: 12px;">
+                                <div style="width: 36px; height: 36px; line-height: 36px; text-align: center; border-radius: 9px; background: linear-gradient(135deg, #10b981 0%%, #059669 55%%, #065f46 100%%); border: 1px solid rgba(110, 231, 183, 0.35); color: #ffffff; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 15px; font-weight: 800; letter-spacing: -1px;">
+                                  &lt;&gt;
+                                </div>
+                              </td>
+                              <td valign="middle">
+                                <div style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #ffffff;">
+                                  CodeForge
+                                </div>
+                                <div style="font-size: 12px; color: #a7f3d0; margin-top: 4px; font-weight: 500; letter-spacing: 0.02em;">
+                                  DEVELOPER FEEDBACK CONFIRMATION
+                                </div>
+                              </td>
+                            </tr>
+                          </table>
                         </td>
                         <td align="right">
                           <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase;">
