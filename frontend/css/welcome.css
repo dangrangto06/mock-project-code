@@ -289,3 +289,38 @@ body.welcome-page.dark-theme #interactive-demo {
     padding-right: 0.75rem;
   }
 }
+
+/* Offset in-page anchors so the sticky header does not cover section titles */
+html { scroll-padding-top: 4rem; }
+
+/* Light mode: "Explore All 100 Problems" button was pale text on a pale tint */
+body.welcome-page:not(.dark-theme) .explore-library-btn {
+  background-color: #059669 !important;
+  border-color: #047857 !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 18px -8px rgba(5, 150, 105, 0.6);
+}
+
+body.welcome-page:not(.dark-theme) .explore-library-btn:hover {
+  background-color: #047857 !important;
+}
+
+/* Light mode: make the 01 / 02 / 03 step numbers readable */
+body.welcome-page:not(.dark-theme) .step-number {
+  color: #059669 !important;
+  opacity: 0.6;
+}
+
+/* Dark mode: step numbers were emerald at 20% opacity on a dark card */
+body.welcome-page.dark-theme .step-number {
+  color: #34d399 !important;
+  opacity: 0.75;
+}
+
+/* Light mode: complexity chips (Time O(n) / Space O(1)) were dark text on a dark slate chip */
+body.welcome-page:not(.dark-theme) .bg-slate-800\/70 {
+  background-color: #ecfdf5 !important;
+  border: 1px solid #a7f3d0;
+  color: #047857 !important;
+  font-weight: 600;
+}
