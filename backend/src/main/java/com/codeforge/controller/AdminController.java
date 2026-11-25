@@ -1,0 +1,191 @@
+package com.codeforge.controller;
+
+import com.codeforge.dto.AdminDto;
+import com.codeforge.dto.FeedbackDto;
+import com.codeforge.service.AdminService;
+import com.codeforge.service.FeedbackService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * REST controller managing administrator functions, moderation workflows, and user permissions.
+ *
+ * <p>All endpoints under {@code /api/admin} require the caller to possess the 'ADMIN' role.</p>
+ */
+@RestController
+@RequestMapping("/api/admin")
+@RequiredArgsConstructor
+public class AdminController {
+
+    private final AdminService adminService;
+    private final FeedbackService feedbackService;
+
+    /**
+     * Retrieves aggregated administrative statistics.
+     */
+    @GetMapping("/stats")
+    public ResponseEntity<AdminDto.StatsResponse> getStats() {
+        return ResponseEntity.ok(adminService.getStats());
+    }
+
+    /**
+     * Retrieves all items currently awaiting moderation review.
+     */
+    @GetMapping("/moderation")
+    public ResponseEntity<AdminDto.ModerationQueueResponse> getModerationQueue() {
+        return ResponseEntity.ok(adminService.getModerationQueue());
+    }
+
+    /**
+     * Approves a user-submitted coding problem.
+     */
+    @PostMapping("/problems/{id}/approve")
+    public ResponseEntity<Map<String, Object>> approveProblem(@PathVariable Long id) {
+        adminService.approveProblem(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Problem approved successfully."));
+    }
+
+    /**
+     * Rejects a user-submitted coding problem with reason.
+     */
+    @PostMapping("/problems/{id}/reject")
+    public ResponseEntity<Map<String, Object>> rejectProblem(
+            @PathVariable Long id,
+            @Valid @RequestBody AdminDto.RejectRequest request) {
+        adminService.rejectProblem(id, request.getReason());
+        return ResponseEntity.ok(Map.of("success", true, "message", "Problem rejected."));
+    }
+
+    /**
+     * Approves a community discussion topic.
+     */
+    @PostMapping("/discussions/{id}/approve")
+    public ResponseEntity<Map<String, Object>> approveDiscussion(@PathVariable Long id) {
+        adminService.approveDiscussion(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Discussion approved successfully."));
+    }
+
+    /**
+     * Rejects a community discussion topic with reason.
+     */
+    @PostMapping("/discussions/{id}/reject")
+    public ResponseEntity<Map<String, Object>> rejectDiscussion(
+            @PathVariable Long id,
+            @Valid @RequestBody AdminDto.RejectRequest request) {
+        adminService.rejectDiscussion(id, request.getReason());
+        return ResponseEntity.ok(Map.of("success", true, "message", "Discussion rejected."));
+    }
+
+    /**
+     * Permanently deletes a community discussion topic from database.
+     */
+    @DeleteMapping("/discussions/{id}")
+    public ResponseEntity<Map<String, Object>> deleteDiscussion(@PathVariable Long id) {
+        adminService.deleteDiscussion(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Discussion deleted from database."));
+    }
+
+    /**
+     * Dismisses a user report, keeping the content.
+     */
+    @PostMapping("/reports/{id}/dismiss")
+    public ResponseEntity<Map<String, Object>> dismissReport(@PathVariable Long id) {
+        adminService.dismissReport(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Report dismissed."));
+    }
+
+    /**
+     * Removes the reported discussion or comment from database and resolves the report.
+     */
+    @PostMapping("/reports/{id}/delete")
+    public ResponseEntity<Map<String, Object>> deleteReportedItem(@PathVariable Long id) {
+        adminService.deleteReportedItem(id);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Content removed from database and report resolved."));
+    }
+
+    /**
+     * Retrieves directory of all platform users.
+     */
+    @GetMapping("/users")
+    public ResponseEntity<List<AdminDto.AdminUserDto>> getUsers() {
+        return ResponseEntity.ok(adminService.getUsers());
+    }
+
+    /**
+     * Updates an existing user's role.
+     */
+    @PutMapping("/users/{id}/role")
+    public ResponseEntity<Map<String, Object>> updateUserRole(
+            @PathVariable Long id,
+            @Valid @RequestBody AdminDto.UpdateRoleRequest request) {
+        adminService.updateUserRole(id, request.getRole());
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "User role updated successfully.",
+                "role", request.getRole()
+        ));
+    }
+
+    /**
+     * Retrieves all user feedback submissions.
+     */
+    @GetMapping("/feedbacks")
+    public ResponseEntity<List<FeedbackDto.Response>> getFeedbacks() {
+        return ResponseEntity.ok(feedbackService.getAllFeedbacks());
+    }
+
+    /**
+     * Updates moderation status of a feedback item (e.g. NEW, REVIEWED, RESOLVED).
+     */
+    @PutMapping("/feedbacks/{id}/status")
+    public ResponseEntity<FeedbackDto.Response> updateFeedbackStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody FeedbackDto.UpdateStatusRequest request) {
+        return ResponseEntity.ok(feedbackService.updateFeedbackStatus(id, request.getStatus()));
+    }
+
+    /**
+     * Deletes a feedback item permanently.
+     */
+    @DeleteMapping("/feedbacks/{id}")
+    public ResponseEntity<Map<String, Object>> deleteFeedback(@PathVariable Long id) {
+        feedbackService.deleteFeedback(id);
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Feedback deleted successfully."
+        ));
+    }
+
+    /**
+     * Retrieves aggregated user tracking & site telemetry summary metrics.
+     */
+    @GetMapping("/tracking/summary")
+    public ResponseEntity<AdminDto.TrackingSummaryDto> getTrackingSummary() {
+        return ResponseEntity.ok(adminService.getTrackingSummary());
+    }
+
+    /**
+     * Retrieves user login history with search and method filtering.
+     */
+    @GetMapping("/tracking/logins")
+    public ResponseEntity<List<AdminDto.UserLoginLogDto>> getLoginLogs(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "ALL") String method) {
+        return ResponseEntity.ok(adminService.getLoginLogs(search, method));
+    }
+
+    /**
+     * Retrieves user page navigation logs with search and route filtering.
+     */
+    @GetMapping("/tracking/visits")
+    public ResponseEntity<List<AdminDto.PageVisitLogDto>> getPageVisitLogs(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String route) {
+        return ResponseEntity.ok(adminService.getPageVisitLogs(search, route));
+    }
+}

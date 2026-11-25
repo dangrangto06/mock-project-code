@@ -1,0 +1,57 @@
+/* CodeForge - Sign up page (extras only).
+   Shared layout, buttons, fields, toast... live in login.css, which must be loaded first. */
+
+/* Slightly tighter spacing so the longer form fits on one screen */
+.form-wrap h2 { font-size: 36px; }
+.divider { margin: 26px 0 24px; }
+.field { margin-bottom: 18px; }
+.btn-primary { margin-top: 22px; }
+
+/* Full name + Username side by side */
+.row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.row-2 .field { min-width: 0; }
+
+/* Password strength meter */
+.strength {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+.strength.is-visible { display: flex; }
+.strength-bars { display: flex; gap: 6px; flex: 1; }
+.strength-bars i {
+  height: 4px; flex: 1; border-radius: 99px;
+  background: var(--line);
+  transition: background .2s ease;
+}
+.strength-label { min-width: 48px; font-size: 12px; font-weight: 500; color: var(--muted); text-align: right; }
+
+.strength[data-level="1"] .strength-bars i:nth-child(-n+1) { background: #e0623b; }
+.strength[data-level="2"] .strength-bars i:nth-child(-n+2) { background: #e3a23a; }
+.strength[data-level="3"] .strength-bars i:nth-child(-n+3) { background: #6dae7f; }
+.strength[data-level="4"] .strength-bars i:nth-child(-n+4) { background: var(--green); }
+.strength[data-level="1"] .strength-label { color: #c2410c; }
+.strength[data-level="2"] .strength-label { color: #b7791f; }
+.strength[data-level="3"] .strength-label,
+.strength[data-level="4"] .strength-label { color: var(--green-text); }
+
+/* Terms checkbox: text can wrap to 2 lines */
+.terms { margin-bottom: 4px; }
+/* `.field label` in login.css makes labels block-level, so restore flex here */
+.terms .check { display: flex; align-items: flex-start; margin-bottom: 0; font-weight: 400; line-height: 1.5; }
+.terms .check .box { margin-top: 2px; flex-shrink: 0; }
+.terms.has-error .check .box { border-color: var(--danger); }
+.inline-link { color: var(--green-text); font-weight: 500; text-decoration: underline; text-underline-offset: 2px; }
+.inline-link:hover { color: var(--green-hover); }
+
+@media (max-width: 900px) {
+  .form-wrap h2 { font-size: 30px; }
+}
+@media (max-width: 520px) {
+  .row-2 { grid-template-columns: 1fr; gap: 0; }
+}
