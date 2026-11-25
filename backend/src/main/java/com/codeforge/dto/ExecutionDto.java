@@ -5,12 +5,26 @@ import lombok.*;
 import java.util.List;
 
 /**
- * Data Transfer Objects (DTOs) for code execution requests and evaluation responses.
+ * Data Transfer Objects (DTOs) for code compilation, execution requests, and evaluation responses.
  *
- * <p>Defines client-server contracts for sandbox dry-runs (testing against custom/sample inputs)
- * and formal submissions (evaluating against full test suites and recording submission entities).</p>
+ * <p>Defines client-server contracts for sandbox dry-runs (testing against custom/sample inputs),
+ * standalone Judge0 compiler execution, language discovery, and formal judged submissions.</p>
  */
 public class ExecutionDto {
+
+    /**
+     * Custom test case input/expected pair supplied by the IDE client.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CustomTestCaseInput {
+        private String name;
+        private String input;
+        private String expected;
+    }
 
     /**
      * Inbound payload for sandbox test execution ({@code POST /api/execute/run}).
@@ -42,6 +56,11 @@ public class ExecutionDto {
          * Optional custom standard input supplied by the user.
          */
         private String customInput;
+
+        /**
+         * Optional list of custom/edited sample test cases from the IDE console.
+         */
+        private List<CustomTestCaseInput> customCases;
     }
 
     /**
@@ -75,7 +94,7 @@ public class ExecutionDto {
         private Integer totalCount;
 
         /**
-         * Execution duration string (e.g., "0.032s" or "32 ms").
+         * Execution duration string (e.g., "32 ms").
          */
         private String runtime;
 
@@ -88,6 +107,16 @@ public class ExecutionDto {
          * Detailed results per test case evaluated.
          */
         private List<ExerciseDto.TestCaseDto> results;
+
+        /**
+         * Optional compiler diagnostics produced during compilation (Status ID 6).
+         */
+        private String compileOutput;
+
+        /**
+         * Execution engine used ("Judge0 CE", "Judge0 RapidAPI", "Judge0 Self-Hosted", or "Local Sandbox Fallback").
+         */
+        private String engine;
     }
 
     /**
@@ -170,5 +199,103 @@ public class ExecutionDto {
          * Congratulatory or diagnostic message explaining test results.
          */
         private String message;
+
+        /**
+         * Optional compiler diagnostics if submission failed to compile.
+         */
+        private String compileOutput;
+
+        /**
+         * Execution engine used.
+         */
+        private String engine;
+    }
+
+    /**
+     * Inbound payload for standalone Judge0 compiler execution ({@code POST /api/execute/compile}).
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CompileRequest {
+
+        /**
+         * Canonical Judge0 numeric language ID (e.g. 100 for Python 3.12, 105 for C++ GCC 14).
+         */
+        private Integer languageId;
+
+        /**
+         * Optional string alias fallback (e.g. "python", "cpp", "java", "javascript").
+         */
+        private String language;
+
+        /**
+         * Complete program source code to compile and execute.
+         */
+        private String sourceCode;
+
+        /**
+         * Standard input passed to the program.
+         */
+        private String stdin;
+
+        /**
+         * Optional expected standard output for automated comparison.
+         */
+        private String expectedOutput;
+
+        /**
+         * Optional CPU time limit in seconds (0.1 .. 15.0).
+         */
+        private Double cpuTimeLimit;
+
+        /**
+         * Optional memory limit in kilobytes (2048 .. 512000).
+         */
+        private Integer memoryLimit;
+    }
+
+    /**
+     * Outbound telemetry payload returned by the Judge0 Compiler endpoint.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CompileResponse {
+        private Boolean success;
+        private Integer statusId;
+        private String status;
+        private String token;
+        private Integer languageId;
+        private String languageName;
+        private String stdout;
+        private String stderr;
+        private String compileOutput;
+        private String message;
+        private Integer exitCode;
+        private String time;
+        private String runtime;
+        private Integer memoryKb;
+        private String memory;
+        private String engine;
+    }
+
+    /**
+     * Supported compiler language metadata from Judge0.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Judge0LanguageDto {
+        private Integer id;
+        private String name;
+        private String key;
+        private Boolean isArchived;
     }
 }

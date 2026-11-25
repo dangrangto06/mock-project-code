@@ -64,6 +64,7 @@ public class ChatbotService {
     private static final Set<String> IN_SCOPE_KEYWORDS = new HashSet<>(Arrays.asList(
             "codeforge", "forge", "platform", "challenge", "challenges", "problem", "problems",
             "ide", "code", "coding", "editor", "run", "running", "execute", "execution", "judge0",
+            "compiler", "compile", "playground", "stdin",
             "sandbox", "testcase", "test cases", "test case", "sample", "expected", "output", "input",
             "runtime", "memory", "solution", "solutions", "submit", "submission", "submissions", "accepted",
             "streak", "streaks", "daily", "goal", "goals", "weekly goal", "progress", "solved", "acceptance rate",
@@ -75,7 +76,7 @@ public class ChatbotService {
             "two pointers", "sliding window", "binary search", "linked list", "tree", "trees", "graph", "graphs",
             "dynamic programming", "dp", "backtracking", "greedy", "heap", "stack", "stacks", "queue", "queues",
             "big-o", "complexity", "time complexity", "space complexity", "time limit", "memory limit",
-            "python", "javascript", "java", "c++", "spring boot", "h2", "sql server", "architecture",
+            "python", "javascript", "java", "c++", "typescript", "rust", "golang", "spring boot", "h2", "sql server", "architecture",
             "focus mode", "theme", "dark mode", "light mode", "shortcut", "cmd+k", "ctrl+k", "random",
             "creator", "create problem", "author", "constraints", "help", "who are you", "what can you do"
     ));
@@ -432,6 +433,14 @@ public class ChatbotService {
             reply = sb.toString();
             relevantRoute = "library";
             suggestions.addAll(Arrays.asList("Open Pair Sum #104", "How to run code in IDE?", "View Problem Library"));
+
+        } else if (lower.contains("compiler") || lower.contains("playground") || lower.contains("stdin")) {
+            reply = "The **CodeForge Judge0 Compiler Playground** lets you compile and run arbitrary standalone programs directly via Judge0 CE:\n\n" +
+                    "• **Multi-Language Runtime**: Supports **Python 3, C++ (GCC 14), Java 17, JavaScript (Node 20), C, TypeScript, Go, Rust**, and 70+ Judge0 languages.\n" +
+                    "• **Custom Stdin & Expected Output**: Test interactive inputs, CPU time limits, and expected output verification.\n" +
+                    "• **Full Telemetry**: Inspect `stdout`, `stderr`, `compile_output`, execution time, memory KB, and raw Judge0 JSON payloads.";
+            relevantRoute = "compiler";
+            suggestions.addAll(Arrays.asList("How does the online IDE work?", "What is Pair Sum #104?", "Browse Challenges"));
 
         } else if (lower.contains("ide") || lower.contains("run code") || lower.contains("execution") || lower.contains("judge0") || lower.contains("language")) {
             reply = "The **CodeForge Web IDE** connects directly to our backend execution engine:\n\n" +

@@ -563,6 +563,7 @@ window.CodeForgeApp = (function () {
     const pageFeedback = document.getElementById('page-feedback');
     const pageAdmin = document.getElementById('page-admin');
     const pageIde = document.getElementById('page-ide');
+    const pageCompiler = document.getElementById('page-compiler');
     const pageCreateProblem = document.getElementById('page-create-problem');
     const pageLogin = document.getElementById('page-login');
     const pageSignup = document.getElementById('page-signup');
@@ -579,6 +580,7 @@ window.CodeForgeApp = (function () {
     if (pageFeedback) pageFeedback.classList.add('hidden');
     if (pageAdmin) pageAdmin.classList.add('hidden');
     if (pageIde) pageIde.classList.add('hidden');
+    if (pageCompiler) pageCompiler.classList.add('hidden');
     if (pageCreateProblem) pageCreateProblem.classList.add('hidden');
     if (pageLogin) pageLogin.classList.add('hidden');
     if (pageSignup) pageSignup.classList.add('hidden');
@@ -592,13 +594,14 @@ window.CodeForgeApp = (function () {
     // Top Navigation Links highlight
     const navOverview = document.getElementById('nav-overview');
     const navPractice = document.getElementById('nav-practice');
+    const navCompiler = document.getElementById('nav-compiler');
     const navNotes = document.getElementById('nav-notes');
     const navCommunity = document.getElementById('nav-community');
     const navFeedback = document.getElementById('nav-feedback');
     const navAdmin = document.getElementById('nav-admin');
 
     const resetTopNav = () => {
-      [navOverview, navPractice, navNotes, navCommunity, navFeedback, navAdmin].forEach(link => {
+      [navOverview, navPractice, navCompiler, navNotes, navCommunity, navFeedback, navAdmin].forEach(link => {
         if (!link) return;
         link.classList.remove('text-emerald-800', 'font-semibold', 'border-emerald-600');
         link.classList.add('text-gray-600', 'hover:text-gray-900', 'font-normal', 'border-transparent');
@@ -731,6 +734,13 @@ window.CodeForgeApp = (function () {
       if (pageSignup) pageSignup.classList.remove('hidden');
       showFullWidthWorkspaceLayout();
       document.body.classList.remove('focus-mode');
+    } else if (route === 'compiler') {
+      if (pageCompiler) pageCompiler.classList.remove('hidden');
+      showStandardSidebarLayout();
+      activateTopNav(navCompiler);
+      activateSidebarLink('sb-compiler');
+      document.body.classList.remove('focus-mode');
+      if (window.CodeForgeCompiler) CodeForgeCompiler.init();
     } else if (route === 'admin') {
       const user = getStoredUser();
       const isAdmin = user && ((user.role && user.role.toLowerCase() === 'admin') || (user.roles && user.roles.includes('ADMIN')));
@@ -1562,6 +1572,15 @@ window.CodeForgeApp = (function () {
       });
     }
 
+    // Compiler nav link
+    const navCompiler = document.getElementById('nav-compiler');
+    if (navCompiler) {
+      navCompiler.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigate('compiler');
+      });
+    }
+
     // Sidebar navigation clicks
     const sbDashboard = document.getElementById('sb-dashboard');
     if (sbDashboard) sbDashboard.addEventListener('click', () => navigate('dashboard'));
@@ -1617,6 +1636,9 @@ window.CodeForgeApp = (function () {
 
     const sbAdmin = document.getElementById('sb-admin');
     if (sbAdmin) sbAdmin.addEventListener('click', () => navigate('admin'));
+
+    const sbCompiler = document.getElementById('sb-compiler');
+    if (sbCompiler) sbCompiler.addEventListener('click', () => navigate('compiler'));
 
     const dropdownAdmin = document.getElementById('dropdown-admin-link');
     if (dropdownAdmin) dropdownAdmin.addEventListener('click', () => navigate('admin'));
