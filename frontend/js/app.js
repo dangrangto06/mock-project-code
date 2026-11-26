@@ -533,7 +533,13 @@ window.CodeForgeApp = (function () {
     }
   }
 
-  function handleLogout() {
+  async function handleLogout() {
+    // Record logout event in database telemetry before clearing tokens
+    if (window.CodeForgeAPI && CodeForgeAPI.logout) {
+      try {
+        await CodeForgeAPI.logout();
+      } catch (_) {}
+    }
     isLoggedIn = false;
     // Clear stored session
     try {
@@ -780,7 +786,7 @@ window.CodeForgeApp = (function () {
       activateSidebarLink('sb-compiler');
       document.body.classList.remove('focus-mode');
       if (window.CodeForgeCompiler) CodeForgeCompiler.init();
-    } else if (route === 'admin') {
+    } else if (route === 'admin' || route === 'tracking' || route === 'user-tracking') {
       const user = getStoredUser();
       const isAdmin = user && ((user.role && user.role.toLowerCase() === 'admin') || (user.roles && user.roles.includes('ADMIN')));
       if (!isAdmin) {
@@ -791,9 +797,14 @@ window.CodeForgeApp = (function () {
       if (pageAdmin) pageAdmin.classList.remove('hidden');
       showStandardSidebarLayout();
       activateTopNav(navAdmin);
-      activateSidebarLink('sb-admin');
+      activateSidebarLink(route === 'tracking' || route === 'user-tracking' ? 'sb-tracking' : 'sb-admin');
       document.body.classList.remove('focus-mode');
-      if (window.CodeForgeAdmin && CodeForgeAdmin.init) CodeForgeAdmin.init();
+      if (window.CodeForgeAdmin) {
+        if (CodeForgeAdmin.init) CodeForgeAdmin.init();
+        if (route === 'tracking' || route === 'user-tracking') {
+          CodeForgeAdmin.switchTab('tracking');
+        }
+      }
     } else {
       // Default to dashboard
       if (pageDashboard) pageDashboard.classList.remove('hidden');
@@ -1676,6 +1687,9 @@ window.CodeForgeApp = (function () {
 
     const sbAdmin = document.getElementById('sb-admin');
     if (sbAdmin) sbAdmin.addEventListener('click', () => navigate('admin'));
+
+    const sbTracking = document.getElementById('sb-tracking');
+    if (sbTracking) sbTracking.addEventListener('click', () => navigate('tracking'));
 
     const sbCompiler = document.getElementById('sb-compiler');
     if (sbCompiler) sbCompiler.addEventListener('click', () => navigate('compiler'));

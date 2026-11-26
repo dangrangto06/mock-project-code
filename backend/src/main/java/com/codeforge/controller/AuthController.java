@@ -124,6 +124,29 @@ public class AuthController {
     }
 
     /**
+     * Records a user sign-out event in telemetry tracking logs.
+     *
+     * <p>HTTP Endpoint: {@code POST /api/auth/logout}</p>
+     *
+     * @param authentication Current user authentication context.
+     * @param httpRequest Client HTTP request containing IP address and user-agent metadata.
+     * @return {@link ResponseEntity} with HTTP 200 OK.
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<java.util.Map<String, Object>> logout(
+            org.springframework.security.core.Authentication authentication,
+            HttpServletRequest httpRequest) {
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            String username = authentication.getName();
+            User user = userRepository.findByUsername(username)
+                    .or(() -> userRepository.findByEmail(username))
+                    .orElse(null);
+            trackingService.recordLogin(user, "LOGOUT", httpRequest);
+        }
+        return ResponseEntity.ok(java.util.Map.of("message", "Logged out successfully"));
+    }
+
+    /**
      * Verifies operational availability of the authentication service.
      *
      * <p>HTTP Endpoint: {@code GET /api/auth/health}</p>
