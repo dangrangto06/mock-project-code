@@ -550,8 +550,47 @@ window.CodeForgeApp = (function () {
     window.location.href = 'login.html';
   }
 
+  let lastTrackedRoute = null;
+  let lastTrackedTime = 0;
+
+  function trackNavigation(route, customTitle = null) {
+    if (!route) return;
+    const cleanRoute = route.startsWith('#') ? route : ('#' + route);
+    let title = customTitle;
+    if (!title) {
+      if (route === 'dashboard') title = 'Dashboard Overview';
+      else if (route === 'library') title = 'Problem Library';
+      else if (route === 'learning-paths') title = 'Learning Paths';
+      else if (route === 'submissions') title = 'Submissions History';
+      else if (route === 'notes') title = 'My Study Notes';
+      else if (route === 'community') title = 'Community Discussions';
+      else if (route === 'feedback') title = 'Platform Feedback';
+      else if (route === 'create-problem') title = 'Create Problem';
+      else if (route === 'compiler') title = 'Online Code Sandbox';
+      else if (route === 'admin') title = 'Admin Console';
+      else if (route === 'ide' || route.startsWith('solve/')) {
+        const pId = route.startsWith('solve/') ? route.replace('solve/', '') : window.CodeForgeCurrentProblemId;
+        title = pId ? `Problem #${pId} - Code Editor` : 'Code Editor & IDE';
+      } else {
+        title = 'CodeForge';
+      }
+    }
+
+    const now = Date.now();
+    if (lastTrackedRoute === cleanRoute && (now - lastTrackedTime) < 2000) {
+      return;
+    }
+    lastTrackedRoute = cleanRoute;
+    lastTrackedTime = now;
+
+    if (window.CodeForgeAPI && window.CodeForgeAPI.trackPageVisit) {
+      window.CodeForgeAPI.trackPageVisit(cleanRoute, title);
+    }
+  }
+
   function handleRoute(route) {
     currentRoute = route;
+    trackNavigation(route);
 
     // Elements
     const pageDashboard = document.getElementById('page-dashboard');
@@ -1037,6 +1076,7 @@ window.CodeForgeApp = (function () {
 
   function openProblem(problemId) {
     window.CodeForgeCurrentProblemId = problemId;
+    trackNavigation(`ide/${problemId}`, `Problem #${problemId} - Code Editor`);
     navigate(`ide`);
     if (window.CodeForgeIDE && window.CodeForgeIDE.loadProblem) {
       window.CodeForgeIDE.loadProblem(problemId);

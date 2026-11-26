@@ -33,6 +33,8 @@ FROM sys.foreign_keys;
 IF @sql <> N'' EXEC sp_executesql @sql;
 GO
 
+IF OBJECT_ID('dbo.page_visit_logs', 'U') IS NOT NULL DROP TABLE dbo.page_visit_logs;
+IF OBJECT_ID('dbo.user_login_logs', 'U') IS NOT NULL DROP TABLE dbo.user_login_logs;
 IF OBJECT_ID('dbo.feedbacks', 'U') IS NOT NULL DROP TABLE dbo.feedbacks;
 IF OBJECT_ID('dbo.community_reports', 'U') IS NOT NULL DROP TABLE dbo.community_reports;
 IF OBJECT_ID('dbo.discussion_upvotes', 'U') IS NOT NULL DROP TABLE dbo.discussion_upvotes;
@@ -234,6 +236,39 @@ CREATE TABLE dbo.feedbacks (
     status           VARCHAR(20) DEFAULT 'NEW' NOT NULL, -- 'NEW', 'REVIEWED', 'RESOLVED'
     created_at       DATETIME2 DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT fk_feedbacks_user FOREIGN KEY (user_id) REFERENCES dbo.users(id) ON DELETE SET NULL
+);
+GO
+
+-- ------------------------------------------------------------------------------
+-- 12. Table: dbo.user_login_logs
+-- ------------------------------------------------------------------------------
+CREATE TABLE dbo.user_login_logs (
+    id           BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    user_id      BIGINT NULL,
+    username     VARCHAR(100) NOT NULL,
+    email        VARCHAR(255) NULL,
+    login_method VARCHAR(30) NOT NULL,
+    ip_address   VARCHAR(64) NULL,
+    location     VARCHAR(150) NULL,
+    user_agent   VARCHAR(500) NULL,
+    logged_in_at DATETIME2 NOT NULL,
+    CONSTRAINT fk_user_login_logs_user FOREIGN KEY (user_id) REFERENCES dbo.users(id) ON DELETE SET NULL
+);
+GO
+
+-- ------------------------------------------------------------------------------
+-- 13. Table: dbo.page_visit_logs
+-- ------------------------------------------------------------------------------
+CREATE TABLE dbo.page_visit_logs (
+    id          BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    user_id     BIGINT NULL,
+    username    VARCHAR(100) NOT NULL,
+    page_route  VARCHAR(120) NOT NULL,
+    page_title  VARCHAR(150) NULL,
+    ip_address  VARCHAR(64) NULL,
+    location    VARCHAR(150) NULL,
+    visited_at  DATETIME2 NOT NULL,
+    CONSTRAINT fk_page_visit_logs_user FOREIGN KEY (user_id) REFERENCES dbo.users(id) ON DELETE SET NULL
 );
 GO
 

@@ -132,5 +132,62 @@ public class AdminDto {
         private Integer solvedCount;
         private LocalDateTime createdAt;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class TrackingSummaryDto {
+        private long totalLogins;
+        private long uniqueLocations;
+        private long totalPageVisits;
+        private String mostVisitedPage;
+        private List<TopPageDto> topPages;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class TopPageDto {
+        private String pageRoute;
+        private String pageTitle;
+        private long visits;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class UserLoginLogDto {
+        private Long id;
+        private Long userId;
+        private String username;
+        private String email;
+        private String loginMethod;
+        private String ipAddress;
+        private String location;
+        private String userAgent;
+        private LocalDateTime loggedInAt;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class PageVisitLogDto {
+        private Long id;
+        private Long userId;
+        private String username;
+        private String pageRoute;
+        private String pageTitle;
+        private String ipAddress;
+        private String location;
+        private LocalDateTime visitedAt;
+    }
 }
 

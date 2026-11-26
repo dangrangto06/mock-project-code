@@ -116,6 +116,7 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/discussions/**").permitAll()
                 .requestMatchers(
                     "/api/auth/**",      // Login, Registration, Health check
+                    "/api/tracking/**",  // Page visit telemetry tracking (guests and users)
                     "/api/overview/**",  // Dashboard metrics & telemetry (supports anonymous/guest view)
                     "/api/problems/**",  // Problem library retrieval & detail views
                     "/api/execute/**",   // Code execution runner & test case judge endpoints

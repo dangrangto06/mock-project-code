@@ -160,4 +160,32 @@ public class AdminController {
                 "message", "Feedback deleted successfully."
         ));
     }
+
+    /**
+     * Retrieves aggregated user tracking & site telemetry summary metrics.
+     */
+    @GetMapping("/tracking/summary")
+    public ResponseEntity<AdminDto.TrackingSummaryDto> getTrackingSummary() {
+        return ResponseEntity.ok(adminService.getTrackingSummary());
+    }
+
+    /**
+     * Retrieves user login history with search and method filtering.
+     */
+    @GetMapping("/tracking/logins")
+    public ResponseEntity<List<AdminDto.UserLoginLogDto>> getLoginLogs(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "ALL") String method) {
+        return ResponseEntity.ok(adminService.getLoginLogs(search, method));
+    }
+
+    /**
+     * Retrieves user page navigation logs with search and route filtering.
+     */
+    @GetMapping("/tracking/visits")
+    public ResponseEntity<List<AdminDto.PageVisitLogDto>> getPageVisitLogs(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String route) {
+        return ResponseEntity.ok(adminService.getPageVisitLogs(search, route));
+    }
 }

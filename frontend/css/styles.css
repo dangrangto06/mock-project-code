@@ -6,17 +6,18 @@
   --primary-dark: #064e3b;
   --primary-light: #ecfdf5;
   --primary-border: #a7f3d0;
-  
-  --bg-page: #f1f5f9; /* Soft, glare-free cool slate */
+
+  --bg-page: #f1f5f9;
+  /* Soft, glare-free cool slate */
   --bg-card: #ffffff;
   --bg-subtle: #f1f5f9;
   --border-subtle: #cbd5e1;
   --border-hover: #94a3b8;
-  
+
   --text-main: #0f172a;
   --text-muted: #475569;
   --text-light: #64748b;
-  
+
   --editor-bg: #1e1e1e;
   --editor-gutter: #181818;
   --editor-active-line: rgba(44, 187, 93, 0.12);
@@ -41,7 +42,9 @@ body:not(.dark-theme) main {
   background-color: #f1f5f9 !important;
 }
 
-code, pre, .font-mono {
+code,
+pre,
+.font-mono {
   font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
 }
 
@@ -142,7 +145,7 @@ body:not(.dark-theme) textarea::placeholder {
 }
 
 /* Divide utilities: single directional separator only */
-.divide-y > :not([hidden]) ~ :not([hidden]) {
+.divide-y> :not([hidden])~ :not([hidden]) {
   border-top-width: 1px !important;
   border-right-width: 0 !important;
   border-bottom-width: 0 !important;
@@ -155,13 +158,16 @@ body:not(.dark-theme) textarea::placeholder {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #94a3b8;
   border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
@@ -169,6 +175,7 @@ body:not(.dark-theme) textarea::placeholder {
 .dark-scroll::-webkit-scrollbar-thumb {
   background: #3e3e3e;
 }
+
 .dark-scroll::-webkit-scrollbar-thumb:hover {
   background: #525252;
 }
@@ -214,21 +221,62 @@ body:not(.dark-theme) textarea::placeholder {
 }
 
 /* Syntax highlight colors (VS Code / LeetCode Dark+ palette) */
-.syn-def { color: #c586c0; font-weight: 500; }
-.syn-func { color: #dcdcaa; }
-.syn-param { color: #9cdcfe; }
-.syn-type { color: #4ec9b0; }
-.syn-comment { color: #6a9955; font-style: italic; }
-.syn-keyword { color: #c586c0; }
-.syn-string { color: #ce9178; }
-.syn-number { color: #b5cea8; }
-.syn-punct { color: #d4d4d4; }
-.syn-return { color: #c586c0; font-weight: 500; }
+.syn-def {
+  color: #c586c0;
+  font-weight: 500;
+}
+
+.syn-func {
+  color: #dcdcaa;
+}
+
+.syn-param {
+  color: #9cdcfe;
+}
+
+.syn-type {
+  color: #4ec9b0;
+}
+
+.syn-comment {
+  color: #6a9955;
+  font-style: italic;
+}
+
+.syn-keyword {
+  color: #c586c0;
+}
+
+.syn-string {
+  color: #ce9178;
+}
+
+.syn-number {
+  color: #b5cea8;
+}
+
+.syn-punct {
+  color: #d4d4d4;
+}
+
+.syn-return {
+  color: #c586c0;
+  font-weight: 500;
+}
 
 /* Pulse animation for running state */
 @keyframes soft-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(0.995); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.85;
+    transform: scale(0.995);
+  }
 }
 
 .animate-soft-pulse {
@@ -328,8 +376,8 @@ body.dark-theme .border-\[\#15231c\],
 body.dark-theme .border-gray-100,
 body.dark-theme .border-gray-200,
 body.dark-theme .border-gray-300,
-body.dark-theme .divide-y > :not([hidden]) ~ :not([hidden]),
-body.dark-theme .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+body.dark-theme .divide-y> :not([hidden])~ :not([hidden]),
+body.dark-theme .divide-gray-100> :not([hidden])~ :not([hidden]) {
   border-color: #303030 !important;
 }
 
@@ -361,7 +409,7 @@ body.dark-theme .border-r {
   border-left-width: 0 !important;
 }
 
-body.dark-theme .divide-y > :not([hidden]) ~ :not([hidden]) {
+body.dark-theme .divide-y> :not([hidden])~ :not([hidden]) {
   border-top-width: 1px !important;
   border-right-width: 0 !important;
   border-bottom-width: 0 !important;
@@ -600,4 +648,103 @@ body.dark-theme .hover\:bg-gray-100:hover,
 body.dark-theme .hover\:bg-\[\#fcfdfd\]:hover,
 body.dark-theme tr.hover\:bg-gray-50\/75:hover {
   background-color: #3a3a3a !important;
+}
+
+/* ========================================================
+   High-Contrast Status Indicators & Progress Badges (Dark Mode Only)
+   ======================================================== */
+/* Problem status circles */
+body.dark-theme span[title="Not started"],
+body.dark-theme #problems-table-body span[title="Not started"],
+body.dark-theme #learning-paths-table-body span[title="Not started"],
+body.dark-theme #learning-path-problems-tbody span[title="Not started"],
+body.dark-theme #library-status-legend span[title="Not started"] {
+  border: 2px solid #ffffff !important;
+  background-color: transparent !important;
+  opacity: 0.9 !important;
+}
+
+body.dark-theme span[title="In progress"],
+body.dark-theme #library-status-legend span[title="In progress"] {
+  background-color: #2d2208 !important;
+  border: 1.5px solid #f59e0b !important;
+  color: #fbbf24 !important;
+}
+
+body.dark-theme span[title="In progress"]>span,
+body.dark-theme #library-status-legend span[title="In progress"]>span {
+  background-color: #f59e0b !important;
+}
+
+body.dark-theme span[title="Solved"],
+body.dark-theme #library-status-legend span[title="Solved"] {
+  background-color: #132a1f !important;
+  border: 1.5px solid #22c55e !important;
+  color: #4ade80 !important;
+}
+
+body.dark-theme span[title="Solved"] svg,
+body.dark-theme #library-status-legend span[title="Solved"] svg {
+  color: #4ade80 !important;
+  stroke: #4ade80 !important;
+}
+
+/* Status legend in Library page */
+body.dark-theme #library-status-legend,
+body.dark-theme #library-status-legend .uppercase {
+  color: #a8a095 !important;
+}
+
+body.dark-theme #library-status-legend .text-gray-500 {
+  color: #d1d5db !important;
+}
+
+/* Status pills in Dark Mode: Solved, In progress, Unattempted, Pending Review, Rejected */
+body.dark-theme #ide-header-problem-status.bg-emerald-50,
+body.dark-theme .bg-emerald-50.text-emerald-700,
+body.dark-theme .bg-emerald-50.text-emerald-800 {
+  background-color: #132a1f !important;
+  border-color: #1f4e37 !important;
+  color: #4ade80 !important;
+}
+
+body.dark-theme #ide-header-problem-status.bg-amber-50,
+body.dark-theme .bg-amber-50.text-amber-700,
+body.dark-theme .bg-amber-50.text-amber-800 {
+  background-color: #2d2208 !important;
+  border-color: #5c430d !important;
+  color: #fbbf24 !important;
+}
+
+body.dark-theme #ide-header-problem-status.bg-gray-100 {
+  background-color: #25282a !important;
+  border-color: #383c3f !important;
+  color: #d1d5db !important;
+}
+
+body.dark-theme .bg-red-50.text-red-700,
+body.dark-theme .bg-rose-50.text-rose-700,
+body.dark-theme .bg-rose-50.text-rose-600 {
+  background-color: #2f1115 !important;
+  border-color: #632028 !important;
+  color: #f87171 !important;
+}
+
+/* Dark mode table headers & high-contrast "Not started" rings */
+body.dark-theme thead,
+body.dark-theme thead tr,
+body.dark-theme thead th {
+  background-color: #25282a !important;
+  color: #9ca3af !important;
+  border-color: #383c3f !important;
+}
+
+body.dark-theme span[title="Not started"],
+body.dark-theme #problems-table-body span[title="Not started"],
+body.dark-theme #learning-paths-table-body span[title="Not started"],
+body.dark-theme #learning-path-problems-tbody span[title="Not started"],
+body.dark-theme #library-status-legend span[title="Not started"] {
+  border: 2px solid #ffffff !important;
+  background-color: transparent !important;
+  opacity: 0.9 !important;
 }

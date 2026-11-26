@@ -14,6 +14,7 @@ import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -46,6 +47,9 @@ public class AuthService {
 
     /** JSON object mapper for serializing OAuth user state payloads. */
     private final ObjectMapper objectMapper;
+
+    /** Telemetry service for auditing authentication events. */
+    private final TrackingService trackingService;
 
     @Value("${github.oauth.client-id:YOUR_GITHUB_CLIENT_ID}")
     private String githubClientId;
@@ -217,6 +221,10 @@ public class AuthService {
      * @return Redirect URI string targeting the frontend login handler.
      */
     public String handleGithubCallback(String code) {
+        return handleGithubCallback(code, null);
+    }
+
+    public String handleGithubCallback(String code, HttpServletRequest request) {
         if (code == null || code.isBlank()) {
             return frontendBaseUrl + "/login.html?oauthError=missing_code";
         }
@@ -330,6 +338,9 @@ public class AuthService {
             }
 
             String jwt = jwtUtil.generateToken(user.getUsername());
+            if (trackingService != null) {
+                trackingService.recordLogin(user, "GITHUB", request);
+            }
             Map<String, Object> userJsonMap = Map.of(
                     "id", user.getId(),
                     "username", user.getUsername(),

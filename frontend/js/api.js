@@ -802,6 +802,180 @@ window.CodeForgeAPI = (function () {
     return { success: true };
   }
 
+  // ===== Client Navigation & Admin Tracking Telemetry =====
+
+  async function trackPageVisit(pageRoute, pageTitle) {
+    try {
+      await checkBackend();
+      if (isBackendOnline) {
+        fetch(`${API_BASE}/tracking/visit`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ pageRoute, pageTitle })
+        }).catch(() => {});
+      }
+    } catch (_) {}
+  }
+
+  async function getAdminTrackingSummary() {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/tracking/summary`, { headers: getAuthHeaders() });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to fetch admin tracking summary:", e);
+      }
+    }
+    return {
+      totalLogins: 4,
+      uniqueLocations: 3,
+      totalPageVisits: 6,
+      mostVisitedPage: "#library",
+      topPages: [
+        { pageRoute: "#library", pageTitle: "Problem Library", visits: 2 },
+        { pageRoute: "#dashboard", pageTitle: "Dashboard Overview", visits: 1 },
+        { pageRoute: "#ide/104", pageTitle: "104. Pair Sum - Code Editor", visits: 1 },
+        { pageRoute: "#notes", pageTitle: "My Study Notes", visits: 1 },
+        { pageRoute: "#community", pageTitle: "Community Discussions", visits: 1 }
+      ]
+    };
+  }
+
+  async function getAdminLoginLogs(params = {}) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const query = new URLSearchParams(params).toString();
+        const res = await fetch(`${API_BASE}/admin/tracking/logins?${query}`, { headers: getAuthHeaders() });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to fetch admin login logs:", e);
+      }
+    }
+    return [
+      {
+        id: 1,
+        userId: 1,
+        username: "alex_morgan",
+        email: "alex@codeforge.io",
+        loginMethod: "PASSWORD",
+        ipAddress: "113.161.45.88",
+        location: "Hanoi, Vietnam",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/128.0.0.0",
+        loggedInAt: new Date(Date.now() - 3 * 3600000).toISOString()
+      },
+      {
+        id: 2,
+        userId: 1,
+        username: "alex_morgan",
+        email: "alex@codeforge.io",
+        loginMethod: "GOOGLE",
+        ipAddress: "14.241.120.5",
+        location: "Ho Chi Minh City, Vietnam",
+        userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15",
+        loggedInAt: new Date(Date.now() - 26 * 3600000).toISOString()
+      },
+      {
+        id: 3,
+        userId: 1,
+        username: "alex_morgan",
+        email: "alex@codeforge.io",
+        loginMethod: "GITHUB",
+        ipAddress: "118.69.182.42",
+        location: "Da Nang, Vietnam",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Edg/127.0.0.0",
+        loggedInAt: new Date(Date.now() - 72 * 3600000).toISOString()
+      },
+      {
+        id: 4,
+        userId: 1,
+        username: "alex_morgan",
+        email: "alex@codeforge.io",
+        loginMethod: "PASSWORD",
+        ipAddress: "127.0.0.1",
+        location: "Hanoi, Vietnam (Localhost)",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/129.0",
+        loggedInAt: new Date(Date.now() - 120 * 3600000).toISOString()
+      }
+    ];
+  }
+
+  async function getAdminPageVisits(params = {}) {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        const query = new URLSearchParams(params).toString();
+        const res = await fetch(`${API_BASE}/admin/tracking/visits?${query}`, { headers: getAuthHeaders() });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Failed to fetch admin page visits:", e);
+      }
+    }
+    return [
+      {
+        id: 1,
+        userId: 1,
+        username: "alex_morgan",
+        pageRoute: "#dashboard",
+        pageTitle: "Dashboard Overview",
+        ipAddress: "113.161.45.88",
+        location: "Hanoi, Vietnam",
+        visitedAt: new Date(Date.now() - 170 * 60000).toISOString()
+      },
+      {
+        id: 2,
+        userId: 1,
+        username: "alex_morgan",
+        pageRoute: "#library",
+        pageTitle: "Problem Library",
+        ipAddress: "113.161.45.88",
+        location: "Hanoi, Vietnam",
+        visitedAt: new Date(Date.now() - 160 * 60000).toISOString()
+      },
+      {
+        id: 3,
+        userId: 1,
+        username: "alex_morgan",
+        pageRoute: "#ide/104",
+        pageTitle: "104. Pair Sum - Code Editor",
+        ipAddress: "113.161.45.88",
+        location: "Hanoi, Vietnam",
+        visitedAt: new Date(Date.now() - 145 * 60000).toISOString()
+      },
+      {
+        id: 4,
+        userId: 1,
+        username: "alex_morgan",
+        pageRoute: "#notes",
+        pageTitle: "My Study Notes",
+        ipAddress: "113.161.45.88",
+        location: "Hanoi, Vietnam",
+        visitedAt: new Date(Date.now() - 75 * 60000).toISOString()
+      },
+      {
+        id: 5,
+        userId: null,
+        username: "Guest",
+        pageRoute: "#library",
+        pageTitle: "Problem Library",
+        ipAddress: "14.241.120.5",
+        location: "Ho Chi Minh City, Vietnam",
+        visitedAt: new Date(Date.now() - 27 * 3600000).toISOString()
+      },
+      {
+        id: 6,
+        userId: 1,
+        username: "alex_morgan",
+        pageRoute: "#community",
+        pageTitle: "Community Discussions",
+        ipAddress: "118.69.182.42",
+        location: "Da Nang, Vietnam",
+        visitedAt: new Date(Date.now() - 72 * 3600000).toISOString()
+      }
+    ];
+  }
+
   // Check health on boot
   checkBackend();
 
@@ -844,6 +1018,10 @@ window.CodeForgeAPI = (function () {
     getAdminFeedbacks,
     updateAdminFeedbackStatus,
     deleteAdminFeedback,
+    trackPageVisit,
+    getAdminTrackingSummary,
+    getAdminLoginLogs,
+    getAdminPageVisits,
     askChatbot,
     getChatHistory,
     clearChatHistory

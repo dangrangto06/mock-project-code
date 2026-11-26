@@ -1,7 +1,11 @@
 package com.codeforge.controller;
 
 import com.codeforge.dto.AuthDto;
+import com.codeforge.entity.User;
+import com.codeforge.repository.UserRepository;
 import com.codeforge.service.AuthService;
+import com.codeforge.service.TrackingService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +27,8 @@ public class AuthController {
 
     /** Business service handling user verification, password hashing, and token issuance. */
     private final AuthService authService;
+    private final UserRepository userRepository;
+    private final TrackingService trackingService;
 
     /**
      * Authenticates a user with a username/email and plaintext password.
@@ -33,8 +39,12 @@ public class AuthController {
      * @return {@link ResponseEntity} with HTTP 200 OK and {@link AuthDto.AuthResponse} (JWT token + profile).
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthDto.AuthResponse> login(@Valid @RequestBody AuthDto.LoginRequest request) {
+    public ResponseEntity<AuthDto.AuthResponse> login(
+            @Valid @RequestBody AuthDto.LoginRequest request,
+            HttpServletRequest httpRequest) {
         AuthDto.AuthResponse response = authService.authenticate(request);
+        User user = userRepository.findByUsername(response.getUsername()).orElse(null);
+        trackingService.recordLogin(user, "PASSWORD", httpRequest);
         return ResponseEntity.ok(response);
     }
 
@@ -47,8 +57,12 @@ public class AuthController {
      * @return {@link ResponseEntity} with HTTP 200 OK and {@link AuthDto.AuthResponse} containing issued JWT token.
      */
     @PostMapping("/register")
-    public ResponseEntity<AuthDto.AuthResponse> register(@Valid @RequestBody AuthDto.RegisterRequest request) {
+    public ResponseEntity<AuthDto.AuthResponse> register(
+            @Valid @RequestBody AuthDto.RegisterRequest request,
+            HttpServletRequest httpRequest) {
         AuthDto.AuthResponse response = authService.register(request);
+        User user = userRepository.findByUsername(response.getUsername()).orElse(null);
+        trackingService.recordLogin(user, "REGISTER", httpRequest);
         return ResponseEntity.ok(response);
     }
 
@@ -102,8 +116,10 @@ public class AuthController {
      * @return HTTP 302 Redirect to frontend dashboard or login error.
      */
     @GetMapping("/github/callback")
-    public ResponseEntity<Void> githubCallback(@RequestParam(name = "code", required = false) String code) {
-        String redirectUrl = authService.handleGithubCallback(code);
+    public ResponseEntity<Void> githubCallback(
+            @RequestParam(name = "code", required = false) String code,
+            HttpServletRequest httpRequest) {
+        String redirectUrl = authService.handleGithubCallback(code, httpRequest);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
     }
 

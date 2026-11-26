@@ -69,6 +69,10 @@ public class DataSeeder implements ApplicationRunner {
 
         private final FeedbackRepository feedbackRepository;
 
+        private final UserLoginLogRepository userLoginLogRepository;
+
+        private final PageVisitLogRepository pageVisitLogRepository;
+
         private final PasswordEncoder passwordEncoder;
 
         /**
@@ -87,6 +91,7 @@ public class DataSeeder implements ApplicationRunner {
                 seedDiscussions();
                 seedCommunityDiscussions();
                 seedFeedbacks();
+                seedTrackingLogs();
                 log.info("✅ DataSeeder completed — seed data is ready.");
         }
 
@@ -2224,5 +2229,126 @@ public class DataSeeder implements ApplicationRunner {
 
                 feedbackRepository.saveAll(List.of(f1, f2, f3));
                 log.info("Seeded initial user feedbacks.");
+        }
+
+        private void seedTrackingLogs() {
+                if (userLoginLogRepository.count() > 0) {
+                        return;
+                }
+
+                User alex = userRepository.findByUsername("alex_morgan").orElse(null);
+                Long alexId = alex != null ? alex.getId() : 1L;
+                String alexEmail = alex != null ? alex.getEmail() : "alex@codeforge.io";
+
+                UserLoginLog l1 = UserLoginLog.builder()
+                                .userId(alexId)
+                                .username("alex_morgan")
+                                .email(alexEmail)
+                                .loginMethod("PASSWORD")
+                                .ipAddress("113.161.45.88")
+                                .location("Hanoi, Vietnam")
+                                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36")
+                                .loggedInAt(LocalDateTime.now().minusHours(3))
+                                .build();
+
+                UserLoginLog l2 = UserLoginLog.builder()
+                                .userId(alexId)
+                                .username("alex_morgan")
+                                .email(alexEmail)
+                                .loginMethod("GOOGLE")
+                                .ipAddress("14.241.120.5")
+                                .location("Ho Chi Minh City, Vietnam")
+                                .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15")
+                                .loggedInAt(LocalDateTime.now().minusHours(26))
+                                .build();
+
+                UserLoginLog l3 = UserLoginLog.builder()
+                                .userId(alexId)
+                                .username("alex_morgan")
+                                .email(alexEmail)
+                                .loginMethod("GITHUB")
+                                .ipAddress("118.69.182.42")
+                                .location("Da Nang, Vietnam")
+                                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0")
+                                .loggedInAt(LocalDateTime.now().minusDays(3))
+                                .build();
+
+                UserLoginLog l4 = UserLoginLog.builder()
+                                .userId(alexId)
+                                .username("alex_morgan")
+                                .email(alexEmail)
+                                .loginMethod("PASSWORD")
+                                .ipAddress("127.0.0.1")
+                                .location("Hanoi, Vietnam (Localhost)")
+                                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0")
+                                .loggedInAt(LocalDateTime.now().minusDays(5))
+                                .build();
+
+                userLoginLogRepository.saveAll(List.of(l1, l2, l3, l4));
+
+                if (pageVisitLogRepository.count() == 0) {
+                        PageVisitLog v1 = PageVisitLog.builder()
+                                        .userId(alexId)
+                                        .username("alex_morgan")
+                                        .pageRoute("#dashboard")
+                                        .pageTitle("Dashboard Overview")
+                                        .ipAddress("113.161.45.88")
+                                        .location("Hanoi, Vietnam")
+                                        .visitedAt(LocalDateTime.now().minusHours(2).minusMinutes(50))
+                                        .build();
+
+                        PageVisitLog v2 = PageVisitLog.builder()
+                                        .userId(alexId)
+                                        .username("alex_morgan")
+                                        .pageRoute("#library")
+                                        .pageTitle("Problem Library")
+                                        .ipAddress("113.161.45.88")
+                                        .location("Hanoi, Vietnam")
+                                        .visitedAt(LocalDateTime.now().minusHours(2).minusMinutes(40))
+                                        .build();
+
+                        PageVisitLog v3 = PageVisitLog.builder()
+                                        .userId(alexId)
+                                        .username("alex_morgan")
+                                        .pageRoute("#ide/104")
+                                        .pageTitle("104. Pair Sum - Code Editor")
+                                        .ipAddress("113.161.45.88")
+                                        .location("Hanoi, Vietnam")
+                                        .visitedAt(LocalDateTime.now().minusHours(2).minusMinutes(25))
+                                        .build();
+
+                        PageVisitLog v4 = PageVisitLog.builder()
+                                        .userId(alexId)
+                                        .username("alex_morgan")
+                                        .pageRoute("#notes")
+                                        .pageTitle("My Study Notes")
+                                        .ipAddress("113.161.45.88")
+                                        .location("Hanoi, Vietnam")
+                                        .visitedAt(LocalDateTime.now().minusHours(1).minusMinutes(15))
+                                        .build();
+
+                        PageVisitLog v5 = PageVisitLog.builder()
+                                        .userId(null)
+                                        .username("Guest")
+                                        .pageRoute("#library")
+                                        .pageTitle("Problem Library")
+                                        .ipAddress("14.241.120.5")
+                                        .location("Ho Chi Minh City, Vietnam")
+                                        .visitedAt(LocalDateTime.now().minusHours(27))
+                                        .build();
+
+                        PageVisitLog v6 = PageVisitLog.builder()
+                                        .userId(alexId)
+                                        .username("alex_morgan")
+                                        .pageRoute("#community")
+                                        .pageTitle("Community Discussions")
+                                        .ipAddress("118.69.182.42")
+                                        .location("Da Nang, Vietnam")
+                                        .visitedAt(LocalDateTime.now().minusDays(3))
+                                        .build();
+
+                        pageVisitLogRepository.saveAll(List.of(v1, v2, v3, v4, v5, v6));
+                }
+                log.info("Seeded initial user tracking logs.");
         }
 }

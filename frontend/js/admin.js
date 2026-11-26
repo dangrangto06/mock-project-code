@@ -12,11 +12,18 @@
   let pendingReports = [];
   let usersList = [];
   let feedbacksList = [];
-  let activeTab = 'moderation'; // 'moderation' | 'feedbacks' | 'users'
+  let trackingSummary = null;
+  let loginLogs = [];
+  let pageVisits = [];
+  let activeTab = 'moderation'; // 'moderation' | 'feedbacks' | 'users' | 'tracking'
   let currentRejectTarget = null; // { type: 'problem'|'discussion', id, title }
   let userSearchQuery = '';
   let feedbackSearchQuery = '';
   let feedbackStatusFilter = 'ALL';
+  let loginSearchQuery = '';
+  let loginMethodFilter = 'ALL';
+  let visitSearchQuery = '';
+  let visitRouteFilter = 'ALL';
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -36,6 +43,45 @@
     }
   }
 
+  function formatDateTime(isoStr) {
+    if (!isoStr) return '--';
+    try {
+      const d = new Date(isoStr);
+      if (isNaN(d.getTime())) return isoStr;
+      return d.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+    } catch (_) {
+      return isoStr;
+    }
+  }
+
+  function parseUserAgent(ua) {
+    if (!ua) return 'Unknown Device';
+    let os = 'Unknown OS';
+    if (/Windows NT 10.0|Windows NT 11.0/i.test(ua)) os = 'Windows';
+    else if (/Windows NT/i.test(ua)) os = 'Windows';
+    else if (/Macintosh|Mac OS X/i.test(ua)) os = 'macOS';
+    else if (/iPhone|iPad|iPod/i.test(ua)) os = 'iOS';
+    else if (/Android/i.test(ua)) os = 'Android';
+    else if (/Linux/i.test(ua)) os = 'Linux';
+
+    let browser = 'Browser';
+    if (/Edg\//i.test(ua)) browser = 'Edge';
+    else if (/Chrome\//i.test(ua) && !/Edg\//i.test(ua)) browser = 'Chrome';
+    else if (/Safari\//i.test(ua) && !/Chrome\//i.test(ua)) browser = 'Safari';
+    else if (/Firefox\//i.test(ua)) browser = 'Firefox';
+    else if (/Opera|OPR\//i.test(ua)) browser = 'Opera';
+
+    return `${browser} on ${os}`;
+  }
+
   function getInitials(name) {
     if (!name) return 'U';
     const parts = name.trim().split(/\s+/);
@@ -50,8 +96,12 @@
     await loadStats();
     if (activeTab === 'moderation') {
       await loadModerationQueue();
-    } else {
+    } else if (activeTab === 'feedbacks') {
+      await loadFeedbacks();
+    } else if (activeTab === 'users') {
       await loadUsers();
+    } else if (activeTab === 'tracking') {
+      await loadTrackingData();
     }
   }
 
@@ -59,9 +109,11 @@
     const tabMod = document.getElementById('tab-admin-mod');
     const tabFeedbacks = document.getElementById('tab-admin-feedbacks');
     const tabUsers = document.getElementById('tab-admin-users');
+    const tabTracking = document.getElementById('tab-admin-tracking');
     if (tabMod) tabMod.addEventListener('click', () => switchTab('moderation'));
     if (tabFeedbacks) tabFeedbacks.addEventListener('click', () => switchTab('feedbacks'));
     if (tabUsers) tabUsers.addEventListener('click', () => switchTab('users'));
+    if (tabTracking) tabTracking.addEventListener('click', () => switchTab('tracking'));
 
     const btnRefresh = document.getElementById('btn-admin-refresh');
     if (btnRefresh) {
@@ -70,7 +122,8 @@
         await loadStats();
         if (activeTab === 'moderation') await loadModerationQueue();
         else if (activeTab === 'feedbacks') await loadFeedbacks();
-        else await loadUsers();
+        else if (activeTab === 'users') await loadUsers();
+        else if (activeTab === 'tracking') await loadTrackingData();
         btnRefresh.classList.remove('opacity-50');
         if (window.CodeForgeApp) CodeForgeApp.showToast('Administration queue refreshed.', 'info');
       });
@@ -100,6 +153,39 @@
       });
     }
 
+    // Tracking filters and search
+    const loginSearch = document.getElementById('admin-login-search-input');
+    if (loginSearch) {
+      loginSearch.addEventListener('input', (e) => {
+        loginSearchQuery = e.target.value.trim().toLowerCase();
+        renderLoginLogsTable();
+      });
+    }
+
+    const loginFilter = document.getElementById('admin-login-filter-method');
+    if (loginFilter) {
+      loginFilter.addEventListener('change', (e) => {
+        loginMethodFilter = e.target.value;
+        renderLoginLogsTable();
+      });
+    }
+
+    const visitSearch = document.getElementById('admin-visit-search-input');
+    if (visitSearch) {
+      visitSearch.addEventListener('input', (e) => {
+        visitSearchQuery = e.target.value.trim().toLowerCase();
+        renderPageVisitsTable();
+      });
+    }
+
+    const visitFilter = document.getElementById('admin-visit-filter-route');
+    if (visitFilter) {
+      visitFilter.addEventListener('change', (e) => {
+        visitRouteFilter = e.target.value;
+        renderPageVisitsTable();
+      });
+    }
+
     // Rejection modal events
     const btnCloseReject = document.getElementById('btn-close-reject-modal');
     const btnCancelReject = document.getElementById('btn-cancel-reject');
@@ -114,9 +200,11 @@
     const tabMod = document.getElementById('tab-admin-mod');
     const tabFeedbacks = document.getElementById('tab-admin-feedbacks');
     const tabUsers = document.getElementById('tab-admin-users');
+    const tabTracking = document.getElementById('tab-admin-tracking');
     const viewMod = document.getElementById('admin-view-moderation');
     const viewFeedbacks = document.getElementById('admin-view-feedbacks');
     const viewUsers = document.getElementById('admin-view-users');
+    const viewTracking = document.getElementById('admin-view-tracking');
 
     const activeClass = 'pb-3 text-sm font-semibold text-emerald-800 border-b-2 border-emerald-600 transition flex items-center gap-2';
     const inactiveClass = 'pb-3 text-sm text-gray-500 hover:text-gray-800 border-b-2 border-transparent transition flex items-center gap-2 font-medium';
@@ -124,17 +212,21 @@
     if (tabMod) tabMod.className = tab === 'moderation' ? activeClass : inactiveClass;
     if (tabFeedbacks) tabFeedbacks.className = tab === 'feedbacks' ? activeClass : inactiveClass;
     if (tabUsers) tabUsers.className = tab === 'users' ? activeClass : inactiveClass;
+    if (tabTracking) tabTracking.className = tab === 'tracking' ? activeClass : inactiveClass;
 
     if (viewMod) viewMod.classList.toggle('hidden', tab !== 'moderation');
     if (viewFeedbacks) viewFeedbacks.classList.toggle('hidden', tab !== 'feedbacks');
     if (viewUsers) viewUsers.classList.toggle('hidden', tab !== 'users');
+    if (viewTracking) viewTracking.classList.toggle('hidden', tab !== 'tracking');
 
     if (tab === 'moderation') {
       loadModerationQueue();
     } else if (tab === 'feedbacks') {
       loadFeedbacks();
-    } else {
+    } else if (tab === 'users') {
       loadUsers();
+    } else if (tab === 'tracking') {
+      loadTrackingData();
     }
   }
 
@@ -167,6 +259,16 @@
       if (tabModCount) tabModCount.textContent = totalPending;
       if (tabFeedbacksCount) tabFeedbacksCount.textContent = (stats.totalFeedbacks || 0).toLocaleString();
       if (tabUsersCount) tabUsersCount.textContent = (stats.totalUsers || 0).toLocaleString();
+
+      if (window.CodeForgeAPI && CodeForgeAPI.getAdminTrackingSummary) {
+        try {
+          const ts = await CodeForgeAPI.getAdminTrackingSummary();
+          const tabTrackingCount = document.getElementById('tab-admin-tracking-count');
+          if (tabTrackingCount && ts) {
+            tabTrackingCount.textContent = (ts.totalLogins || 0).toLocaleString();
+          }
+        } catch (_) {}
+      }
 
       // Update Nav badges
       const navBadge = document.getElementById('nav-admin-badge');
@@ -763,6 +865,264 @@
     }
   }
 
+  // ===== User Tracking Dashboard =====
+  async function loadTrackingData() {
+    if (!window.CodeForgeAPI) return;
+    try {
+      const [summaryData, loginsData, visitsData] = await Promise.all([
+        CodeForgeAPI.getAdminTrackingSummary ? CodeForgeAPI.getAdminTrackingSummary() : null,
+        CodeForgeAPI.getAdminLoginLogs ? CodeForgeAPI.getAdminLoginLogs() : [],
+        CodeForgeAPI.getAdminPageVisits ? CodeForgeAPI.getAdminPageVisits() : []
+      ]);
+
+      trackingSummary = summaryData;
+      loginLogs = loginsData || [];
+      pageVisits = visitsData || [];
+
+      renderTrackingSummary();
+      renderLoginLogsTable();
+      populateRouteFilterOptions();
+      renderPageVisitsTable();
+    } catch (err) {
+      console.warn('Failed to load tracking data:', err);
+    }
+  }
+
+  function renderTrackingSummary() {
+    const kpiLogins = document.getElementById('tracking-total-logins');
+    const kpiLocations = document.getElementById('tracking-unique-locations');
+    const kpiVisits = document.getElementById('tracking-total-visits');
+    const kpiTopPage = document.getElementById('tracking-top-page');
+    const kpiTopPageSub = document.getElementById('tracking-top-page-sub');
+    const tabTrackingCount = document.getElementById('tab-admin-tracking-count');
+
+    const totalLogins = trackingSummary && trackingSummary.totalLogins != null ? trackingSummary.totalLogins : loginLogs.length;
+    const uniqueLocations = trackingSummary && trackingSummary.uniqueLocations != null ? trackingSummary.uniqueLocations : 0;
+    const totalVisits = trackingSummary && trackingSummary.totalPageVisits != null ? trackingSummary.totalPageVisits : pageVisits.length;
+
+    if (kpiLogins) kpiLogins.textContent = totalLogins.toLocaleString();
+    if (kpiLocations) kpiLocations.textContent = uniqueLocations.toLocaleString();
+    if (kpiVisits) kpiVisits.textContent = totalVisits.toLocaleString();
+    if (tabTrackingCount) tabTrackingCount.textContent = totalLogins.toLocaleString();
+
+    if (trackingSummary && Array.isArray(trackingSummary.topPages) && trackingSummary.topPages.length > 0) {
+      const top = trackingSummary.topPages[0];
+      if (kpiTopPage) kpiTopPage.textContent = top.pageTitle || top.pageRoute || '--';
+      if (kpiTopPageSub) kpiTopPageSub.textContent = `${(top.visits || 0).toLocaleString()} views (${top.pageRoute})`;
+    } else {
+      if (kpiTopPage) kpiTopPage.textContent = '--';
+      if (kpiTopPageSub) kpiTopPageSub.textContent = 'No visit records yet';
+    }
+  }
+
+  function renderLoginLogsTable() {
+    const tableBody = document.getElementById('admin-login-table-body');
+    const countBadge = document.getElementById('admin-login-count-badge');
+    if (!tableBody) return;
+
+    let filtered = loginLogs || [];
+
+    // Filter by login method
+    if (loginMethodFilter && loginMethodFilter !== 'ALL') {
+      filtered = filtered.filter(l => (l.loginMethod || '').toUpperCase() === loginMethodFilter);
+    }
+
+    // Filter by search query
+    if (loginSearchQuery) {
+      filtered = filtered.filter(l =>
+        (l.username && l.username.toLowerCase().includes(loginSearchQuery)) ||
+        (l.email && l.email.toLowerCase().includes(loginSearchQuery)) ||
+        (l.ipAddress && l.ipAddress.toLowerCase().includes(loginSearchQuery)) ||
+        (l.location && l.location.toLowerCase().includes(loginSearchQuery))
+      );
+    }
+
+    if (countBadge) {
+      countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'session' : 'sessions'}`;
+    }
+
+    if (filtered.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="5" class="py-8 text-center text-gray-400">
+            <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004 11c0 2.473.345 4.866.99 7.132"/>
+            </svg>
+            No login history records found matching your filters.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = filtered.map(log => {
+      const initials = getInitials(log.username || 'User');
+      const method = (log.loginMethod || 'PASSWORD').toUpperCase();
+      let methodBadge = '';
+      if (method === 'GOOGLE') {
+        methodBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-700 border border-red-200">Google</span>';
+      } else if (method === 'GITHUB') {
+        methodBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-300">GitHub</span>';
+      } else if (method === 'REGISTER') {
+        methodBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">Register</span>';
+      } else {
+        methodBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700 border border-gray-200">Password</span>';
+      }
+
+      const deviceLabel = parseUserAgent(log.userAgent);
+
+      return `
+        <tr class="hover:bg-gray-50/75 transition">
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-800 font-semibold flex items-center justify-center text-[11px] flex-shrink-0">
+                ${escapeHtml(initials)}
+              </div>
+              <div class="min-w-0">
+                <div class="font-semibold text-gray-900 truncate">${escapeHtml(log.username || 'Unknown')}</div>
+                <div class="text-[11px] text-gray-400 font-mono truncate">${escapeHtml(log.email || '--')}</div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3 px-4 whitespace-nowrap">
+            ${methodBadge}
+          </td>
+          <td class="py-3 px-4 text-gray-500 font-mono text-[11px] whitespace-nowrap">
+            ${formatDateTime(log.loggedInAt)}
+          </td>
+          <td class="py-3 px-4">
+            <div class="font-medium text-gray-800 truncate">${escapeHtml(log.location || 'Unknown')}</div>
+            <div class="text-[11px] text-gray-400 font-mono truncate">${escapeHtml(log.ipAddress || '--')}</div>
+          </td>
+          <td class="py-3 px-4 text-xs text-gray-600 truncate max-w-xs" title="${escapeHtml(log.userAgent || '')}">
+            <span class="inline-flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <span>${escapeHtml(deviceLabel)}</span>
+            </span>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function populateRouteFilterOptions() {
+    const routeSelect = document.getElementById('admin-visit-filter-route');
+    if (!routeSelect) return;
+
+    const routes = new Set();
+    routes.add('#dashboard');
+    routes.add('#library');
+    routes.add('#ide');
+    routes.add('#learning-paths');
+    routes.add('#notes');
+    routes.add('#community');
+    routes.add('#submissions');
+    routes.add('#create-problem');
+
+    (pageVisits || []).forEach(v => {
+      if (v.pageRoute) routes.add(v.pageRoute);
+    });
+
+    const currentVal = routeSelect.value || 'ALL';
+    let html = '<option value="ALL">All Routes</option>';
+    routes.forEach(r => {
+      const selected = r === currentVal ? 'selected' : '';
+      html += `<option value="${escapeHtml(r)}" ${selected}>${escapeHtml(r)}</option>`;
+    });
+    routeSelect.innerHTML = html;
+  }
+
+  function renderPageVisitsTable() {
+    const tableBody = document.getElementById('admin-visit-table-body');
+    const countBadge = document.getElementById('admin-visit-count-badge');
+    if (!tableBody) return;
+
+    let filtered = pageVisits || [];
+
+    // Filter by route
+    if (visitRouteFilter && visitRouteFilter !== 'ALL') {
+      filtered = filtered.filter(v => (v.pageRoute || '') === visitRouteFilter);
+    }
+
+    // Filter by search query
+    if (visitSearchQuery) {
+      filtered = filtered.filter(v =>
+        (v.username && v.username.toLowerCase().includes(visitSearchQuery)) ||
+        (v.pageRoute && v.pageRoute.toLowerCase().includes(visitSearchQuery)) ||
+        (v.pageTitle && v.pageTitle.toLowerCase().includes(visitSearchQuery)) ||
+        (v.location && v.location.toLowerCase().includes(visitSearchQuery)) ||
+        (v.ipAddress && v.ipAddress.toLowerCase().includes(visitSearchQuery))
+      );
+    }
+
+    if (countBadge) {
+      countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'visit' : 'visits'}`;
+    }
+
+    if (filtered.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="4" class="py-8 text-center text-gray-400">
+            <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            No navigation records found matching your filters.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = filtered.map(visit => {
+      const isGuest = !visit.username || visit.username.toLowerCase() === 'guest';
+      const userHtml = isGuest
+        ? `<div class="flex items-center gap-2.5">
+             <div class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 font-semibold flex items-center justify-center text-[10px] flex-shrink-0">
+               ?
+             </div>
+             <div>
+               <div class="font-medium text-gray-500 italic">Guest User</div>
+               <div class="text-[10px] text-gray-400">Unauthenticated</div>
+             </div>
+           </div>`
+        : `<div class="flex items-center gap-2.5">
+             <div class="w-7 h-7 rounded-full bg-purple-100 text-purple-800 font-semibold flex items-center justify-center text-[11px] flex-shrink-0">
+               ${escapeHtml(getInitials(visit.username))}
+             </div>
+             <div>
+               <div class="font-semibold text-gray-900">${escapeHtml(visit.username)}</div>
+               <div class="text-[10px] text-purple-700 font-medium">Logged-in User</div>
+             </div>
+           </div>`;
+
+      return `
+        <tr class="hover:bg-gray-50/75 transition">
+          <td class="py-3 px-4 whitespace-nowrap">
+            ${userHtml}
+          </td>
+          <td class="py-3 px-4">
+            <div class="font-medium text-gray-900 truncate">${escapeHtml(visit.pageTitle || 'Untitled Page')}</div>
+            <div class="mt-0.5">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-gray-100 text-gray-700 border border-gray-200">
+                ${escapeHtml(visit.pageRoute || '#')}
+              </span>
+            </div>
+          </td>
+          <td class="py-3 px-4">
+            <div class="font-medium text-gray-800 truncate">${escapeHtml(visit.location || 'Unknown')}</div>
+            <div class="text-[11px] text-gray-400 font-mono truncate">${escapeHtml(visit.ipAddress || '--')}</div>
+          </td>
+          <td class="py-3 px-4 text-gray-500 font-mono text-[11px] whitespace-nowrap">
+            ${formatDateTime(visit.visitedAt)}
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
   window.CodeForgeAdmin = {
     init,
     loadStats,
@@ -780,7 +1140,8 @@
     updateFeedbackStatus,
     deleteFeedback,
     changeRole,
-    switchTab
+    switchTab,
+    loadTrackingData
   };
 
 })();

@@ -5,13 +5,17 @@ import com.codeforge.entity.CommunityReport;
 import com.codeforge.entity.Discussion;
 import com.codeforge.entity.DiscussionReply;
 import com.codeforge.entity.Exercise;
+import com.codeforge.entity.PageVisitLog;
 import com.codeforge.entity.User;
+import com.codeforge.entity.UserLoginLog;
 import com.codeforge.exception.ApiException;
 import com.codeforge.repository.CommunityReportRepository;
 import com.codeforge.repository.DiscussionReplyRepository;
 import com.codeforge.repository.DiscussionRepository;
 import com.codeforge.repository.ExerciseRepository;
+import com.codeforge.repository.PageVisitLogRepository;
 import com.codeforge.repository.SubmissionRepository;
+import com.codeforge.repository.UserLoginLogRepository;
 import com.codeforge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -19,8 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +45,8 @@ public class AdminService {
         private final CommunityReportRepository communityReportRepository;
         private final SubmissionRepository submissionRepository;
         private final com.codeforge.repository.FeedbackRepository feedbackRepository;
+        private final UserLoginLogRepository userLoginLogRepository;
+        private final PageVisitLogRepository pageVisitLogRepository;
 
         /**
          * Aggregates platform telemetry and pending counts.
@@ -329,5 +338,135 @@ public class AdminService {
                 }
                 communityReportRepository.deleteByReportTypeAndTargetId("DISCUSSION", id);
                 discussionRepository.delete(discussion);
+        }
+
+        /**
+         * Aggregates telemetry summary metrics for the Admin Tracking Dashboard.
+         */
+        @Transactional(readOnly = true)
+        public AdminDto.TrackingSummaryDto getTrackingSummary() {
+                long totalLogins = userLoginLogRepository.count();
+                long totalPageVisits = pageVisitLogRepository.count();
+
+                Set<String> uniqueLocs = new HashSet<>();
+                uniqueLocs.addAll(userLoginLogRepository.findDistinctLocations());
+                uniqueLocs.addAll(pageVisitLogRepository.findDistinctLocations());
+                long uniqueLocations = uniqueLocs.stream()
+                                .filter(loc -> loc != null && !loc.trim().isBlank())
+                                .count();
+
+                List<PageVisitLog> allVisits = pageVisitLogRepository.findAll();
+                Map<String, List<PageVisitLog>> grouped = allVisits.stream()
+                                .collect(Collectors.groupingBy(PageVisitLog::getPageRoute));
+
+                List<AdminDto.TopPageDto> topPages = grouped.entrySet().stream()
+                                .map(entry -> {
+                                        String route = entry.getKey();
+                                        long visits = entry.getValue().size();
+                                        String title = entry.getValue().stream()
+                                                        .map(PageVisitLog::getPageTitle)
+                                                        .filter(t -> t != null && !t.isBlank())
+                                                        .findFirst()
+                                                        .orElse(route);
+                                        return AdminDto.TopPageDto.builder()
+                                                        .pageRoute(route)
+                                                        .pageTitle(title)
+                                                        .visits(visits)
+                                                        .build();
+                                })
+                                .sorted((a, b) -> Long.compare(b.getVisits(), a.getVisits()))
+                                .limit(10)
+                                .collect(Collectors.toList());
+
+                String mostVisited = (!topPages.isEmpty()) ? topPages.get(0).getPageRoute() : "None";
+
+                return AdminDto.TrackingSummaryDto.builder()
+                                .totalLogins(totalLogins)
+                                .uniqueLocations(uniqueLocations)
+                                .totalPageVisits(totalPageVisits)
+                                .mostVisitedPage(mostVisited)
+                                .topPages(topPages)
+                                .build();
+        }
+
+        /**
+         * Retrieves user login history with optional search and method filtering.
+         */
+        @Transactional(readOnly = true)
+        public List<AdminDto.UserLoginLogDto> getLoginLogs(String search, String method) {
+                List<UserLoginLog> logs = userLoginLogRepository.findAllByOrderByLoggedInAtDesc();
+
+                String searchLower = (search != null) ? search.trim().toLowerCase() : "";
+                String methodFilter = (method != null) ? method.trim().toUpperCase() : "ALL";
+
+                return logs.stream()
+                                .filter(l -> {
+                                        if (!"ALL".equals(methodFilter) && !methodFilter.equalsIgnoreCase(l.getLoginMethod())) {
+                                                return false;
+                                        }
+                                        if (!searchLower.isEmpty()) {
+                                                boolean matchUser = l.getUsername() != null && l.getUsername().toLowerCase().contains(searchLower);
+                                                boolean matchEmail = l.getEmail() != null && l.getEmail().toLowerCase().contains(searchLower);
+                                                boolean matchLoc = l.getLocation() != null && l.getLocation().toLowerCase().contains(searchLower);
+                                                boolean matchIp = l.getIpAddress() != null && l.getIpAddress().toLowerCase().contains(searchLower);
+                                                return matchUser || matchEmail || matchLoc || matchIp;
+                                        }
+                                        return true;
+                                })
+                                .limit(200)
+                                .map(l -> AdminDto.UserLoginLogDto.builder()
+                                                .id(l.getId())
+                                                .userId(l.getUserId())
+                                                .username(l.getUsername())
+                                                .email(l.getEmail())
+                                                .loginMethod(l.getLoginMethod())
+                                                .ipAddress(l.getIpAddress())
+                                                .location(l.getLocation())
+                                                .userAgent(l.getUserAgent())
+                                                .loggedInAt(l.getLoggedInAt())
+                                                .build())
+                                .collect(Collectors.toList());
+        }
+
+        /**
+         * Retrieves page navigation logs with optional search and route filtering.
+         */
+        @Transactional(readOnly = true)
+        public List<AdminDto.PageVisitLogDto> getPageVisitLogs(String search, String route) {
+                List<PageVisitLog> logs = pageVisitLogRepository.findAllByOrderByVisitedAtDesc();
+
+                String searchLower = (search != null) ? search.trim().toLowerCase() : "";
+                String routeFilter = (route != null) ? route.trim().toLowerCase() : "all";
+
+                return logs.stream()
+                                .filter(l -> {
+                                        if (!"all".equalsIgnoreCase(routeFilter) && !routeFilter.isBlank()) {
+                                                String pageRoute = (l.getPageRoute() != null) ? l.getPageRoute().toLowerCase() : "";
+                                                if (!pageRoute.equals(routeFilter) && !pageRoute.startsWith(routeFilter)) {
+                                                        return false;
+                                                }
+                                        }
+                                        if (!searchLower.isEmpty()) {
+                                                boolean matchUser = l.getUsername() != null && l.getUsername().toLowerCase().contains(searchLower);
+                                                boolean matchRoute = l.getPageRoute() != null && l.getPageRoute().toLowerCase().contains(searchLower);
+                                                boolean matchTitle = l.getPageTitle() != null && l.getPageTitle().toLowerCase().contains(searchLower);
+                                                boolean matchLoc = l.getLocation() != null && l.getLocation().toLowerCase().contains(searchLower);
+                                                boolean matchIp = l.getIpAddress() != null && l.getIpAddress().toLowerCase().contains(searchLower);
+                                                return matchUser || matchRoute || matchTitle || matchLoc || matchIp;
+                                        }
+                                        return true;
+                                })
+                                .limit(200)
+                                .map(l -> AdminDto.PageVisitLogDto.builder()
+                                                .id(l.getId())
+                                                .userId(l.getUserId())
+                                                .username(l.getUsername())
+                                                .pageRoute(l.getPageRoute())
+                                                .pageTitle(l.getPageTitle())
+                                                .ipAddress(l.getIpAddress())
+                                                .location(l.getLocation())
+                                                .visitedAt(l.getVisitedAt())
+                                                .build())
+                                .collect(Collectors.toList());
         }
 }

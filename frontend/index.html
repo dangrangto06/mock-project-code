@@ -894,23 +894,23 @@
         </div>
 
         <!-- Status legend -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-gray-400">
+        <div id="library-status-legend" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-gray-400">
           <div class="flex items-center gap-4">
             <span class="uppercase tracking-wider">Your progress</span>
             <span class="inline-flex items-center gap-1.5 text-gray-500">
-              <span
+              <span title="Solved"
                 class="inline-flex items-center justify-center w-3.5 h-3.5 text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200"><svg
                   class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                 </svg></span>Solved
             </span>
             <span class="inline-flex items-center gap-1.5 text-gray-500">
-              <span
+              <span title="In progress"
                 class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-amber-200 bg-amber-50"><span
                   class="w-1.5 h-1.5 rounded-full bg-amber-500"></span></span>In progress
             </span>
             <span class="inline-flex items-center gap-1.5 text-gray-500">
-              <span class="inline-block w-3.5 h-3.5 rounded-full border border-gray-300"></span>Not started
+              <span title="Not started" class="inline-block w-3.5 h-3.5 rounded-full border border-gray-300"></span>Not started
             </span>
           </div>
           <div>Find your next challenge. Make it a habit.</div>
@@ -2458,6 +2458,12 @@ Return the answer in any order.
             <span id="tab-admin-users-count"
               class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">--</span>
           </button>
+          <button id="tab-admin-tracking"
+            class="pb-3 text-sm text-gray-500 hover:text-gray-800 border-b-2 border-transparent transition flex items-center gap-2 font-medium">
+            <span>User Tracking</span>
+            <span id="tab-admin-tracking-count"
+              class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">--</span>
+          </button>
         </div>
 
         <!-- ================= VIEW 1: MODERATION QUEUE ================= -->
@@ -2594,6 +2600,175 @@ Return the answer in any order.
                   <!-- Rendered dynamically -->
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 4: USER TRACKING ================= -->
+        <div id="admin-view-tracking" class="space-y-6 hidden">
+          <!-- 4-Card Tracking Summary Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Total Logins -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#e5eae7] shadow-xs">
+              <div class="flex items-center justify-between text-gray-500 text-xs font-medium">
+                <span>Total Logins</span>
+                <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  </svg>
+                </div>
+              </div>
+              <div class="mt-2 text-2xl font-bold text-gray-900 font-mono" id="tracking-total-logins">--</div>
+              <div class="mt-1 text-[11px] text-gray-400">Authenticated user sessions</div>
+            </div>
+
+            <!-- Unique Locations -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#e5eae7] shadow-xs">
+              <div class="flex items-center justify-between text-gray-500 text-xs font-medium">
+                <span>Unique Locations</span>
+                <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="mt-2 text-2xl font-bold text-emerald-700 font-mono" id="tracking-unique-locations">--</div>
+              <div class="mt-1 text-[11px] text-emerald-600 font-medium">Distinct geo-locations</div>
+            </div>
+
+            <!-- Total Page Visits -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#e5eae7] shadow-xs">
+              <div class="flex items-center justify-between text-gray-500 text-xs font-medium">
+                <span>Total Page Visits</span>
+                <div class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="mt-2 text-2xl font-bold text-gray-900 font-mono" id="tracking-total-visits">--</div>
+              <div class="mt-1 text-[11px] text-gray-400">Internal navigation pings</div>
+            </div>
+
+            <!-- Most Visited Page -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#e5eae7] shadow-xs">
+              <div class="flex items-center justify-between text-gray-500 text-xs font-medium">
+                <span>Top Destination</span>
+                <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+              </div>
+              <div class="mt-2 text-xl font-bold text-gray-900 font-mono truncate" id="tracking-top-page">--</div>
+              <div class="mt-1 text-[11px] text-amber-700 font-medium truncate" id="tracking-top-page-sub">Most active view</div>
+            </div>
+          </div>
+
+          <!-- Section 1: User Login History -->
+          <div class="space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-[#e5eae7]">
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-gray-900">User Login History</h3>
+                <span id="admin-login-count-badge"
+                  class="px-2 py-0.5 text-xs font-semibold rounded bg-blue-50 text-blue-700 border border-blue-200">0 sessions</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-2.5">
+                <div class="relative w-full sm:w-64">
+                  <svg class="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input id="admin-login-search-input" type="text" placeholder="Search user, email, IP, location..."
+                    class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-transparent focus:border-emerald-500 focus:bg-white focus:outline-none bg-gray-50 text-gray-800">
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs text-gray-500">Method:</span>
+                  <select id="admin-login-filter-method"
+                    class="text-xs px-2 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none">
+                    <option value="ALL">All Methods</option>
+                    <option value="PASSWORD">Password</option>
+                    <option value="GOOGLE">Google</option>
+                    <option value="GITHUB">GitHub</option>
+                    <option value="REGISTER">Register</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-[#e5eae7] overflow-hidden shadow-xs">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="border-b border-[#e5eae7] bg-gray-50/75 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                      <th class="py-3 px-4">User</th>
+                      <th class="py-3 px-4">Method</th>
+                      <th class="py-3 px-4">Date &amp; Time</th>
+                      <th class="py-3 px-4">Location &amp; IP</th>
+                      <th class="py-3 px-4">Device / Browser</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-login-table-body" class="divide-y divide-gray-100 text-xs">
+                    <!-- Rendered dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Page & Site Navigation Logs -->
+          <div class="space-y-3 pt-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-[#e5eae7]">
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-gray-900">Page &amp; Site Navigation Logs</h3>
+                <span id="admin-visit-count-badge"
+                  class="px-2 py-0.5 text-xs font-semibold rounded bg-purple-50 text-purple-700 border border-purple-200">0 visits</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-2.5">
+                <div class="relative w-full sm:w-64">
+                  <svg class="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input id="admin-visit-search-input" type="text" placeholder="Search user, route, title, location..."
+                    class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-transparent focus:border-emerald-500 focus:bg-white focus:outline-none bg-gray-50 text-gray-800">
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs text-gray-500">Route:</span>
+                  <select id="admin-visit-filter-route"
+                    class="text-xs px-2 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none">
+                    <option value="ALL">All Routes</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-[#e5eae7] overflow-hidden shadow-xs">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="border-b border-[#e5eae7] bg-gray-50/75 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                      <th class="py-3 px-4">User</th>
+                      <th class="py-3 px-4">Page / Route Visited</th>
+                      <th class="py-3 px-4">Location &amp; IP</th>
+                      <th class="py-3 px-4">Date &amp; Time</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-visit-table-body" class="divide-y divide-gray-100 text-xs">
+                    <!-- Rendered dynamically -->
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
