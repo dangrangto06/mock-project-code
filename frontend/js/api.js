@@ -802,6 +802,22 @@ window.CodeForgeAPI = (function () {
     return { success: true };
   }
 
+  // ===== User Session & Authentication Telemetry =====
+  async function logout() {
+    await checkBackend();
+    if (isBackendOnline && isAuthenticated()) {
+      try {
+        await fetch(`${API_BASE}/auth/logout`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          keepalive: true
+        });
+      } catch (e) {
+        console.warn("Failed to notify backend of logout:", e);
+      }
+    }
+  }
+
   // ===== Client Navigation & Admin Tracking Telemetry =====
 
   async function trackPageVisit(pageRoute, pageTitle) {
@@ -870,6 +886,17 @@ window.CodeForgeAPI = (function () {
         userId: 1,
         username: "alex_morgan",
         email: "alex@codeforge.io",
+        loginMethod: "LOGOUT",
+        ipAddress: "113.161.45.88",
+        location: "Hanoi, Vietnam",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/128.0.0.0",
+        loggedInAt: new Date(Date.now() - 2 * 3600000).toISOString()
+      },
+      {
+        id: 3,
+        userId: 2,
+        username: "david_kim",
+        email: "david_kim@codeforge.io",
         loginMethod: "GOOGLE",
         ipAddress: "14.241.120.5",
         location: "Ho Chi Minh City, Vietnam",
@@ -877,10 +904,10 @@ window.CodeForgeAPI = (function () {
         loggedInAt: new Date(Date.now() - 26 * 3600000).toISOString()
       },
       {
-        id: 3,
-        userId: 1,
-        username: "alex_morgan",
-        email: "alex@codeforge.io",
+        id: 4,
+        userId: 3,
+        username: "sarah_jenkins",
+        email: "sarah_jenkins@codeforge.io",
         loginMethod: "GITHUB",
         ipAddress: "118.69.182.42",
         location: "Da Nang, Vietnam",
@@ -888,14 +915,14 @@ window.CodeForgeAPI = (function () {
         loggedInAt: new Date(Date.now() - 72 * 3600000).toISOString()
       },
       {
-        id: 4,
-        userId: 1,
-        username: "alex_morgan",
-        email: "alex@codeforge.io",
-        loginMethod: "PASSWORD",
-        ipAddress: "127.0.0.1",
-        location: "Hanoi, Vietnam (Localhost)",
-        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/129.0",
+        id: 5,
+        userId: 4,
+        username: "marcus_vance",
+        email: "marcus_vance@codeforge.io",
+        loginMethod: "REGISTER",
+        ipAddress: "27.72.88.19",
+        location: "Hanoi, Vietnam",
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Firefox/129.0",
         loggedInAt: new Date(Date.now() - 120 * 3600000).toISOString()
       }
     ];
@@ -1018,6 +1045,7 @@ window.CodeForgeAPI = (function () {
     getAdminFeedbacks,
     updateAdminFeedbackStatus,
     deleteAdminFeedback,
+    logout,
     trackPageVisit,
     getAdminTrackingSummary,
     getAdminLoginLogs,

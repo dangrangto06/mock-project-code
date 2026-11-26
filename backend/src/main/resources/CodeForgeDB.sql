@@ -287,67 +287,67 @@ GO
 SET IDENTITY_INSERT dbo.users ON;
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (1, 'alex_morgan', 'alex@codeforge.io', '$2b$10$a3DRjdEfncUYteAIU7dnzeJNr4xOWznGQTjPWIwi4Y54PWj8PzXQK', 'Alex Morgan', 'Admin', 7, 48, 76.20, 12.50, CURRENT_TIMESTAMP);
+VALUES (1, 'alex_morgan', 'alex@codeforge.io', '$2b$10$a3DRjdEfncUYteAIU7dnzeJNr4xOWznGQTjPWIwi4Y54PWj8PzXQK', 'Alex Morgan', 'Admin', 7, 48, 76.20, 12.50, '2026-11-11 08:30:00'); -- ID 1: Alex Morgan (Admin) | Account Created: Wednesday, 11/11/2026 08:30:00
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (2, 'david_kim', 'david_kim@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'David Kim', 'Learner', 14, 69, 88.57, 15.04, CURRENT_TIMESTAMP);
+VALUES (2, 'david_kim', 'david_kim@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'David Kim', 'Learner', 14, 69, 88.57, 15.04, '2026-11-12 09:15:24'); -- ID 2: David Kim (Learner) | Account Created: Thursday, 11/12/2026 09:15:24
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (3, 'sarah_jenkins', 'sarah_jenkins@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Sarah Jenkins', 'Learner', 6, 36, 77.55, 19.20, CURRENT_TIMESTAMP);
+VALUES (3, 'sarah_jenkins', 'sarah_jenkins@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Sarah Jenkins', 'Learner', 6, 36, 77.55, 19.20, '2026-11-12 14:22:45'); -- ID 3: Sarah Jenkins (Learner) | Account Created: Thursday, 11/12/2026 14:22:45
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (4, 'marcus_vance', 'marcus_vance@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Marcus Vance', 'Learner', 15, 58, 71.22, 36.38, CURRENT_TIMESTAMP);
+VALUES (4, 'marcus_vance', 'marcus_vance@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Marcus Vance', 'Learner', 15, 58, 71.22, 36.38, '2026-11-13 08:45:10'); -- ID 4: Marcus Vance (Learner) | Account Created: Friday, 11/13/2026 08:45:10
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (5, 'priya_natarajan', 'priya_natarajan@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Priya Natarajan', 'Learner', 9, 43, 66.51, 32.66, CURRENT_TIMESTAMP);
+VALUES (5, 'priya_natarajan', 'priya_natarajan@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Priya Natarajan', 'Learner', 9, 43, 66.51, 32.66, '2026-11-13 16:30:18'); -- ID 5: Priya Natarajan (Learner) | Account Created: Friday, 11/13/2026 16:30:18
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (6, 'liam_oconnor', 'liam_oconnor@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Liam O''Connor', 'Learner', 14, 68, 57.17, 36.96, CURRENT_TIMESTAMP);
+VALUES (6, 'liam_oconnor', 'liam_oconnor@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Liam O''Connor', 'Learner', 14, 68, 57.17, 36.96, '2026-11-14 10:05:32'); -- ID 6: Liam O'Connor (Learner) | Account Created: Saturday, 11/14/2026 10:05:32
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (7, 'mia_thompson', 'mia_thompson@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Mia Thompson', 'Learner', 5, 57, 84.59, 19.69, CURRENT_TIMESTAMP);
+VALUES (7, 'mia_thompson', 'mia_thompson@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Mia Thompson', 'Learner', 5, 57, 84.59, 19.69, '2026-11-14 15:40:50'); -- ID 7: Mia Thompson (Learner) | Account Created: Saturday, 11/14/2026 15:40:50
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (8, 'daniel_alves', 'daniel_alves@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Daniel Alves', 'Learner', 2, 37, 87.45, 15.44, CURRENT_TIMESTAMP);
+VALUES (8, 'daniel_alves', 'daniel_alves@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Daniel Alves', 'Learner', 2, 37, 87.45, 15.44, '2026-11-15 11:12:05'); -- ID 8: Daniel Alves (Learner) | Account Created: Sunday, 11/15/2026 11:12:05
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (9, 'hana_suzuki', 'hana_suzuki@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Hana Suzuki', 'Learner', 6, 55, 51.88, 36.74, CURRENT_TIMESTAMP);
+VALUES (9, 'hana_suzuki', 'hana_suzuki@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Hana Suzuki', 'Learner', 6, 55, 51.88, 36.74, '2026-11-15 19:28:40'); -- ID 9: Hana Suzuki (Learner) | Account Created: Sunday, 11/15/2026 19:28:40
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (10, 'omar_haddad', 'omar_haddad@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Omar Haddad', 'Learner', 2, 3, 66.21, 22.32, CURRENT_TIMESTAMP);
+VALUES (10, 'omar_haddad', 'omar_haddad@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Omar Haddad', 'Learner', 2, 3, 66.21, 22.32, '2026-11-16 08:10:15'); -- ID 10: Omar Haddad (Learner) | Account Created: Monday, 11/16/2026 08:10:15
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (11, 'isabella_rossi', 'isabella_rossi@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Isabella Rossi', 'Learner', 2, 28, 56.65, 25.22, CURRENT_TIMESTAMP);
+VALUES (11, 'isabella_rossi', 'isabella_rossi@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Isabella Rossi', 'Learner', 2, 28, 56.65, 25.22, '2026-11-16 13:35:55'); -- ID 11: Isabella Rossi (Learner) | Account Created: Monday, 11/16/2026 13:35:55
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (12, 'ethan_walker', 'ethan_walker@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Ethan Walker', 'Learner', 17, 37, 76.42, 25.78, CURRENT_TIMESTAMP);
+VALUES (12, 'ethan_walker', 'ethan_walker@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Ethan Walker', 'Learner', 17, 37, 76.42, 25.78, '2026-11-17 09:50:20'); -- ID 12: Ethan Walker (Learner) | Account Created: Tuesday, 11/17/2026 09:50:20
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (13, 'chloe_martin', 'chloe_martin@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Chloe Martin', 'Learner', 4, 3, 59.73, 23.74, CURRENT_TIMESTAMP);
+VALUES (13, 'chloe_martin', 'chloe_martin@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Chloe Martin', 'Learner', 4, 3, 59.73, 23.74, '2026-11-17 14:18:33'); -- ID 13: Chloe Martin (Learner) | Account Created: Tuesday, 11/17/2026 14:18:33
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (14, 'noah_becker', 'noah_becker@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Noah Becker', 'Learner', 15, 20, 70.65, 19.45, CURRENT_TIMESTAMP);
+VALUES (14, 'noah_becker', 'noah_becker@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Noah Becker', 'Learner', 15, 20, 70.65, 19.45, '2026-11-17 20:04:12'); -- ID 14: Noah Becker (Learner) | Account Created: Tuesday, 11/17/2026 20:04:12
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (15, 'grace_lee', 'grace_lee@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Grace Lee', 'Learner', 4, 67, 58.66, 17.29, CURRENT_TIMESTAMP);
+VALUES (15, 'grace_lee', 'grace_lee@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Grace Lee', 'Learner', 4, 67, 58.66, 17.29, '2026-11-18 08:42:00'); -- ID 15: Grace Lee (Learner) | Account Created: Wednesday, 11/18/2026 08:42:00
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (16, 'lucas_ferreira', 'lucas_ferreira@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Lucas Ferreira', 'Learner', 5, 20, 81.82, 36.69, CURRENT_TIMESTAMP);
+VALUES (16, 'lucas_ferreira', 'lucas_ferreira@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Lucas Ferreira', 'Learner', 5, 20, 81.82, 36.69, '2026-11-18 11:25:48'); -- ID 16: Lucas Ferreira (Learner) | Account Created: Wednesday, 11/18/2026 11:25:48
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (17, 'emma_novak', 'emma_novak@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Emma Novak', 'Learner', 9, 67, 64.37, 32.51, CURRENT_TIMESTAMP);
+VALUES (17, 'emma_novak', 'emma_novak@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Emma Novak', 'Learner', 9, 67, 64.37, 32.51, '2026-11-18 17:15:30'); -- ID 17: Emma Novak (Learner) | Account Created: Wednesday, 11/18/2026 17:15:30
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (18, 'ryan_bennett', 'ryan_bennett@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Ryan Bennett', 'Learner', 16, 28, 62.67, 38.39, CURRENT_TIMESTAMP);
+VALUES (18, 'ryan_bennett', 'ryan_bennett@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Ryan Bennett', 'Learner', 16, 28, 62.67, 38.39, '2026-11-19 09:05:14'); -- ID 18: Ryan Bennett (Learner) | Account Created: Thursday, 11/19/2026 09:05:14
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (19, 'sofia_petrova', 'sofia_petrova@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Sofia Petrova', 'Learner', 12, 12, 47.41, 14.53, CURRENT_TIMESTAMP);
+VALUES (19, 'sofia_petrova', 'sofia_petrova@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Sofia Petrova', 'Learner', 12, 12, 47.41, 14.53, '2026-11-19 13:48:22'); -- ID 19: Sofia Petrova (Learner) | Account Created: Thursday, 11/19/2026 13:48:22
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (20, 'aiden_murphy', 'aiden_murphy@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Aiden Murphy', 'Learner', 11, 6, 46.20, 19.56, CURRENT_TIMESTAMP);
+VALUES (20, 'aiden_murphy', 'aiden_murphy@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Aiden Murphy', 'Learner', 11, 6, 46.20, 19.56, '2026-11-19 16:32:05'); -- ID 20: Aiden Murphy (Learner) | Account Created: Thursday, 11/19/2026 16:32:05
 
 INSERT INTO dbo.users (id, username, email, password_hash, full_name, role, streak_days, solved_count, acceptance_rate, practice_time_hours, created_at)
-VALUES (21, 'zoe_carter', 'zoe_carter@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Zoe Carter', 'Learner', 21, 41, 66.16, 36.64, CURRENT_TIMESTAMP);
+VALUES (21, 'zoe_carter', 'zoe_carter@codeforge.io', '$2b$10$mz5NqrTsIc9EH9Or.GWpjedbmIbzjQAf9n924nQIwWJ4Hn9B9Umuu', 'Zoe Carter', 'Learner', 21, 41, 66.16, 36.64, '2026-11-19 21:10:40'); -- ID 21: Zoe Carter (Learner) | Account Created: Thursday, 11/19/2026 21:10:40
 
 SET IDENTITY_INSERT dbo.users OFF;
 GO
@@ -1435,4 +1435,477 @@ INSERT INTO dbo.feedbacks (id, user_id, name, email, subject, message, status, c
 VALUES (3, 4, 'Marcus Vance', 'marcus_vance@codeforge.io', 'Feature Request', 'Could we get weekly algorithmic contests or timed sprint sessions? That would elevate practice excitement!', 'NEW', DATEADD(hour, -2, CURRENT_TIMESTAMP));
 
 SET IDENTITY_INSERT dbo.feedbacks OFF;
+GO
+
+-- ------------------------------------------------------------------------------
+-- L. User Login Logs: Historical authentication sessions & lifecycle tracking
+-- ------------------------------------------------------------------------------
+SET IDENTITY_INSERT dbo.user_login_logs ON;
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (1, 1, 'alex_morgan', 'alex@codeforge.io', 'PASSWORD', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-11 08:35:10'); -- #001 | User: alex_morgan (PASSWORD) | Event Time: Wednesday, 11/11/2026 08:35:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (2, 1, 'alex_morgan', 'alex@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-11 10:10:10'); -- #002 | User: alex_morgan (LOGOUT) | Event Time: Wednesday, 11/11/2026 10:10:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (3, 2, 'david_kim', 'david_kim@codeforge.io', 'REGISTER', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-12 09:15:24'); -- #003 | User: david_kim (REGISTER) | Event Time: Thursday, 11/12/2026 09:15:24
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (4, 2, 'david_kim', 'david_kim@codeforge.io', 'LOGOUT', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-12 10:15:24'); -- #004 | User: david_kim (LOGOUT) | Event Time: Thursday, 11/12/2026 10:15:24
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (5, 3, 'sarah_jenkins', 'sarah_jenkins@codeforge.io', 'REGISTER', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-12 14:22:45'); -- #005 | User: sarah_jenkins (REGISTER) | Event Time: Thursday, 11/12/2026 14:22:45
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (6, 3, 'sarah_jenkins', 'sarah_jenkins@codeforge.io', 'LOGOUT', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-12 15:07:45'); -- #006 | User: sarah_jenkins (LOGOUT) | Event Time: Thursday, 11/12/2026 15:07:45
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (7, 4, 'marcus_vance', 'marcus_vance@codeforge.io', 'REGISTER', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-13 08:45:10'); -- #007 | User: marcus_vance (REGISTER) | Event Time: Friday, 11/13/2026 08:45:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (8, 4, 'marcus_vance', 'marcus_vance@codeforge.io', 'LOGOUT', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-13 09:45:10'); -- #008 | User: marcus_vance (LOGOUT) | Event Time: Friday, 11/13/2026 09:45:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (9, 5, 'priya_natarajan', 'priya_natarajan@codeforge.io', 'REGISTER', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-13 16:30:18'); -- #009 | User: priya_natarajan (REGISTER) | Event Time: Friday, 11/13/2026 16:30:18
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (10, 5, 'priya_natarajan', 'priya_natarajan@codeforge.io', 'LOGOUT', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-13 17:20:18'); -- #010 | User: priya_natarajan (LOGOUT) | Event Time: Friday, 11/13/2026 17:20:18
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (11, 6, 'liam_oconnor', 'liam_oconnor@codeforge.io', 'REGISTER', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-14 10:05:32'); -- #011 | User: liam_oconnor (REGISTER) | Event Time: Saturday, 11/14/2026 10:05:32
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (12, 2, 'david_kim', 'david_kim@codeforge.io', 'PASSWORD', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-14 10:30:15'); -- #012 | User: david_kim (PASSWORD) | Event Time: Saturday, 11/14/2026 10:30:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (13, 6, 'liam_oconnor', 'liam_oconnor@codeforge.io', 'LOGOUT', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-14 11:00:32'); -- #013 | User: liam_oconnor (LOGOUT) | Event Time: Saturday, 11/14/2026 11:00:32
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (14, 2, 'david_kim', 'david_kim@codeforge.io', 'LOGOUT', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-14 12:00:15'); -- #014 | User: david_kim (LOGOUT) | Event Time: Saturday, 11/14/2026 12:00:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (15, 7, 'mia_thompson', 'mia_thompson@codeforge.io', 'REGISTER', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-14 15:40:50'); -- #015 | User: mia_thompson (REGISTER) | Event Time: Saturday, 11/14/2026 15:40:50
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (16, 7, 'mia_thompson', 'mia_thompson@codeforge.io', 'LOGOUT', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-14 16:20:50'); -- #016 | User: mia_thompson (LOGOUT) | Event Time: Saturday, 11/14/2026 16:20:50
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (17, 3, 'sarah_jenkins', 'sarah_jenkins@codeforge.io', 'PASSWORD', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-15 09:20:10'); -- #017 | User: sarah_jenkins (PASSWORD) | Event Time: Sunday, 11/15/2026 09:20:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (18, 3, 'sarah_jenkins', 'sarah_jenkins@codeforge.io', 'LOGOUT', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-15 10:35:10'); -- #018 | User: sarah_jenkins (LOGOUT) | Event Time: Sunday, 11/15/2026 10:35:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (19, 8, 'daniel_alves', 'daniel_alves@codeforge.io', 'REGISTER', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-15 11:12:05'); -- #019 | User: daniel_alves (REGISTER) | Event Time: Sunday, 11/15/2026 11:12:05
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (20, 8, 'daniel_alves', 'daniel_alves@codeforge.io', 'LOGOUT', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-15 11:57:05'); -- #020 | User: daniel_alves (LOGOUT) | Event Time: Sunday, 11/15/2026 11:57:05
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (21, 1, 'alex_morgan', 'alex@codeforge.io', 'GOOGLE', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-15 14:10:00'); -- #021 | User: alex_morgan (GOOGLE) | Event Time: Sunday, 11/15/2026 14:10:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (22, 1, 'alex_morgan', 'alex@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-15 16:10:00'); -- #022 | User: alex_morgan (LOGOUT) | Event Time: Sunday, 11/15/2026 16:10:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (23, 9, 'hana_suzuki', 'hana_suzuki@codeforge.io', 'REGISTER', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-15 19:28:40'); -- #023 | User: hana_suzuki (REGISTER) | Event Time: Sunday, 11/15/2026 19:28:40
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (24, 9, 'hana_suzuki', 'hana_suzuki@codeforge.io', 'LOGOUT', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-15 20:28:40'); -- #024 | User: hana_suzuki (LOGOUT) | Event Time: Sunday, 11/15/2026 20:28:40
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (25, 10, 'omar_haddad', 'omar_haddad@codeforge.io', 'REGISTER', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-16 08:10:15'); -- #025 | User: omar_haddad (REGISTER) | Event Time: Monday, 11/16/2026 08:10:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (26, 10, 'omar_haddad', 'omar_haddad@codeforge.io', 'LOGOUT', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-16 08:45:15'); -- #026 | User: omar_haddad (LOGOUT) | Event Time: Monday, 11/16/2026 08:45:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (27, 11, 'isabella_rossi', 'isabella_rossi@codeforge.io', 'REGISTER', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-16 13:35:55'); -- #027 | User: isabella_rossi (REGISTER) | Event Time: Monday, 11/16/2026 13:35:55
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (28, 11, 'isabella_rossi', 'isabella_rossi@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-16 14:15:55'); -- #028 | User: isabella_rossi (LOGOUT) | Event Time: Monday, 11/16/2026 14:15:55
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (29, 4, 'marcus_vance', 'marcus_vance@codeforge.io', 'PASSWORD', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-16 19:40:20'); -- #029 | User: marcus_vance (PASSWORD) | Event Time: Monday, 11/16/2026 19:40:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (30, 4, 'marcus_vance', 'marcus_vance@codeforge.io', 'LOGOUT', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-16 21:30:20'); -- #030 | User: marcus_vance (LOGOUT) | Event Time: Monday, 11/16/2026 21:30:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (31, 12, 'ethan_walker', 'ethan_walker@codeforge.io', 'REGISTER', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-17 09:50:20'); -- #031 | User: ethan_walker (REGISTER) | Event Time: Tuesday, 11/17/2026 09:50:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (32, 5, 'priya_natarajan', 'priya_natarajan@codeforge.io', 'GOOGLE', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-17 10:15:25'); -- #032 | User: priya_natarajan (GOOGLE) | Event Time: Tuesday, 11/17/2026 10:15:25
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (33, 12, 'ethan_walker', 'ethan_walker@codeforge.io', 'LOGOUT', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-17 10:40:20'); -- #033 | User: ethan_walker (LOGOUT) | Event Time: Tuesday, 11/17/2026 10:40:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (34, 5, 'priya_natarajan', 'priya_natarajan@codeforge.io', 'LOGOUT', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-17 11:40:25'); -- #034 | User: priya_natarajan (LOGOUT) | Event Time: Tuesday, 11/17/2026 11:40:25
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (35, 13, 'chloe_martin', 'chloe_martin@codeforge.io', 'REGISTER', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-17 14:18:33'); -- #035 | User: chloe_martin (REGISTER) | Event Time: Tuesday, 11/17/2026 14:18:33
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (36, 13, 'chloe_martin', 'chloe_martin@codeforge.io', 'LOGOUT', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-17 15:03:33'); -- #036 | User: chloe_martin (LOGOUT) | Event Time: Tuesday, 11/17/2026 15:03:33
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (37, 14, 'noah_becker', 'noah_becker@codeforge.io', 'REGISTER', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-17 20:04:12'); -- #037 | User: noah_becker (REGISTER) | Event Time: Tuesday, 11/17/2026 20:04:12
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (38, 7, 'mia_thompson', 'mia_thompson@codeforge.io', 'PASSWORD', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-17 20:05:15'); -- #038 | User: mia_thompson (PASSWORD) | Event Time: Tuesday, 11/17/2026 20:05:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (39, 14, 'noah_becker', 'noah_becker@codeforge.io', 'LOGOUT', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-17 21:04:12'); -- #039 | User: noah_becker (LOGOUT) | Event Time: Tuesday, 11/17/2026 21:04:12
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (40, 7, 'mia_thompson', 'mia_thompson@codeforge.io', 'LOGOUT', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-17 21:20:15'); -- #040 | User: mia_thompson (LOGOUT) | Event Time: Tuesday, 11/17/2026 21:20:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (41, 15, 'grace_lee', 'grace_lee@codeforge.io', 'REGISTER', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-18 08:42:00'); -- #041 | User: grace_lee (REGISTER) | Event Time: Wednesday, 11/18/2026 08:42:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (42, 15, 'grace_lee', 'grace_lee@codeforge.io', 'LOGOUT', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-18 09:37:00'); -- #042 | User: grace_lee (LOGOUT) | Event Time: Wednesday, 11/18/2026 09:37:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (43, 16, 'lucas_ferreira', 'lucas_ferreira@codeforge.io', 'REGISTER', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-18 11:25:48'); -- #043 | User: lucas_ferreira (REGISTER) | Event Time: Wednesday, 11/18/2026 11:25:48
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (44, 16, 'lucas_ferreira', 'lucas_ferreira@codeforge.io', 'LOGOUT', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-18 12:10:48'); -- #044 | User: lucas_ferreira (LOGOUT) | Event Time: Wednesday, 11/18/2026 12:10:48
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (45, 6, 'liam_oconnor', 'liam_oconnor@codeforge.io', 'GITHUB', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-18 13:30:45'); -- #045 | User: liam_oconnor (GITHUB) | Event Time: Wednesday, 11/18/2026 13:30:45
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (46, 6, 'liam_oconnor', 'liam_oconnor@codeforge.io', 'LOGOUT', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-18 15:10:45'); -- #046 | User: liam_oconnor (LOGOUT) | Event Time: Wednesday, 11/18/2026 15:10:45
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (47, 2, 'david_kim', 'david_kim@codeforge.io', 'PASSWORD', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-18 15:45:00'); -- #047 | User: david_kim (PASSWORD) | Event Time: Wednesday, 11/18/2026 15:45:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (48, 17, 'emma_novak', 'emma_novak@codeforge.io', 'REGISTER', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-18 17:15:30'); -- #048 | User: emma_novak (REGISTER) | Event Time: Wednesday, 11/18/2026 17:15:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (49, 2, 'david_kim', 'david_kim@codeforge.io', 'LOGOUT', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-18 17:45:00'); -- #049 | User: david_kim (LOGOUT) | Event Time: Wednesday, 11/18/2026 17:45:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (50, 17, 'emma_novak', 'emma_novak@codeforge.io', 'LOGOUT', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-18 18:05:30'); -- #050 | User: emma_novak (LOGOUT) | Event Time: Wednesday, 11/18/2026 18:05:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (51, 9, 'hana_suzuki', 'hana_suzuki@codeforge.io', 'PASSWORD', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-18 20:15:10'); -- #051 | User: hana_suzuki (PASSWORD) | Event Time: Wednesday, 11/18/2026 20:15:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (52, 9, 'hana_suzuki', 'hana_suzuki@codeforge.io', 'LOGOUT', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-18 21:45:10'); -- #052 | User: hana_suzuki (LOGOUT) | Event Time: Wednesday, 11/18/2026 21:45:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (53, 18, 'ryan_bennett', 'ryan_bennett@codeforge.io', 'REGISTER', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-19 09:05:14'); -- #053 | User: ryan_bennett (REGISTER) | Event Time: Thursday, 11/19/2026 09:05:14
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (54, 18, 'ryan_bennett', 'ryan_bennett@codeforge.io', 'LOGOUT', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-19 10:05:14'); -- #054 | User: ryan_bennett (LOGOUT) | Event Time: Thursday, 11/19/2026 10:05:14
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (55, 19, 'sofia_petrova', 'sofia_petrova@codeforge.io', 'REGISTER', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-19 13:48:22'); -- #055 | User: sofia_petrova (REGISTER) | Event Time: Thursday, 11/19/2026 13:48:22
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (56, 3, 'sarah_jenkins', 'sarah_jenkins@codeforge.io', 'GITHUB', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-19 14:05:40'); -- #056 | User: sarah_jenkins (GITHUB) | Event Time: Thursday, 11/19/2026 14:05:40
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (57, 19, 'sofia_petrova', 'sofia_petrova@codeforge.io', 'LOGOUT', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-19 14:33:22'); -- #057 | User: sofia_petrova (LOGOUT) | Event Time: Thursday, 11/19/2026 14:33:22
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (58, 8, 'daniel_alves', 'daniel_alves@codeforge.io', 'PASSWORD', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-19 15:20:30'); -- #058 | User: daniel_alves (PASSWORD) | Event Time: Thursday, 11/19/2026 15:20:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (59, 3, 'sarah_jenkins', 'sarah_jenkins@codeforge.io', 'LOGOUT', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-19 15:25:40'); -- #059 | User: sarah_jenkins (LOGOUT) | Event Time: Thursday, 11/19/2026 15:25:40
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (60, 8, 'daniel_alves', 'daniel_alves@codeforge.io', 'LOGOUT', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-19 16:30:30'); -- #060 | User: daniel_alves (LOGOUT) | Event Time: Thursday, 11/19/2026 16:30:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (61, 20, 'aiden_murphy', 'aiden_murphy@codeforge.io', 'REGISTER', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-19 16:32:05'); -- #061 | User: aiden_murphy (REGISTER) | Event Time: Thursday, 11/19/2026 16:32:05
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (62, 20, 'aiden_murphy', 'aiden_murphy@codeforge.io', 'LOGOUT', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-19 17:12:05'); -- #062 | User: aiden_murphy (LOGOUT) | Event Time: Thursday, 11/19/2026 17:12:05
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (63, 11, 'isabella_rossi', 'isabella_rossi@codeforge.io', 'GOOGLE', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-19 19:10:20'); -- #063 | User: isabella_rossi (GOOGLE) | Event Time: Thursday, 11/19/2026 19:10:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (64, 11, 'isabella_rossi', 'isabella_rossi@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-19 20:25:20'); -- #064 | User: isabella_rossi (LOGOUT) | Event Time: Thursday, 11/19/2026 20:25:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (65, 21, 'zoe_carter', 'zoe_carter@codeforge.io', 'REGISTER', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-19 21:10:40'); -- #065 | User: zoe_carter (REGISTER) | Event Time: Thursday, 11/19/2026 21:10:40
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (66, 21, 'zoe_carter', 'zoe_carter@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-19 22:15:40'); -- #066 | User: zoe_carter (LOGOUT) | Event Time: Thursday, 11/19/2026 22:15:40
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (67, 1, 'alex_morgan', 'alex@codeforge.io', 'PASSWORD', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-20 09:15:30'); -- #067 | User: alex_morgan (PASSWORD) | Event Time: Friday, 11/20/2026 09:15:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (68, 1, 'alex_morgan', 'alex@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-20 10:40:30'); -- #068 | User: alex_morgan (LOGOUT) | Event Time: Friday, 11/20/2026 10:40:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (69, 12, 'ethan_walker', 'ethan_walker@codeforge.io', 'GITHUB', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-20 11:20:15'); -- #069 | User: ethan_walker (GITHUB) | Event Time: Friday, 11/20/2026 11:20:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (70, 12, 'ethan_walker', 'ethan_walker@codeforge.io', 'LOGOUT', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-20 12:55:15'); -- #070 | User: ethan_walker (LOGOUT) | Event Time: Friday, 11/20/2026 12:55:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (71, 10, 'omar_haddad', 'omar_haddad@codeforge.io', 'PASSWORD', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-20 16:30:45'); -- #071 | User: omar_haddad (PASSWORD) | Event Time: Friday, 11/20/2026 16:30:45
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (72, 10, 'omar_haddad', 'omar_haddad@codeforge.io', 'LOGOUT', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-20 17:25:45'); -- #072 | User: omar_haddad (LOGOUT) | Event Time: Friday, 11/20/2026 17:25:45
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (73, 14, 'noah_becker', 'noah_becker@codeforge.io', 'PASSWORD', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-20 21:15:40'); -- #073 | User: noah_becker (PASSWORD) | Event Time: Friday, 11/20/2026 21:15:40
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (74, 14, 'noah_becker', 'noah_becker@codeforge.io', 'LOGOUT', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-20 22:40:40'); -- #074 | User: noah_becker (LOGOUT) | Event Time: Friday, 11/20/2026 22:40:40
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (75, 13, 'chloe_martin', 'chloe_martin@codeforge.io', 'PASSWORD', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-21 09:40:00'); -- #075 | User: chloe_martin (PASSWORD) | Event Time: Saturday, 11/21/2026 09:40:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (76, 13, 'chloe_martin', 'chloe_martin@codeforge.io', 'LOGOUT', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-21 10:40:00'); -- #076 | User: chloe_martin (LOGOUT) | Event Time: Saturday, 11/21/2026 10:40:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (77, 7, 'mia_thompson', 'mia_thompson@codeforge.io', 'PASSWORD', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-21 11:30:00'); -- #077 | User: mia_thompson (PASSWORD) | Event Time: Saturday, 11/21/2026 11:30:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (78, 7, 'mia_thompson', 'mia_thompson@codeforge.io', 'LOGOUT', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-21 12:55:00'); -- #078 | User: mia_thompson (LOGOUT) | Event Time: Saturday, 11/21/2026 12:55:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (79, 4, 'marcus_vance', 'marcus_vance@codeforge.io', 'PASSWORD', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-21 14:15:00'); -- #079 | User: marcus_vance (PASSWORD) | Event Time: Saturday, 11/21/2026 14:15:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (80, 15, 'grace_lee', 'grace_lee@codeforge.io', 'PASSWORD', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-21 14:35:10'); -- #080 | User: grace_lee (PASSWORD) | Event Time: Saturday, 11/21/2026 14:35:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (81, 4, 'marcus_vance', 'marcus_vance@codeforge.io', 'LOGOUT', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-21 15:50:00'); -- #081 | User: marcus_vance (LOGOUT) | Event Time: Saturday, 11/21/2026 15:50:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (82, 15, 'grace_lee', 'grace_lee@codeforge.io', 'LOGOUT', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-21 15:55:10'); -- #082 | User: grace_lee (LOGOUT) | Event Time: Saturday, 11/21/2026 15:55:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (83, 5, 'priya_natarajan', 'priya_natarajan@codeforge.io', 'PASSWORD', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-21 16:20:00'); -- #083 | User: priya_natarajan (PASSWORD) | Event Time: Saturday, 11/21/2026 16:20:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (84, 5, 'priya_natarajan', 'priya_natarajan@codeforge.io', 'LOGOUT', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-21 17:50:00'); -- #084 | User: priya_natarajan (LOGOUT) | Event Time: Saturday, 11/21/2026 17:50:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (85, 16, 'lucas_ferreira', 'lucas_ferreira@codeforge.io', 'GOOGLE', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-21 17:50:30'); -- #085 | User: lucas_ferreira (GOOGLE) | Event Time: Saturday, 11/21/2026 17:50:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (86, 16, 'lucas_ferreira', 'lucas_ferreira@codeforge.io', 'LOGOUT', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-21 19:00:30'); -- #086 | User: lucas_ferreira (LOGOUT) | Event Time: Saturday, 11/21/2026 19:00:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (87, 17, 'emma_novak', 'emma_novak@codeforge.io', 'PASSWORD', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-21 20:05:40'); -- #087 | User: emma_novak (PASSWORD) | Event Time: Saturday, 11/21/2026 20:05:40
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (88, 17, 'emma_novak', 'emma_novak@codeforge.io', 'LOGOUT', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-21 21:40:40'); -- #088 | User: emma_novak (LOGOUT) | Event Time: Saturday, 11/21/2026 21:40:40
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (89, 18, 'ryan_bennett', 'ryan_bennett@codeforge.io', 'PASSWORD', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-22 10:30:25'); -- #089 | User: ryan_bennett (PASSWORD) | Event Time: Sunday, 11/22/2026 10:30:25
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (90, 18, 'ryan_bennett', 'ryan_bennett@codeforge.io', 'LOGOUT', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-22 11:55:25'); -- #090 | User: ryan_bennett (LOGOUT) | Event Time: Sunday, 11/22/2026 11:55:25
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (91, 9, 'hana_suzuki', 'hana_suzuki@codeforge.io', 'PASSWORD', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-22 14:00:00'); -- #091 | User: hana_suzuki (PASSWORD) | Event Time: Sunday, 11/22/2026 14:00:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (92, 9, 'hana_suzuki', 'hana_suzuki@codeforge.io', 'LOGOUT', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-22 15:25:00'); -- #092 | User: hana_suzuki (LOGOUT) | Event Time: Sunday, 11/22/2026 15:25:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (93, 19, 'sofia_petrova', 'sofia_petrova@codeforge.io', 'PASSWORD', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-22 16:20:10'); -- #093 | User: sofia_petrova (PASSWORD) | Event Time: Sunday, 11/22/2026 16:20:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (94, 6, 'liam_oconnor', 'liam_oconnor@codeforge.io', 'PASSWORD', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-22 17:10:00'); -- #094 | User: liam_oconnor (PASSWORD) | Event Time: Sunday, 11/22/2026 17:10:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (95, 19, 'sofia_petrova', 'sofia_petrova@codeforge.io', 'LOGOUT', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-22 17:30:10'); -- #095 | User: sofia_petrova (LOGOUT) | Event Time: Sunday, 11/22/2026 17:30:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (96, 6, 'liam_oconnor', 'liam_oconnor@codeforge.io', 'LOGOUT', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-22 18:30:00'); -- #096 | User: liam_oconnor (LOGOUT) | Event Time: Sunday, 11/22/2026 18:30:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (97, 20, 'aiden_murphy', 'aiden_murphy@codeforge.io', 'PASSWORD', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-22 19:10:35'); -- #097 | User: aiden_murphy (PASSWORD) | Event Time: Sunday, 11/22/2026 19:10:35
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (98, 2, 'david_kim', 'david_kim@codeforge.io', 'GOOGLE', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-22 20:10:30'); -- #098 | User: david_kim (GOOGLE) | Event Time: Sunday, 11/22/2026 20:10:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (99, 20, 'aiden_murphy', 'aiden_murphy@codeforge.io', 'LOGOUT', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-22 20:25:35'); -- #099 | User: aiden_murphy (LOGOUT) | Event Time: Sunday, 11/22/2026 20:25:35
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (100, 21, 'zoe_carter', 'zoe_carter@codeforge.io', 'GITHUB', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-22 21:30:15'); -- #100 | User: zoe_carter (GITHUB) | Event Time: Sunday, 11/22/2026 21:30:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (101, 2, 'david_kim', 'david_kim@codeforge.io', 'LOGOUT', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-22 21:55:30'); -- #101 | User: david_kim (LOGOUT) | Event Time: Sunday, 11/22/2026 21:55:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (102, 21, 'zoe_carter', 'zoe_carter@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-22 23:20:15'); -- #102 | User: zoe_carter (LOGOUT) | Event Time: Sunday, 11/22/2026 23:20:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (103, 8, 'daniel_alves', 'daniel_alves@codeforge.io', 'GOOGLE', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-23 10:45:00'); -- #103 | User: daniel_alves (GOOGLE) | Event Time: Monday, 11/23/2026 10:45:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (104, 8, 'daniel_alves', 'daniel_alves@codeforge.io', 'LOGOUT', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-23 11:50:00'); -- #104 | User: daniel_alves (LOGOUT) | Event Time: Monday, 11/23/2026 11:50:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (105, 12, 'ethan_walker', 'ethan_walker@codeforge.io', 'PASSWORD', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-23 15:00:00'); -- #105 | User: ethan_walker (PASSWORD) | Event Time: Monday, 11/23/2026 15:00:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (106, 12, 'ethan_walker', 'ethan_walker@codeforge.io', 'LOGOUT', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-23 16:25:00'); -- #106 | User: ethan_walker (LOGOUT) | Event Time: Monday, 11/23/2026 16:25:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (107, 11, 'isabella_rossi', 'isabella_rossi@codeforge.io', 'PASSWORD', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-23 16:45:00'); -- #107 | User: isabella_rossi (PASSWORD) | Event Time: Monday, 11/23/2026 16:45:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (108, 11, 'isabella_rossi', 'isabella_rossi@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-23 18:05:00'); -- #108 | User: isabella_rossi (LOGOUT) | Event Time: Monday, 11/23/2026 18:05:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (109, 14, 'noah_becker', 'noah_becker@codeforge.io', 'GOOGLE', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-23 19:30:00'); -- #109 | User: noah_becker (GOOGLE) | Event Time: Monday, 11/23/2026 19:30:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (110, 14, 'noah_becker', 'noah_becker@codeforge.io', 'LOGOUT', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-23 21:00:00'); -- #110 | User: noah_becker (LOGOUT) | Event Time: Monday, 11/23/2026 21:00:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (111, 15, 'grace_lee', 'grace_lee@codeforge.io', 'PASSWORD', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-24 10:20:00'); -- #111 | User: grace_lee (PASSWORD) | Event Time: Tuesday, 11/24/2026 10:20:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (112, 3, 'sarah_jenkins', 'sarah_jenkins@codeforge.io', 'PASSWORD', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-24 11:15:00'); -- #112 | User: sarah_jenkins (PASSWORD) | Event Time: Tuesday, 11/24/2026 11:15:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (113, 15, 'grace_lee', 'grace_lee@codeforge.io', 'LOGOUT', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-24 11:50:00'); -- #113 | User: grace_lee (LOGOUT) | Event Time: Tuesday, 11/24/2026 11:50:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (114, 3, 'sarah_jenkins', 'sarah_jenkins@codeforge.io', 'LOGOUT', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-24 12:20:00'); -- #114 | User: sarah_jenkins (LOGOUT) | Event Time: Tuesday, 11/24/2026 12:20:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (115, 10, 'omar_haddad', 'omar_haddad@codeforge.io', 'PASSWORD', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-24 14:10:00'); -- #115 | User: omar_haddad (PASSWORD) | Event Time: Tuesday, 11/24/2026 14:10:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (116, 10, 'omar_haddad', 'omar_haddad@codeforge.io', 'LOGOUT', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-24 15:10:00'); -- #116 | User: omar_haddad (LOGOUT) | Event Time: Tuesday, 11/24/2026 15:10:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (117, 17, 'emma_novak', 'emma_novak@codeforge.io', 'GITHUB', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-24 15:40:00'); -- #117 | User: emma_novak (GITHUB) | Event Time: Tuesday, 11/24/2026 15:40:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (118, 13, 'chloe_martin', 'chloe_martin@codeforge.io', 'PASSWORD', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-24 16:15:30'); -- #118 | User: chloe_martin (PASSWORD) | Event Time: Tuesday, 11/24/2026 16:15:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (119, 1, 'alex_morgan', 'alex@codeforge.io', 'GITHUB', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-24 16:40:22'); -- #119 | User: alex_morgan (GITHUB) | Event Time: Tuesday, 11/24/2026 16:40:22
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (120, 18, 'ryan_bennett', 'ryan_bennett@codeforge.io', 'PASSWORD', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-24 17:15:00'); -- #120 | User: ryan_bennett (PASSWORD) | Event Time: Tuesday, 11/24/2026 17:15:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (121, 17, 'emma_novak', 'emma_novak@codeforge.io', 'LOGOUT', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-24 17:20:00'); -- #121 | User: emma_novak (LOGOUT) | Event Time: Tuesday, 11/24/2026 17:20:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (122, 13, 'chloe_martin', 'chloe_martin@codeforge.io', 'LOGOUT', '118.69.182.42', 'Da Nang, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-24 17:25:30'); -- #122 | User: chloe_martin (LOGOUT) | Event Time: Tuesday, 11/24/2026 17:25:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (123, 1, 'alex_morgan', 'alex@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-24 18:30:22'); -- #123 | User: alex_morgan (LOGOUT) | Event Time: Tuesday, 11/24/2026 18:30:22
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (124, 18, 'ryan_bennett', 'ryan_bennett@codeforge.io', 'LOGOUT', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-24 18:45:00'); -- #124 | User: ryan_bennett (LOGOUT) | Event Time: Tuesday, 11/24/2026 18:45:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (125, 7, 'mia_thompson', 'mia_thompson@codeforge.io', 'PASSWORD', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-24 18:50:20'); -- #125 | User: mia_thompson (PASSWORD) | Event Time: Tuesday, 11/24/2026 18:50:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (126, 7, 'mia_thompson', 'mia_thompson@codeforge.io', 'LOGOUT', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-24 19:50:20'); -- #126 | User: mia_thompson (LOGOUT) | Event Time: Tuesday, 11/24/2026 19:50:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (127, 21, 'zoe_carter', 'zoe_carter@codeforge.io', 'PASSWORD', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-24 20:00:00'); -- #127 | User: zoe_carter (PASSWORD) | Event Time: Tuesday, 11/24/2026 20:00:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (128, 21, 'zoe_carter', 'zoe_carter@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-24 21:35:00'); -- #128 | User: zoe_carter (LOGOUT) | Event Time: Tuesday, 11/24/2026 21:35:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (129, 5, 'priya_natarajan', 'priya_natarajan@codeforge.io', 'GOOGLE', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-25 09:40:12'); -- #129 | User: priya_natarajan (GOOGLE) | Event Time: Wednesday, 11/25/2026 09:40:12
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (130, 5, 'priya_natarajan', 'priya_natarajan@codeforge.io', 'LOGOUT', '42.112.204.67', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-25 10:50:12'); -- #130 | User: priya_natarajan (LOGOUT) | Event Time: Wednesday, 11/25/2026 10:50:12
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (131, 19, 'sofia_petrova', 'sofia_petrova@codeforge.io', 'PASSWORD', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-25 11:05:00'); -- #131 | User: sofia_petrova (PASSWORD) | Event Time: Wednesday, 11/25/2026 11:05:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (132, 19, 'sofia_petrova', 'sofia_petrova@codeforge.io', 'LOGOUT', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-25 12:10:00'); -- #132 | User: sofia_petrova (LOGOUT) | Event Time: Wednesday, 11/25/2026 12:10:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (133, 16, 'lucas_ferreira', 'lucas_ferreira@codeforge.io', 'PASSWORD', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-25 14:15:00'); -- #133 | User: lucas_ferreira (PASSWORD) | Event Time: Wednesday, 11/25/2026 14:15:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (134, 6, 'liam_oconnor', 'liam_oconnor@codeforge.io', 'GITHUB', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-25 15:25:30'); -- #134 | User: liam_oconnor (GITHUB) | Event Time: Wednesday, 11/25/2026 15:25:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (135, 16, 'lucas_ferreira', 'lucas_ferreira@codeforge.io', 'LOGOUT', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-25 15:40:00'); -- #135 | User: lucas_ferreira (LOGOUT) | Event Time: Wednesday, 11/25/2026 15:40:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (136, 20, 'aiden_murphy', 'aiden_murphy@codeforge.io', 'PASSWORD', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-25 16:40:00'); -- #136 | User: aiden_murphy (PASSWORD) | Event Time: Wednesday, 11/25/2026 16:40:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (137, 6, 'liam_oconnor', 'liam_oconnor@codeforge.io', 'LOGOUT', '125.235.14.90', 'Can Tho, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-25 17:00:30'); -- #137 | User: liam_oconnor (LOGOUT) | Event Time: Wednesday, 11/25/2026 17:00:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (138, 20, 'aiden_murphy', 'aiden_murphy@codeforge.io', 'LOGOUT', '123.24.160.82', 'Quy Nhon, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-25 18:00:00'); -- #138 | User: aiden_murphy (LOGOUT) | Event Time: Wednesday, 11/25/2026 18:00:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (139, 12, 'ethan_walker', 'ethan_walker@codeforge.io', 'GITHUB', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-25 18:30:10'); -- #139 | User: ethan_walker (GITHUB) | Event Time: Wednesday, 11/25/2026 18:30:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (140, 2, 'david_kim', 'david_kim@codeforge.io', 'PASSWORD', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-25 19:30:00'); -- #140 | User: david_kim (PASSWORD) | Event Time: Wednesday, 11/25/2026 19:30:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (141, 18, 'ryan_bennett', 'ryan_bennett@codeforge.io', 'GOOGLE', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-25 19:45:30'); -- #141 | User: ryan_bennett (GOOGLE) | Event Time: Wednesday, 11/25/2026 19:45:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (142, 17, 'emma_novak', 'emma_novak@codeforge.io', 'PASSWORD', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-25 20:10:15'); -- #142 | User: emma_novak (PASSWORD) | Event Time: Wednesday, 11/25/2026 20:10:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (143, 12, 'ethan_walker', 'ethan_walker@codeforge.io', 'LOGOUT', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-25 20:15:10'); -- #143 | User: ethan_walker (LOGOUT) | Event Time: Wednesday, 11/25/2026 20:15:10
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (144, 9, 'hana_suzuki', 'hana_suzuki@codeforge.io', 'PASSWORD', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-25 20:40:15'); -- #144 | User: hana_suzuki (PASSWORD) | Event Time: Wednesday, 11/25/2026 20:40:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (145, 2, 'david_kim', 'david_kim@codeforge.io', 'LOGOUT', '14.241.120.5', 'Ho Chi Minh City, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-25 20:55:00'); -- #145 | User: david_kim (LOGOUT) | Event Time: Wednesday, 11/25/2026 20:55:00
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (146, 18, 'ryan_bennett', 'ryan_bennett@codeforge.io', 'LOGOUT', '1.53.195.44', 'Hue, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-25 21:00:30'); -- #146 | User: ryan_bennett (LOGOUT) | Event Time: Wednesday, 11/25/2026 21:00:30
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (147, 4, 'marcus_vance', 'marcus_vance@codeforge.io', 'GOOGLE', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-25 21:05:45'); -- #147 | User: marcus_vance (GOOGLE) | Event Time: Wednesday, 11/25/2026 21:05:45
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (148, 17, 'emma_novak', 'emma_novak@codeforge.io', 'LOGOUT', '171.244.33.12', 'Hai Phong, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0', '2026-11-25 21:30:15'); -- #148 | User: emma_novak (LOGOUT) | Event Time: Wednesday, 11/25/2026 21:30:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (149, 21, 'zoe_carter', 'zoe_carter@codeforge.io', 'GITHUB', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-25 21:45:20'); -- #149 | User: zoe_carter (GITHUB) | Event Time: Wednesday, 11/25/2026 21:45:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (150, 14, 'noah_becker', 'noah_becker@codeforge.io', 'PASSWORD', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-25 21:50:20'); -- #150 | User: noah_becker (PASSWORD) | Event Time: Wednesday, 11/25/2026 21:50:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (151, 9, 'hana_suzuki', 'hana_suzuki@codeforge.io', 'LOGOUT', '115.79.138.25', 'Nha Trang, Vietnam', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15', '2026-11-25 22:30:15'); -- #151 | User: hana_suzuki (LOGOUT) | Event Time: Wednesday, 11/25/2026 22:30:15
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (152, 14, 'noah_becker', 'noah_becker@codeforge.io', 'LOGOUT', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-25 23:05:20'); -- #152 | User: noah_becker (LOGOUT) | Event Time: Wednesday, 11/25/2026 23:05:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (153, 4, 'marcus_vance', 'marcus_vance@codeforge.io', 'LOGOUT', '27.72.88.19', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0', '2026-11-25 23:15:45'); -- #153 | User: marcus_vance (LOGOUT) | Event Time: Wednesday, 11/25/2026 23:15:45
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (154, 21, 'zoe_carter', 'zoe_carter@codeforge.io', 'LOGOUT', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-25 23:45:20'); -- #154 | User: zoe_carter (LOGOUT) | Event Time: Wednesday, 11/25/2026 23:45:20
+
+INSERT INTO dbo.user_login_logs (id, user_id, username, email, login_method, ip_address, location, user_agent, logged_in_at)
+VALUES (155, 1, 'alex_morgan', 'alex@codeforge.io', 'PASSWORD', '113.161.45.88', 'Hanoi, Vietnam', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', '2026-11-26 08:20:15'); -- #155 | User: alex_morgan (PASSWORD) | Event Time: Thursday, 11/26/2026 08:20:15
+
+SET IDENTITY_INSERT dbo.user_login_logs OFF;
 GO

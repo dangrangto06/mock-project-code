@@ -24,6 +24,8 @@
   let loginMethodFilter = 'ALL';
   let visitSearchQuery = '';
   let visitRouteFilter = 'ALL';
+  let eventsBound = false;
+  let trackingPollInterval = null;
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -106,6 +108,9 @@
   }
 
   function bindEvents() {
+    if (eventsBound) return;
+    eventsBound = true;
+
     const tabMod = document.getElementById('tab-admin-mod');
     const tabFeedbacks = document.getElementById('tab-admin-feedbacks');
     const tabUsers = document.getElementById('tab-admin-users');
@@ -220,13 +225,35 @@
     if (viewTracking) viewTracking.classList.toggle('hidden', tab !== 'tracking');
 
     if (tab === 'moderation') {
+      stopTrackingPolling();
       loadModerationQueue();
     } else if (tab === 'feedbacks') {
+      stopTrackingPolling();
       loadFeedbacks();
     } else if (tab === 'users') {
+      stopTrackingPolling();
       loadUsers();
     } else if (tab === 'tracking') {
       loadTrackingData();
+      startTrackingPolling();
+    }
+  }
+
+  function startTrackingPolling() {
+    stopTrackingPolling();
+    trackingPollInterval = setInterval(async () => {
+      if (activeTab === 'tracking') {
+        await loadTrackingData(true);
+      } else {
+        stopTrackingPolling();
+      }
+    }, 4000);
+  }
+
+  function stopTrackingPolling() {
+    if (trackingPollInterval) {
+      clearInterval(trackingPollInterval);
+      trackingPollInterval = null;
     }
   }
 
@@ -965,6 +992,8 @@
         methodBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-300">GitHub</span>';
       } else if (method === 'REGISTER') {
         methodBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">Register</span>';
+      } else if (method === 'LOGOUT') {
+        methodBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">Logout</span>';
       } else {
         methodBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700 border border-gray-200">Password</span>';
       }

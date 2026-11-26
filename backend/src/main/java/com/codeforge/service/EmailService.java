@@ -35,6 +35,9 @@ public class EmailService {
     @Value("${spring.mail.username:}")
     private String fromEmail;
 
+    @Value("${frontend.base-url:http://localhost:3000}")
+    private String frontendUrl;
+
     /**
      * Dispatches a password reset email containing a secure token link.
      *
@@ -42,18 +45,29 @@ public class EmailService {
      * @param resetToken Secure one-time password reset token string.
      */
     public void sendPasswordResetEmail(String toEmail, String resetToken) {
-        String resetLink = "http://localhost:3000/login.html?resetToken=" + resetToken;
+        String base = (frontendUrl != null && !frontendUrl.isBlank()) ? frontendUrl.replaceAll("/+$", "") : "http://localhost:3000";
+        String resetLink = base + "/login.html?resetToken=" + resetToken;
         log.info("Password reset link for {}: {}", toEmail, resetLink);
         try {
             if (mailSender != null) {
-                SimpleMailMessage message = new SimpleMailMessage();
+                MimeMessage mimeMessage = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
                 if (fromEmail != null && !fromEmail.isBlank()) {
-                    message.setFrom(fromEmail);
+                    helper.setFrom(fromEmail, "CodeForge Support");
+                    helper.setReplyTo(fromEmail);
                 }
-                message.setTo(toEmail);
-                message.setSubject("CodeForge - Password Reset Request");
-                message.setText("Click here to reset your CodeForge password: " + resetLink);
-                mailSender.send(message);
+                helper.setTo(toEmail);
+                helper.setSubject("CodeForge - Password Reset Request");
+                mimeMessage.setHeader("Auto-Submitted", "auto-generated");
+                mimeMessage.setHeader("X-Auto-Response-Suppress", "All");
+                mimeMessage.setHeader("X-Mailer", "CodeForge-Platform-Mailer");
+
+                String text = "Hello,\n\nYou requested a password reset for your CodeForge account.\n\n"
+                        + "Please click the link below to set a new password:\n" + resetLink + "\n\n"
+                        + "If you did not request this reset, you can safely ignore this email.\n\n"
+                        + "Best regards,\nThe CodeForge Team";
+                helper.setText(text, false);
+                mailSender.send(mimeMessage);
                 log.info("Password reset email sent successfully via SMTP to {}", toEmail);
             } else {
                 log.info("[Email Service Simulation] Sent password reset link {} to {}", resetLink, toEmail);
@@ -68,26 +82,43 @@ public class EmailService {
      * Contains the exact message: "We value your feedback and will get back to you soon!"
      * with high-class styling, branding, and feedback details.
      *
+     * <p>Includes both text/plain fallback and responsive HTML, plus RFC 3834 auto-submitted
+     * headers to minimize spam classification risk in Gmail, Outlook, and other providers.</p>
+     *
      * @param toEmail         Destination user email address.
      * @param recipientName   Submitter display name.
      * @param feedbackMessage The message content submitted by the user.
      */
     public void sendFeedbackConfirmationEmail(String toEmail, String recipientName, String feedbackMessage) {
         String safeName = (recipientName != null && !recipientName.isBlank()) ? recipientName.trim() : "Valued Developer";
-        String safeMessage = (feedbackMessage != null) ? feedbackMessage.replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br/>") : "";
+        String rawMessage = (feedbackMessage != null) ? feedbackMessage.trim() : "";
+        String safeMessage = rawMessage.replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br/>");
         log.info("Dispatching feedback confirmation email to {}", toEmail);
 
         try {
             if (mailSender != null) {
                 MimeMessage mimeMessage = mailSender.createMimeMessage();
+                // Enable multipart mode for HTML + plain text alternative
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
                 if (fromEmail != null && !fromEmail.isBlank()) {
-                    helper.setFrom(fromEmail, "CodeForge");
+                    helper.setFrom(fromEmail, "CodeForge Support");
+                    helper.setReplyTo(fromEmail);
                 }
                 helper.setTo(toEmail);
-                helper.setSubject("CodeForge - We Value Your Feedback!");
+                // Professional subject without exclamation marks to avoid Bayesian spam filters
+                helper.setSubject("CodeForge - Feedback Confirmation");
+
+                // RFC 3834 and transactional headers to declare auto-generated transactional content
+                mimeMessage.setHeader("Auto-Submitted", "auto-generated");
+                mimeMessage.setHeader("X-Auto-Response-Suppress", "All");
+                mimeMessage.setHeader("Precedence", "bulk");
+                mimeMessage.setHeader("X-Mailer", "CodeForge-Platform-Mailer");
+
+                String plainText = buildFeedbackPlainText(safeName, rawMessage);
                 String htmlBody = buildFeedbackHtml(safeName, safeMessage);
-                helper.setText(htmlBody, true);
+                // multipart/alternative: both plain text and rich HTML
+                helper.setText(plainText, htmlBody);
+
                 mailSender.send(mimeMessage);
                 log.info("Feedback confirmation email sent successfully via SMTP to {}", toEmail);
             } else {
@@ -99,9 +130,32 @@ public class EmailService {
     }
 
     /**
+     * Builds plain text fallback body for anti-spam multipart/alternative compliance.
+     */
+    private String buildFeedbackPlainText(String userName, String feedbackMessage) {
+        return """
+            Hello %s,
+
+            We value your feedback and will get back to you soon!
+
+            Thank you for sharing your thoughts with the CodeForge team. User feedback is vital in shaping our platform, refining challenges, and crafting the best possible developer learning journey.
+
+            Your Submitted Message:
+            "%s"
+
+            Our team will carefully review your notes. If your submission requires troubleshooting or further clarification, one of our administrators will reach back out to you directly at this email address.
+
+            Best regards,
+            The CodeForge Platform Team
+            """.formatted(userName, feedbackMessage);
+    }
+
+    /**
      * Generates a beautifully styled, responsive HTML email template for feedback confirmation.
      */
     private String buildFeedbackHtml(String userName, String feedbackMessage) {
+        String base = (frontendUrl != null && !frontendUrl.isBlank()) ? frontendUrl.replaceAll("/+$", "") : "http://localhost:3000";
+        String homeLink = base + "/index.html";
         return """
             <!DOCTYPE html>
             <html lang="en">
@@ -179,7 +233,7 @@ public class EmailService {
 
                     <!-- CTA Button -->
                     <div style="text-align: center; margin: 28px 0 16px 0;">
-                      <a href="http://localhost:3000/index.html" style="display: inline-block; background-color: #059669; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 14px; padding: 12px 28px; border-radius: 8px; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);">
+                      <a href="%s" style="display: inline-block; background-color: #059669; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 14px; padding: 12px 28px; border-radius: 8px; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);">
                         Return to CodeForge Platform
                       </a>
                     </div>
@@ -208,7 +262,7 @@ public class EmailService {
               </table>
             </body>
             </html>
-            """.formatted(userName, feedbackMessage);
+            """.formatted(userName, feedbackMessage, homeLink);
     }
 
     /**
