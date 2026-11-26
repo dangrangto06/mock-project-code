@@ -1,0 +1,27 @@
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Build output
+backend/target/
+
+# Sensitive credentials & environment files
+application-secrets.properties
+**/application-secrets.properties
+.env
+*.env
+
+# Local runtimes
+frontend/oracleJdk*/
+
+

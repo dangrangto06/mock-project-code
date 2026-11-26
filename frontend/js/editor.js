@@ -1,0 +1,279 @@
+/**
+ * @file editor.js
+ * @description CodeForge Challenge Creator & Markdown Editor Controller.
+ * @module CodeForgeEditor
+ *
+ * <p>Architectural Role:</p>
+ * Drives the Problem Authoring interface (`#page-create-problem`). Manages live markdown
+ * editing and HTML preview rendering, toolbar text transformations (bold, italic, code, links),
+ * topic tag chip manipulation, difficulty tier selection, draft auto-saving, and publishing workflows.
+ */
+
+window.CodeForgeEditor = (function () {
+  'use strict';
+
+  /** Internal state flag tracking whether the markdown editor is in Preview mode */
+  let isPreviewMode = false;
+
+  /** Active difficulty selection ('Easy' | 'Medium' | 'Hard') */
+  let activeDifficulty = 'Easy';
+
+  /** List of topic tags applied to the current problem */
+  let tags = ['Arrays', 'Hash map'];
+
+  /**
+   * Initializes the problem editor module, binding event listeners and rendering initial tags.
+   */
+  function init() {
+    bindEvents();
+    renderTags();
+  }
+
+  /**
+   * Renders topic tag chips into the DOM and binds individual removal listeners.
+   */
+  function renderTags() {
+    const container = document.getElementById('editor-tag-chips');
+    if (!container) return;
+
+    // Generate HTML for each tag badge with an interactive remove button
+    container.innerHTML = tags.map(tag => `
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+        ${tag}
+        <button type="button" data-tag="${tag}" class="btn-remove-tag text-emerald-600 hover:text-emerald-900 focus:outline-none">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </span>
+    `).join('');
+
+    // Attach click listeners to remove tag buttons
+    container.querySelectorAll('.btn-remove-tag').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const tagToRemove = btn.getAttribute('data-tag');
+        tags = tags.filter(t => t !== tagToRemove);
+        renderTags();
+      });
+    });
+  }
+
+  /**
+   * Adds a new topic tag if not already present and below the 5-tag limit.
+   *
+   * @param {string} tagName - Tag label to add.
+   */
+  function addTag(tagName) {
+    const trimmed = tagName.trim();
+    if (trimmed && !tags.includes(trimmed) && tags.length < 5) {
+      tags.push(trimmed);
+      renderTags();
+    }
+  }
+
+  /**
+   * Translates raw Markdown text into sanitized HTML for live preview rendering.
+   *
+   * <p>Parses standard Markdown constructs including headers (h1-h3), bold text, italics,
+   * inline monospace code spans, unordered lists, and paragraphs.</p>
+   *
+   * @param {string} rawMarkdown - Raw Markdown source string.
+   * @returns {string} Formatted HTML string ready for injection into the preview DOM.
+   */
+  function renderMarkdownPreview(rawMarkdown) {
+    // Lightweight regex-based markdown parser
+    let html = rawMarkdown
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/^### (.*$)/gim, '<h3 class="text-base font-semibold text-gray-900 mt-4 mb-2">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-lg font-bold text-gray-900 mt-4 mb-2">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-xl font-bold text-gray-900 mt-4 mb-2">$1</h1>')
+      .replace(/\*\*(.*)\*\*/gim, '<strong class="font-semibold text-gray-900">$1</strong>')
+      .replace(/\*(.*)\*/gim, '<em class="italic">$1</em>')
+      .replace(/`([^`]+)`/gim, '<code class="px-1.5 py-0.5 rounded bg-gray-100 font-mono text-xs text-emerald-700 border border-gray-200">$1</code>')
+      .replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc text-gray-700 text-sm">$1</li>')
+      .replace(/\n\n/gim, '<p class="my-2.5 text-sm text-gray-700 leading-relaxed"></p>')
+      .replace(/\n/gim, '<br />');
+
+    return html;
+  }
+
+  /**
+   * Binds user event handlers for toolbar buttons, difficulty selectors, and preview toggles.
+   */
+  function bindEvents() {
+    // Markdown tab toggle Write vs Preview
+    const tabWrite = document.getElementById('tab-edit-write');
+    const tabPreview = document.getElementById('tab-edit-preview');
+    const textarea = document.getElementById('problem-statement-input');
+    const previewArea = document.getElementById('problem-statement-preview');
+
+    if (tabWrite && tabPreview && textarea && previewArea) {
+      // Switch to raw Markdown editing textarea
+      tabWrite.addEventListener('click', () => {
+        isPreviewMode = false;
+        tabWrite.className = "px-3 py-1 text-xs font-semibold rounded bg-white text-gray-800 shadow-sm border border-gray-200";
+        tabPreview.className = "px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-800";
+        textarea.classList.remove('hidden');
+        previewArea.classList.add('hidden');
+      });
+
+      // Switch to parsed HTML preview container
+      tabPreview.addEventListener('click', () => {
+        isPreviewMode = true;
+        tabPreview.className = "px-3 py-1 text-xs font-semibold rounded bg-white text-gray-800 shadow-sm border border-gray-200";
+        tabWrite.className = "px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-800";
+        previewArea.innerHTML = renderMarkdownPreview(textarea.value);
+        textarea.classList.add('hidden');
+        previewArea.classList.remove('hidden');
+      });
+    }
+
+    // Markdown formatting toolbar action configuration
+    const toolbarButtons = {
+      'btn-fmt-bold': { wrap: '**' },
+      'btn-fmt-italic': { wrap: '*' },
+      'btn-fmt-code': { wrap: '`' },
+      'btn-fmt-link': { prefix: '[', suffix: '](url)' },
+      'btn-fmt-list': { prefix: '\n- ' }
+    };
+
+    // Attach text wrapping and insertion handlers to each toolbar button
+    Object.keys(toolbarButtons).forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn && textarea) {
+        btn.addEventListener('click', () => {
+          const cfg = toolbarButtons[id];
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const selected = textarea.value.substring(start, end);
+
+          let replacement = '';
+          if (cfg.wrap) {
+            replacement = `${cfg.wrap}${selected || 'text'}${cfg.wrap}`;
+          } else if (cfg.prefix && cfg.suffix) {
+            replacement = `${cfg.prefix}${selected || 'text'}${cfg.suffix}`;
+          } else if (cfg.prefix) {
+            replacement = `${cfg.prefix}${selected || 'item'}`;
+          }
+
+          textarea.setRangeText(replacement, start, end, 'end');
+          textarea.focus();
+        });
+      }
+    });
+
+    // Tag input on Enter or Comma keypress
+    const tagInput = document.getElementById('tag-input-field');
+    if (tagInput) {
+      tagInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          addTag(tagInput.value);
+          tagInput.value = '';
+        }
+      });
+    }
+
+    // Difficulty selection buttons toggle
+    const diffButtons = document.querySelectorAll('.btn-diff-choice');
+    diffButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Reset styling across all choices
+        diffButtons.forEach(b => {
+          b.className = "btn-diff-choice flex-1 py-1.5 text-xs font-medium rounded-md text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 text-center transition";
+        });
+        const choice = btn.getAttribute('data-diff');
+        activeDifficulty = choice;
+        // Apply active accent color according to selected tier
+        if (choice === 'Easy') {
+          btn.className = "btn-diff-choice flex-1 py-1.5 text-xs font-medium rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold text-center";
+        } else if (choice === 'Medium') {
+          btn.className = "btn-diff-choice flex-1 py-1.5 text-xs font-medium rounded-md bg-amber-50 text-amber-800 border border-amber-300 font-semibold text-center";
+        } else {
+          btn.className = "btn-diff-choice flex-1 py-1.5 text-xs font-medium rounded-md bg-red-50 text-red-800 border border-red-300 font-semibold text-center";
+        }
+      });
+    });
+
+    // Save Draft Button handler
+    const saveDraftBtn = document.getElementById('btn-save-draft');
+    if (saveDraftBtn) {
+      saveDraftBtn.addEventListener('click', () => {
+        saveDraftBtn.innerHTML = `
+          <svg class="animate-spin w-3.5 h-3.5 text-gray-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          Saving...
+        `;
+        setTimeout(() => {
+          saveDraftBtn.innerHTML = `Save draft`;
+          const saveStatus = document.getElementById('editor-save-status');
+          if (saveStatus) saveStatus.textContent = "Last saved just now";
+          CodeForgeApp.showToast("Draft saved successfully!", "info");
+        }, 500);
+      });
+    }
+
+    // Publish Changes Button handler
+    const publishBtn = document.getElementById('btn-publish-changes');
+    if (publishBtn) {
+      publishBtn.addEventListener('click', async () => {
+        const titleInput = document.querySelector('#page-create-problem input[type="text"]');
+        const statementInput = document.getElementById('problem-statement-input');
+        const langSelect = document.querySelector('#page-create-problem select');
+
+        const title = titleInput ? titleInput.value.trim() : '';
+        const statement = statementInput ? statementInput.value.trim() : '';
+        if (!title || !statement) {
+          CodeForgeApp.showToast("Please enter both title and statement.", "warn");
+          return;
+        }
+
+        const originalHTML = publishBtn.innerHTML;
+        publishBtn.disabled = true;
+        publishBtn.innerHTML = `Publishing...`;
+
+        try {
+          const created = await CodeForgeAPI.createProblem({
+            title,
+            statement,
+            difficulty: activeDifficulty,
+            topics: tags,
+            language: langSelect ? langSelect.value : 'Python 3'
+          });
+          if (created && !CodeForgeData.problems.some(p => p.id === created.id)) {
+            CodeForgeData.problems.unshift(created);
+          }
+          const user = (window.CodeForgeApp && CodeForgeApp.getUser) ? CodeForgeApp.getUser() : null;
+          const isAdmin = user && ((user.role && user.role.toLowerCase() === 'admin') || (user.roles && user.roles.includes('ADMIN')));
+          if (isAdmin || (created && created.moderationStatus === 'APPROVED')) {
+            CodeForgeApp.showToast("Published immediately!", "success");
+          } else {
+            CodeForgeApp.showToast("Submitted for admin approval! You'll see it publicly once verified.", "info");
+          }
+          CodeForgeApp.navigate('library');
+        } catch (err) {
+          if (err.message === 'UNAUTHORIZED') {
+            CodeForgeApp.showToast("Please sign in first to publish a problem.", "warn");
+          } else {
+            CodeForgeApp.showToast("Failed to publish problem.", "warn");
+          }
+        } finally {
+          publishBtn.disabled = false;
+          publishBtn.innerHTML = originalHTML;
+        }
+      });
+    }
+
+    // Top Preview button opens the problem solving IDE view
+    const previewProblemBtn = document.getElementById('btn-preview-problem');
+    if (previewProblemBtn) {
+      previewProblemBtn.addEventListener('click', () => {
+        CodeForgeApp.navigate('ide');
+      });
+    }
+  }
+
+  // Expose public API
+  return {
+    init
+  };
+})();
